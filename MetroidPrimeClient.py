@@ -1,24 +1,28 @@
 import asyncio
+import ipaddress
 import json
 import multiprocessing
 import os
 import subprocess
 import traceback
-from typing import List, Optional
+from typing import Optional
 import zipfile
 import py_randomprime
 
 from CommonClient import ClientCommandProcessor, CommonContext, get_base_parser, logger, server_loop, gui_enabled
 from NetUtils import ClientStatus
 import Utils
+
 from .config import make_version_specific_changes
 from .PrimeUtils import get_apworld_version
 from .Items import suit_upgrade_table
 from .ClientReceiveItems import handle_receive_items
 from .NotificationManager import NotificationManager
 from .Container import construct_hook_patch
-from .DolphinClient import DolphinException, assert_no_running_dolphin, get_num_dolphin_instances
-from .Locations import METROID_PRIME_LOCATION_BASE, every_location, PICKUP_LOCATIONS
+from .clients.BaseClient import Prime1ClientException
+from .clients.DolphinClient import DolphinClient, assert_no_running_dolphin, get_num_dolphin_instances
+from .clients.NintendontClient import NintendontClient
+from .Locations import METROID_PRIME_LOCATION_BASE, PICKUP_LOCATIONS
 from .MetroidPrimeInterface import HUD_MESSAGE_DURATION, ConnectionState, InventoryItemData, MetroidPrimeInterface, MetroidPrimeLevel, MetroidPrimeSuit
 
 
@@ -29,6 +33,73 @@ class MetroidPrimeCommandProcessor(ClientCommandProcessor):
     def _cmd_test_hud(self, *args):
         """Send a message to the game interface."""
         self.ctx.notification_manager.queue_notification(' '.join(map(str, args)))
+
+    def _cmd_client(self, *args):
+        """Display the selected client if no argument provided. Client can be dolphin or nintendont."""
+        supported_clients = ["dolphin", "nintendont"]
+
+        def switch_client(ctx: MetroidPrimeContext, client: str, ip: str|None = None):
+            try:
+                if ctx.game_interface.client.internal_name == client:
+                    return
+
+                if ctx.game_interface.client.is_connected():
+                    ctx.game_interface.client.disconnect()
+
+                match client:
+                    case "dolphin":
+                        ctx.game_interface.client = DolphinClient(ctx.game_interface.logger)
+                    case "nintendont":
+                        ctx.game_interface.client = NintendontClient(ctx.game_interface.logger, ip)
+            except Prime1ClientException as ex:
+                pass
+
+
+        options = Utils.get_options()
+        metroidprime_options = options["metroidprime_options"]
+        if isinstance(self.ctx, MetroidPrimeContext):
+            match len(args):
+                case 0:
+                    if isinstance(self.ctx.game_interface.client, NintendontClient):
+                        logger.info(f"Client: {self.ctx.game_interface.client.name} (IP: {self.ctx.game_interface.client.ip})")
+                    else:
+                        logger.info(f"Client: {self.ctx.game_interface.client.name}")
+                    return
+                case 1:
+                    selected_client = args[0].lower()
+                    if selected_client in supported_clients:
+                        if selected_client == "nintendont":
+                            logger.info("/client nintendont ip")
+                            return
+                        switch_client(self.ctx, selected_client)
+                        metroidprime_options["client"] = selected_client
+                        metroidprime_options["nintendont_ip"] = ""
+                        options.save()
+                        return
+                case 2:
+                    selected_client = args[0].lower()
+                    ip = args[1]
+                    if selected_client in supported_clients:
+                        if selected_client == "dolphin":
+                            logger.info("/client nintendont")
+                            return
+                        try:
+                            ipaddress.ip_address(ip)
+                        except ValueError:
+                            logger.info(f"IP argument is not valid (ip: {ip})")
+                            return
+                        except:
+                            logger.info("/client <dolphin|nintendont> [ip]")
+                            return
+                        switch_client(self.ctx, selected_client)
+                        metroidprime_options["client"] = selected_client
+                        metroidprime_options["nintendont_ip"] = ip
+                        options.save()
+                        return
+
+        logger.info("/client <dolphin|nintendont> [ip]")
+
+
 
     def _cmd_status(self, *args):
         """Display the current dolphin connection status."""
@@ -72,7 +143,7 @@ class MetroidPrimeCommandProcessor(ClientCommandProcessor):
 status_messages = {
     ConnectionState.IN_GAME: "Connected to Metroid Prime",
     ConnectionState.IN_MENU: "Connected to game, waiting for game to start",
-    ConnectionState.DISCONNECTED: "Unable to connect to the Dolphin instance, attempting to reconnect...",
+    ConnectionState.DISCONNECTED: "Unable to connect to the Dolphin/Nintendont instance, attempting to reconnect...",
     ConnectionState.MULTIPLE_DOLPHIN_INSTANCES: "Warning: Multiple Dolphin instances detected, client may not function correctly."
 }
 
@@ -86,7 +157,7 @@ class MetroidPrimeContext(CommonContext):
     notification_manager: NotificationManager
     game = "Metroid Prime"
     items_handling = 0b111
-    dolphin_sync_task = None
+    client_sync_task = None
     connection_state = ConnectionState.DISCONNECTED
     slot_data: dict[str, Utils.Any] = None
     death_link_enabled = False
@@ -139,12 +210,12 @@ def update_connection_status(ctx: MetroidPrimeContext, status):
         return
     else:
         logger.info(status_messages[status])
-        if get_num_dolphin_instances() > 1:
+        if isinstance(ctx.game_interface.client, DolphinClient) and get_num_dolphin_instances() > 1:
             logger.info(status_messages[ConnectionState.MULTIPLE_DOLPHIN_INSTANCES])
         ctx.connection_state = status
 
 
-async def dolphin_sync_task(ctx: MetroidPrimeContext):
+async def client_sync_task(ctx: MetroidPrimeContext):
     try:
         # This will not work if the client is running from source
         version = get_apworld_version()
@@ -155,7 +226,7 @@ async def dolphin_sync_task(ctx: MetroidPrimeContext):
     if ctx.apmp1_file:
         Utils.async_start(patch_and_run_game(ctx.apmp1_file))
 
-    logger.info("Starting Dolphin Connector, attempting to connect to emulator...")
+    logger.info(f"Starting {ctx.game_interface.client.name} Connector, attempting to connect...")
 
     while not ctx.exit_event.is_set():
         try:
@@ -169,7 +240,7 @@ async def dolphin_sync_task(ctx: MetroidPrimeContext):
                 await _handle_game_not_ready(ctx)
                 await asyncio.sleep(1)
         except Exception as e:
-            if isinstance(e, DolphinException):
+            if isinstance(e, Prime1ClientException):
                 logger.error(str(e))
             else:
                 logger.error(traceback.format_exc())
@@ -250,14 +321,17 @@ async def _handle_game_not_ready(ctx: MetroidPrimeContext):
 
 
 async def run_game(romfile):
-    auto_start = Utils.get_options()["metroidprime_options"].get("rom_start", True)
+    metroidprime_options = Utils.get_options()["metroidprime_options"]
+    selected_client = metroidprime_options.get("client", "dolphin")
+    auto_start = metroidprime_options.get("rom_start", True)
 
-    if auto_start is True and assert_no_running_dolphin():
-        import webbrowser
-        webbrowser.open(romfile)
-    elif os.path.isfile(auto_start) and assert_no_running_dolphin():
-        subprocess.Popen([auto_start, romfile],
-                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if selected_client == "dolphin":
+        if auto_start is True and assert_no_running_dolphin():
+            import webbrowser
+            webbrowser.open(romfile)
+        elif os.path.isfile(auto_start) and assert_no_running_dolphin():
+            subprocess.Popen([auto_start, romfile],
+                             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def get_version_from_iso(path: str) -> str:
@@ -315,11 +389,17 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> dict:
 
 
 async def patch_and_run_game(apmp1_file: str):
+    options = Utils.get_options()
+    metroidprime_options = options["metroidprime_options"]
     apmp1_file = os.path.abspath(apmp1_file)
-    input_iso_path = Utils.get_options()["metroidprime_options"]["rom_file"]
+    input_iso_path = metroidprime_options["rom_file"]
     game_version = get_version_from_iso(input_iso_path)
     base_name = os.path.splitext(apmp1_file)[0]
     output_path = base_name + '.iso'
+    # set defaults for client settings
+    metroidprime_options["client"] = metroidprime_options.get("client", "dolphin")
+    metroidprime_options["nintendont_ip"] = metroidprime_options.get("nintendont_ip", "")
+    options.save()
 
     if not os.path.exists(output_path):
         if not zipfile.is_zipfile(apmp1_file):
@@ -389,16 +469,16 @@ def launch():
         ctx.run_cli()
 
         logger.info("Running game...")
-        ctx.dolphin_sync_task = asyncio.create_task(dolphin_sync_task(ctx), name="Dolphin Sync")
+        ctx.client_sync_task = asyncio.create_task(client_sync_task(ctx), name="Client Sync")
 
         await ctx.exit_event.wait()
         ctx.server_address = None
 
         await ctx.shutdown()
 
-        if ctx.dolphin_sync_task:
+        if ctx.client_sync_task:
             await asyncio.sleep(3)
-            await ctx.dolphin_sync_task
+            await ctx.client_sync_task
 
     import colorama
 
