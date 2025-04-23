@@ -3,8 +3,8 @@ import re
 import struct
 from typing import Any, Dict, Optional, Union
 
-from .DolphinClient import GC_GAME_ID_ADDRESS, DolphinClient, DolphinException
 from .Enum import ConnectionState, MetroidPrimeLevel, MetroidPrimeSuit, SuitUpgrade
+from .GameCubeClient import GC_GAME_ID_ADDRESS, DolphinClient, GameCubeClient, GameCubeException
 from .Items import (
     custom_suit_upgrade_table,
     get_artifact_layer_from_item_index,
@@ -165,9 +165,9 @@ class InventoryItemData(ItemData):
 
 
 class MetroidPrimeInterface:
-    """Interface sitting in front of the DolphinClient to provide higher level functions for interacting with Metroid Prime"""
+    """Interface sitting in front of the GameCubeClient to provide higher level functions for interacting with Metroid Prime"""
 
-    dolphin_client: DolphinClient
+    gamecube_client: GameCubeClient
     connection_status: str
     logger: Logger
     _previous_message_size: int
@@ -179,7 +179,7 @@ class MetroidPrimeInterface:
     def __init__(self, logger: Logger) -> None:
         self._previous_message_size = 0
         self.current_game = None
-        self.dolphin_client = DolphinClient(logger)
+        self.gamecube_client = DolphinClient(logger)
         self.game_id_error = None
         self.game_rev_error = 0
         self.logger = logger
@@ -204,7 +204,7 @@ class MetroidPrimeInterface:
             unknown_item_2 = self.get_item(item_table["UnknownItem2"])
 
             if unknown_item_2 is not None:
-                self.dolphin_client.write_pointer(
+                self.gamecube_client.write_pointer(
                     self.__get_player_state_pointer(),
                     calculate_item_offset(unknown_item_2.id) + 4,
                     struct.pack(">I", unknown_item_2.current_capacity | (1 << (item_id - 41))),
@@ -212,13 +212,13 @@ class MetroidPrimeInterface:
                 return
 
         if ignore_capacity:
-            self.dolphin_client.write_pointer(
+            self.gamecube_client.write_pointer(
                 self.__get_player_state_pointer(),
                 calculate_item_offset(item_id),
                 struct.pack(">I", new_amount),
             )
         else:
-            self.dolphin_client.write_pointer(
+            self.gamecube_client.write_pointer(
                 self.__get_player_state_pointer(),
                 calculate_item_offset(item_id),
                 struct.pack(">II", new_amount, new_capacity),
@@ -256,7 +256,7 @@ class MetroidPrimeInterface:
                 return InventoryItemData(
                     item_data,
                     0,
-                    struct.unpack(">I", self.dolphin_client.read_pointer(
+                    struct.unpack(">I", self.gamecube_client.read_pointer(
                         self.__get_player_state_pointer(),
                         calculate_item_offset(misc_item_table["UnknownItem2"].id),
                         4,
@@ -275,7 +275,7 @@ class MetroidPrimeInterface:
                     )
 
 
-            result = self.dolphin_client.read_pointer(
+            result = self.gamecube_client.read_pointer(
                 self.__get_player_state_pointer(),
                 calculate_item_offset(item_data.id),
                 8,
@@ -311,7 +311,7 @@ class MetroidPrimeInterface:
 
     def get_current_cosmetic_suit(self) -> MetroidPrimeSuit:
         player_state_pointer = self.__get_player_state_pointer()
-        result = self.dolphin_client.read_pointer(player_state_pointer, 0x20, 4)
+        result = self.gamecube_client.read_pointer(player_state_pointer, 0x20, 4)
         suit_id = struct.unpack(">I", result)[0]
         return MetroidPrimeSuit(suit_id)
 
@@ -328,27 +328,27 @@ class MetroidPrimeInterface:
 
     def set_current_suit(self, suit: MetroidPrimeSuit):
         player_state_pointer = self.__get_player_state_pointer()
-        self.dolphin_client.write_pointer(
+        self.gamecube_client.write_pointer(
             player_state_pointer, 0x20, struct.pack(">I", suit.value)
         )
 
     def get_alive(self) -> bool:
         player_state_pointer = self.__get_player_state_pointer()
         value = struct.unpack(
-            ">I", self.dolphin_client.read_pointer(player_state_pointer, 0, 4)
+            ">I", self.gamecube_client.read_pointer(player_state_pointer, 0, 4)
         )[0]
         return bool(value & (1 << 31))
 
     def set_alive(self, alive: bool):
         player_state_pointer = self.__get_player_state_pointer()
         value = struct.unpack(
-            ">I", self.dolphin_client.read_pointer(player_state_pointer, 0, 4)
+            ">I", self.gamecube_client.read_pointer(player_state_pointer, 0, 4)
         )[0]
         if alive:
             value |= 1 << 31
         else:
             value &= ~(1 << 31)
-        self.dolphin_client.write_pointer(
+        self.gamecube_client.write_pointer(
             player_state_pointer, 0, struct.pack(">I", value)
         )
 
@@ -356,7 +356,7 @@ class MetroidPrimeInterface:
         """Returns the world that the player is currently in"""
         if self.current_game is None:
             return None
-        world_bytes = self.dolphin_client.read_pointer(
+        world_bytes = self.gamecube_client.read_pointer(
             GAMES[self.current_game]["game_state_pointer"], 0x84, struct.calcsize(">I")
         )
         if world_bytes is not None:
@@ -365,13 +365,13 @@ class MetroidPrimeInterface:
         return None
 
     def get_current_health(self) -> float:
-        result = self.dolphin_client.read_pointer(
+        result = self.gamecube_client.read_pointer(
             self.__get_player_state_pointer(), 0xC, 4
         )
         return struct.unpack(">f", result)[0]
 
     def set_current_health(self, new_health_amount: float):
-        self.dolphin_client.write_pointer(
+        self.gamecube_client.write_pointer(
             self.__get_player_state_pointer(), 0xC, struct.pack(">f", new_health_amount)
         )
         return self.get_current_health()
@@ -396,11 +396,11 @@ class MetroidPrimeInterface:
 
     def get_scans(self) -> Dict[int, bool]:
         """Gets the state of each scan by its asset ID"""
-        vector_bytes = self.dolphin_client.read_pointer(
+        vector_bytes = self.gamecube_client.read_pointer(
             self.__get_player_state_pointer(), 0x170 + MetroidPrimeInterface.__get_vector_item_offset(), struct.calcsize(">iiI")
         )
         length, _capacity, item_pointer = struct.unpack(">iiI", vector_bytes)
-        item_bytes = self.dolphin_client.read_address(
+        item_bytes = self.gamecube_client.read_address(
             item_pointer, length * struct.calcsize(">If")
         )
         return {asset_id: progress >= 1.0 for asset_id, progress in struct.iter_unpack(">If", item_bytes)}
@@ -408,7 +408,7 @@ class MetroidPrimeInterface:
     def is_vanilla_game(self) -> bool:
         if self.current_game:
             if self.current_game in ["pal", "jpn"]:
-                if self.dolphin_client.read_address(GAMES[self.current_game]["aMetroidPrime"], 12) == b"MetroidPrime":
+                if self.gamecube_client.read_address(GAMES[self.current_game]["aMetroidPrime"], 12) == b"MetroidPrime":
                     return True
             else:
                 _addresses = [
@@ -416,7 +416,7 @@ class MetroidPrimeInterface:
                     GAMES[self.current_game]["aMetroidPrimeB"],
                 ]
                 for _address in _addresses:
-                    if self.dolphin_client.read_address(_address, 14) in [
+                    if self.gamecube_client.read_address(_address, 14) in [
                         b"MetroidPrime A",
                         b"MetroidPrime B",
                     ]:
@@ -426,11 +426,11 @@ class MetroidPrimeInterface:
     def connect_to_game(self):
         """Initializes the connection to dolphin and verifies it is connected to Metroid Prime"""
         try:
-            if not self.dolphin_client.is_connected():
-                self.dolphin_client.connect()
-            game_id = self.dolphin_client.read_address(GC_GAME_ID_ADDRESS, 6)
+            if not self.gamecube_client.is_connected():
+                self.gamecube_client.connect()
+            game_id = self.gamecube_client.read_address(GC_GAME_ID_ADDRESS, 6)
             try:
-                game_rev: Optional[int] = self.dolphin_client.read_address(
+                game_rev: Optional[int] = self.gamecube_client.read_address(
                     GC_GAME_ID_ADDRESS + 7, 1
                 )[0]
             except (Exception,):
@@ -469,7 +469,7 @@ class MetroidPrimeInterface:
 
             if self.current_game and not self.is_vanilla_game():
                 self.logger.info(f"Metroid Prime Disc Version: {self.current_game}")
-        except DolphinException:
+        except GameCubeException:
             pass
 
     def disconnect_from_game(self, reset=True, notify=True) -> None:
@@ -477,13 +477,13 @@ class MetroidPrimeInterface:
             self.current_game = None
             self.game_id_error = None
             self.game_rev_error = 0
-        self.dolphin_client.disconnect()
+        self.gamecube_client.disconnect()
         if notify:
             self.logger.info("Disconnected from Dolphin Emulator")
 
     def get_connection_state(self):
         try:
-            connected = self.dolphin_client.is_connected()
+            connected = self.gamecube_client.is_connected()
             if not connected or self.current_game is None:
                 return ConnectionState.DISCONNECTED
             elif self.is_vanilla_game():
@@ -492,7 +492,7 @@ class MetroidPrimeInterface:
                 return ConnectionState.IN_GAME
             else:
                 return ConnectionState.IN_MENU
-        except DolphinException:
+        except GameCubeException:
             return ConnectionState.DISCONNECTED
 
     def is_in_playable_state(self) -> bool:
@@ -507,7 +507,7 @@ class MetroidPrimeInterface:
         try:
             igt_f: float = struct.unpack(
                 '>d',
-                self.dolphin_client.read_pointer(GAMES[self.current_game]["game_state_pointer"], 0xA0, 8),
+                self.gamecube_client.read_pointer(GAMES[self.current_game]["game_state_pointer"], 0xA0, 8),
             )[0] * 1000
 
             return int(igt_f)
@@ -521,7 +521,7 @@ class MetroidPrimeInterface:
 
         camera_manager: int = struct.unpack(
             '>I',
-            self.dolphin_client.read_address(GAMES[self.current_game]["cstate_manager_global"]+0x870, 4),
+            self.gamecube_client.read_address(GAMES[self.current_game]["cstate_manager_global"]+0x870, 4),
         )[0]
         # only happens when game is loading (aka region loading screen)
         if camera_manager == 0:
@@ -529,7 +529,7 @@ class MetroidPrimeInterface:
 
         camera_count: int = struct.unpack(
             '>I',
-            self.dolphin_client.read_address(camera_manager + 8, 4),
+            self.gamecube_client.read_address(camera_manager + 8, 4),
         )[0]
 
         return camera_count > 0
@@ -541,13 +541,13 @@ class MetroidPrimeInterface:
 
         if self.current_game == "jpn":
             message = f"&push;&font=C29C51F1;{message}&pop;"
-        current_value = self.dolphin_client.read_address(
+        current_value = self.gamecube_client.read_address(
             GAMES[self.current_game]["HUD_TRIGGER_ADDRESS"], 1
         )
         if current_value == b"\x01":
             return False
         self._save_message_to_memory(message)
-        self.dolphin_client.write_address(
+        self.gamecube_client.write_address(
             GAMES[self.current_game]["HUD_TRIGGER_ADDRESS"], b"\x01"
         )
         return True
@@ -570,7 +570,7 @@ class MetroidPrimeInterface:
             encoded_message += b"\x00" * num_to_align
 
         assert self.current_game
-        self.dolphin_client.write_address(
+        self.gamecube_client.write_address(
             GAMES[self.current_game]["HUD_MESSAGE_ADDRESS"], encoded_message
         )
 
@@ -579,7 +579,7 @@ class MetroidPrimeInterface:
         beam_upgrade = progressive_beam_to_beam(charge_beam)
 
         if beam_upgrade is not None:
-            self.dolphin_client.write_pointer(
+            self.gamecube_client.write_pointer(
                 cplayer_state,
                 calculate_item_offset(suit_upgrade_table[beam_upgrade.value].id),
                 struct.pack(">II", 2, 2),
@@ -592,7 +592,7 @@ class MetroidPrimeInterface:
         if beam_upgrade is not None:
             _, cap = struct.unpack(
                 ">II",
-                self.dolphin_client.read_pointer(
+                self.gamecube_client.read_pointer(
                     cplayer_state,
                     calculate_item_offset(suit_upgrade_table[beam_upgrade.value].id),
                     struct.calcsize(">II"),
@@ -609,7 +609,7 @@ class MetroidPrimeInterface:
         if self.current_game is None:
             return False
 
-        player_table_bytes = self.dolphin_client.read_pointer(
+        player_table_bytes = self.gamecube_client.read_pointer(
             GAMES[self.current_game]["cstate_manager_global"] + 0x84C, 0, 4
         )
         if player_table_bytes is None:
@@ -625,7 +625,7 @@ class MetroidPrimeInterface:
             return 0
 
         return int.from_bytes(
-            self.dolphin_client.read_address(
+            self.gamecube_client.read_address(
                 GAMES[self.current_game]["cstate_manager_global"] + 0x8B8, 4
             ),
             "big",
@@ -636,7 +636,7 @@ class MetroidPrimeInterface:
             return 0
 
         return int.from_bytes(
-            self.dolphin_client.read_address(
+            self.gamecube_client.read_address(
                 GAMES[self.current_game]["cstate_manager_global"] + 0x8C8, 4
             ),
             "big",
@@ -651,7 +651,7 @@ class MetroidPrimeInterface:
 
     def __get_area_address(self, area_index: int):
         """Gets the address of an area from the world layer state areas vector"""
-        vector_bytes = self.dolphin_client.read_pointer(
+        vector_bytes = self.gamecube_client.read_pointer(
             self.__get_world_layer_state_pointer(), MetroidPrimeInterface.__get_vector_item_offset(), 12
         )  # 0x4 is count, 0x8 is max, 0xC is start address of the items in the vector
         # Unpack the bytes into the fields of the Area
@@ -661,7 +661,7 @@ class MetroidPrimeInterface:
     def __get_area(self, area_index: int) -> Area:
         """Loads an area at the given index for the level the player is currently in"""
         address = self.__get_area_address(area_index)
-        item_bytes = self.dolphin_client.read_address(address, AREA_SIZE)
+        item_bytes = self.gamecube_client.read_address(address, AREA_SIZE)
         return Area(*struct.unpack(">IIII", item_bytes))
 
     def set_layer_active(self, area_index: int, layer_id: int, active: bool):
@@ -683,7 +683,7 @@ class MetroidPrimeInterface:
             area.layerBitsLo,
         )
 
-        self.dolphin_client.write_address(
+        self.gamecube_client.write_address(
             self.__get_area_address(area_index), new_bytes
         )
 
@@ -718,7 +718,7 @@ class MetroidPrimeInterface:
                 return
             world_state_array = struct.unpack(
                 ">I",
-                self.dolphin_client.read_pointer(
+                self.gamecube_client.read_pointer(
                     GAMES[self.current_game]["game_state_pointer"],
                     0x94,
                     struct.calcsize(">I"),
@@ -729,7 +729,7 @@ class MetroidPrimeInterface:
                 # getting WorldState.x0_mlvlId
                 mlvl = struct.unpack(
                     ">I",
-                    self.dolphin_client.read_address(
+                    self.gamecube_client.read_address(
                         world_state, struct.calcsize(">I")
                     ),
                 )[0]
@@ -738,7 +738,7 @@ class MetroidPrimeInterface:
                     # which is an array of memory relays active in the selected world
                     "address": struct.unpack(
                         ">I",
-                        self.dolphin_client.read_pointer(
+                        self.gamecube_client.read_pointer(
                             world_state + 8, 0, struct.calcsize(">I")
                         ),
                     )[0],
@@ -751,14 +751,14 @@ class MetroidPrimeInterface:
                 # getting WorldState.x8_mailbox.x0_relays.size()
                 relay_tracker["count"] = struct.unpack(
                     ">I",
-                    self.dolphin_client.read_address(
+                    self.gamecube_client.read_address(
                         relay_tracker["address"], struct.calcsize(">I")
                     ),
                 )[0]
                 # getting WorldState.x8_mailbox.x0_relays content
                 relay_tracker["memory_relays"] = list(struct.unpack(
                     ">" + ("I" * relay_tracker["count"]),
-                    self.dolphin_client.read_address(
+                    self.gamecube_client.read_address(
                         relay_tracker["address"] + 4,
                         relay_tracker["count"] * struct.calcsize(">I"),
                     ),

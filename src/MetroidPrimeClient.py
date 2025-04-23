@@ -25,12 +25,12 @@ from . import SuitUpgrade
 from .Config import make_version_specific_changes
 from .ClientReceiveItems import handle_receive_items
 from .Container import construct_hook_patch
-from .DolphinClient import (
-    DolphinException,
+from .Enum import ProgressiveUpgrade
+from .GameCubeClient import (
+    GameCubeException,
     assert_no_running_dolphin,
     get_num_dolphin_instances,
 )
-from .Enum import ProgressiveUpgrade
 from .Items import PROGRESSIVE_ITEM_MAPPING, suit_upgrade_table
 from .Locations import METROID_PRIME_LOCATION_BASE, PICKUP_LOCATIONS
 from .MetroidPrimeInterface import (
@@ -585,7 +585,7 @@ async def dolphin_sync_task(ctx: MetroidPrimeContext):
                 await _handle_game_not_ready(ctx)
                 await asyncio.sleep(1)
         except Exception as e:
-            if isinstance(e, DolphinException):
+            if isinstance(e, GameCubeException):
                 logger.error(str(e))
             else:
                 logger.error(traceback.format_exc())
