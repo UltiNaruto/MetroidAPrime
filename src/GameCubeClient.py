@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from logging import Logger
-from typing import Any
 import dolphin_memory_engine  # type: ignore
 import subprocess
 import Utils
@@ -18,11 +17,11 @@ class DolphinException(GameCubeException):
 
 class GameCubeClient(ABC):
     @abstractmethod
-    def is_connected(self):
+    def is_connected(self) -> bool:
         ...
 
     @abstractmethod
-    def connect(self):
+    async def connect(self):
         ...
 
     @abstractmethod
@@ -30,19 +29,19 @@ class GameCubeClient(ABC):
         ...
 
     @abstractmethod
-    def read_pointer(self, pointer: int, offset: int, byte_count: int) -> Any:
+    async def read_pointer(self, pointer: int, offset: int, byte_count: int) -> bytes | None:
         ...
 
     @abstractmethod
-    def read_address(self, address: int, bytes_to_read: int) -> Any:
+    async def read_address(self, address: int, bytes_to_read: int) -> bytes:
         ...
 
     @abstractmethod
-    def write_pointer(self, pointer: int, offset: int, data: Any):
+    async def write_pointer(self, pointer: int, offset: int, data: bytes):
         ...
 
     @abstractmethod
-    def write_address(self, address: int, data: Any):
+    async def write_address(self, address: int, data: bytes):
         ...
 
 
@@ -61,7 +60,7 @@ class DolphinClient(GameCubeClient):
         except Exception:
             return False
 
-    def connect(self):
+    async def connect(self):
         if not self.dolphin.is_hooked():
             self.dolphin.hook()
         if not self.dolphin.is_hooked():
@@ -86,11 +85,9 @@ class DolphinClient(GameCubeClient):
     def verify_target_address(self, target_address: int, read_size: int):
         """Ensures that the target address is within the valid range for GC memory"""
         if target_address < 0x80000000 or target_address + read_size > 0x81800000:
-            raise DolphinException(
-                f"{target_address:x} -> {target_address + read_size:x} is not a valid for GC memory"
-            )
+            raise DolphinException(f"{target_address:x} -> {target_address + read_size:x} is not a valid for GC memory")
 
-    def read_pointer(self, pointer: int, offset: int, byte_count: int) -> Any:
+    async def read_pointer(self, pointer: int, offset: int, byte_count: int):
         self.__assert_connected()
 
         address = None
@@ -103,15 +100,15 @@ class DolphinClient(GameCubeClient):
             raise DolphinException("Dolphin no longer connected")
 
         address += offset
-        return self.read_address(address, byte_count)
+        return await self.read_address(address, byte_count)
 
-    def read_address(self, address: int, bytes_to_read: int) -> Any:
+    async def read_address(self, address: int, bytes_to_read: int):
         self.__assert_connected()
         self.verify_target_address(address, bytes_to_read)
         result = self.dolphin.read_bytes(address, bytes_to_read)
         return result
 
-    def write_pointer(self, pointer: int, offset: int, data: Any):
+    async def write_pointer(self, pointer: int, offset: int, data: bytes):
         self.__assert_connected()
         address = None
         try:
@@ -123,9 +120,9 @@ class DolphinClient(GameCubeClient):
             raise DolphinException("Dolphin no longer connected")
 
         address += offset
-        return self.write_address(address, data)
+        return await self.write_address(address, data)
 
-    def write_address(self, address: int, data: Any):
+    async def write_address(self, address: int, data: bytes):
         self.__assert_connected()
         result = self.dolphin.write_bytes(address, data)
         return result
@@ -148,5 +145,5 @@ def get_num_dolphin_instances() -> int:
             count = sum("Dolphin.exe" in line for line in lines)
             return count
         return 0
-    except:
+    except BaseException:
         return 0
