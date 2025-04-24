@@ -60,7 +60,9 @@ async def handle_receive_items(
     await ctx.game_interface.set_last_received_index(new_index)
 
     # Update inventory before attempting to handle other types of upgrades
-    current_items = await ctx.game_interface.get_current_inventory()
+    updated_items = await ctx.game_interface.get_current_inventory()
+    if updated_items is None:
+        return
 
     await handle_receive_missiles(ctx, current_items)
     await handle_receive_power_bombs(ctx, current_items)

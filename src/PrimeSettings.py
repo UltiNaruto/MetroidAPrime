@@ -81,6 +81,13 @@ class EmulatorSettings(Group):
             self.update({attr: self[attr] for attr in self.__dict__.keys()})
 
 
+class NintendontAddress(str):
+    """
+    Set this to null to connect the client to Dolphin by default.
+    Set it to your Wii or Wii U's IP address to connect to it using Nintendont when the client starts.
+    """
+
+
 class HUDSettings(Group):
     """Settings related to HUD."""
     class HudColor(str):
@@ -350,6 +357,7 @@ class DefaultGameOptionsSettings(Group):
 class MetroidPrimeSettings(Group):
     rom_file: RomFile = RomFile(RomFile.copy_to)
     emulator_settings: EmulatorSettings = EmulatorSettings()
+    nintendont_address: NintendontAddress | None = None
     hud_settings: HUDSettings = HUDSettings()
     suit_settings: SuitSettings = SuitSettings()
     default_game_settings: DefaultGameOptionsSettings = DefaultGameOptionsSettings()
