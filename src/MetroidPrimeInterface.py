@@ -303,22 +303,34 @@ class MetroidPrimeInterface:
         if unknown_item2 is None:
             unknown_item2 = InventoryItemData(item_table["UnknownItem2"], 0, 0)
 
-        inventory: Dict[str, InventoryItemData] = {}
+        inventory_bytes = await self.__read_player_state(
+            calculate_item_offset(0),
+            8 * (MAX_VANILLA_ITEM_ID + 1)
+        )
+        if inventory_bytes is None:
+            return None
+        inventory_values = list(struct.iter_unpack(">II", inventory_bytes))
 
+        inventory: Dict[str, InventoryItemData] = {}
         for item in item_table.values():
-            i = await self.get_item(item)
-            if i is not None:
-                if item.id <= MAX_VANILLA_ITEM_ID:
-                    inventory[item.name] = i
-                elif MAX_VANILLA_ITEM_ID < item.id < MAX_VANILLA_ITEM_ID + 6:
-                    has_obtained_item = unknown_item2.current_capacity >> (item.id - (MAX_VANILLA_ITEM_ID + 1)) & 1
-                    inventory[item.name] = InventoryItemData(
-                        item_data=item,
-                        current_amount=has_obtained_item,
-                        current_capacity=has_obtained_item,
-                    )
-                elif item.id in custom_charge_id_to_beam:
-                    inventory[item.name] = i
+            if item.id <= MAX_VANILLA_ITEM_ID:
+                amount, capacity = inventory_values[item.id]
+                i = InventoryItemData(item, amount, capacity)
+                inventory[item.name] = i
+            elif MAX_VANILLA_ITEM_ID < item.id < MAX_VANILLA_ITEM_ID + 6:
+                has_obtained_item = unknown_item2.current_capacity >> (item.id - (MAX_VANILLA_ITEM_ID + 1)) & 1
+                inventory[item.name] = InventoryItemData(
+                    item_data=item,
+                    current_amount=has_obtained_item,
+                    current_capacity=has_obtained_item,
+                )
+            elif item.id in custom_charge_id_to_beam:
+                beam_upgrade = progressive_beam_to_beam(custom_charge_id_to_beam[item.id])
+                if beam_upgrade is None:
+                    continue
+                amount, capacity = inventory_values[suit_upgrade_table[beam_upgrade.value].id]
+                i = InventoryItemData(item, int(amount >= 2), 1)
+                inventory[item.name] = i
 
         return inventory
 
