@@ -153,14 +153,15 @@ async def handle_receive_missiles(
         diff = new_capacity - current_capacity
         new_amount = min(current_amount + diff, new_capacity)
 
-        await ctx.game_interface.give_item_to_player(
-            missile_item.id, new_amount, new_capacity
-        )
-        if not has_local_player_picked_up_item and diff > 0:
-            message = f"Missile capacity increased by {diff}"
-            if not has_missile_launcher:
-                message += " but Missile Launcher is required to use missiles"
-            ctx.notification_manager.queue_notification(message)
+        if diff > 0:
+            await ctx.game_interface.give_item_to_player(
+                missile_item.id, new_amount, new_capacity
+            )
+            if not has_local_player_picked_up_item:
+                message = f"Missile capacity increased by {diff}"
+                if not has_missile_launcher:
+                    message += " but Missile Launcher is required to use missiles"
+                ctx.notification_manager.queue_notification(message)
 
 
 async def handle_receive_power_bombs(
@@ -193,12 +194,13 @@ async def handle_receive_power_bombs(
         diff = new_capacity - current_capacity
         new_amount = min(current_amount + diff, new_capacity)
 
-        await ctx.game_interface.give_item_to_player(pb_item.id, new_amount, new_capacity)
-        if not has_local_player_picked_up_item and diff > 0:
-            message = f"Power Bomb capacity increased by {diff}"
-            if not has_main_pb:
-                message += " but Power Bomb (Main) is required to use power bombs"
-            ctx.notification_manager.queue_notification(message)
+        if diff > 0:
+            await ctx.game_interface.give_item_to_player(pb_item.id, new_amount, new_capacity)
+            if not has_local_player_picked_up_item:
+                message = f"Power Bomb capacity increased by {diff}"
+                if not has_main_pb:
+                    message += " but Power Bomb (Main) is required to use power bombs"
+                ctx.notification_manager.queue_notification(message)
 
 
 async def handle_receive_energy_tanks(
@@ -219,14 +221,9 @@ async def handle_receive_energy_tanks(
                 energy_tank_sender = network_item.player
 
         diff = num_energy_tanks_received - energy_tank_item.current_capacity
-        if (
-            diff > 0
-            and energy_tank_item.current_capacity < energy_tank_item.max_capacity
-        ):
+        if diff > 0 and energy_tank_item.current_capacity < energy_tank_item.max_capacity:
             new_capacity = min(num_energy_tanks_received, energy_tank_item.max_capacity)
-            await ctx.game_interface.give_item_to_player(
-                energy_tank_item.id, new_capacity, new_capacity
-            )
+            await ctx.game_interface.give_item_to_player(energy_tank_item.id, new_capacity, new_capacity)
 
             if energy_tank_sender != ctx.slot and diff > 0:
                 message = (
