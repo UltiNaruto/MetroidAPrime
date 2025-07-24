@@ -61,10 +61,16 @@ class FinalBosses(Choice):
     default = 0
 
 
-class ArtifactHints(DefaultOnToggle):
-    """If enabled, scanning the artifact stones in the temple will give a hint to their location. Additionally, hints will be pre collected in the client."""
+class ArtifactHints(Choice):
+    """If enabled, scanning the artifact stones in the temple will give a hint to their location. Additionally, hints may be pre-collected in the client."""
 
     display_name = "Artifact Hints"
+    option_disable = 0
+    option_enable_precollected = 1
+    option_enable_scanned = 2
+    default = option_enable_precollected
+    alias_false = option_disable
+    alias_true = option_enable_precollected
 
 
 class MissileLauncher(Toggle):

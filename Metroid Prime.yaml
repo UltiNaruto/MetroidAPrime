@@ -51,9 +51,10 @@ Metroid Prime:
     random-high: 0
 
   artifact_hints:
-    # If enabled, scanning the artifact stones in the temple will give a hint to their location. Additionally, hints will be pre collected in the client.
-    'false': 0
-    'true': 50
+    # If enabled, scanning the artifact stones in the temple will give a hint to their location. Additionally, hints may be pre-collected in the client.
+    'disable': 0
+    'enable_precollected': 50
+    'enable_scanned': 0
 
   final_bosses:
     # Determines the final bosses required to beat the seed. Choose from Meta Ridley, Metroid Prime,

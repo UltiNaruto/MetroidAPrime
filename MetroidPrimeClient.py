@@ -5,7 +5,7 @@ import os
 import struct
 import subprocess
 import traceback
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, DefaultDict, Dict, List, Optional, Tuple, cast
 import zipfile
 import py_randomprime  # type: ignore
 
@@ -17,7 +17,7 @@ from CommonClient import (
     server_loop,
     gui_enabled,
 )
-from NetUtils import ClientStatus
+from NetUtils import ClientStatus, HintStatus
 from settings import get_settings
 import Utils
 from .Config import make_version_specific_changes
@@ -108,6 +108,22 @@ status_messages = {
     ConnectionState.IN_MENU: "Connected to game, waiting for game to start",
     ConnectionState.DISCONNECTED: "Unable to connect to the Dolphin instance, attempting to reconnect...",
     ConnectionState.MULTIPLE_DOLPHIN_INSTANCES: "Warning: Multiple Dolphin instances detected, client may not function correctly.",
+}
+
+
+artifact_hint_scans: Dict[str, int] = {
+    "Artifact of Truth": 852090318,
+    "Artifact of Strength": 3026038624,
+    "Artifact of Elder": 2130803909,
+    "Artifact of Wild": 1644448893,
+    "Artifact of Lifegiver": 2841157592,
+    "Artifact of Warrior": 801959286,
+    "Artifact of Chozo": 3834658515,
+    "Artifact of Nature": 365333510,
+    "Artifact of Sun": 3734658979,
+    "Artifact of World": 4223573402,
+    "Artifact of Spirit": 820137535,
+    "Artifact of Newborn": 3061202065,
 }
 
 
@@ -255,6 +271,23 @@ async def handle_tracker_level(ctx: MetroidPrimeContext):
     }])
 
 
+async def handle_artifact_hints(ctx: MetroidPrimeContext, scans: Dict[int, bool]):
+    artifact_locations: Optional[Dict[str, Tuple[int, int]]] = ctx.slot_data.get("artifact_locations")
+    if not artifact_locations:
+        return
+
+    scans = ctx.game_interface.get_scans()
+    scanned_hints: DefaultDict[int, List[int]] = DefaultDict(list)
+    for artifact_name, asset_id in artifact_hint_scans.items():
+        if scans.get(asset_id):
+            location, player = artifact_locations[artifact_name]
+            scanned_hints[player].append(location)
+    await ctx.send_msgs([
+        {"cmd": "CreateHints", "locations": locations, "player": player, "status": HintStatus.HINT_PRIORITY}
+        for player, locations in scanned_hints.items()
+    ])
+
+
 async def handle_check_deathlink(ctx: MetroidPrimeContext):
     health = ctx.game_interface.get_current_health()
     if health <= 0 and ctx.is_pending_death_link_reset == False and ctx.slot:
@@ -277,6 +310,8 @@ async def _handle_game_ready(ctx: MetroidPrimeContext):
         await handle_checked_location(ctx, current_inventory)
         await handle_check_goal_complete(ctx)
         await handle_tracker_level(ctx)
+        scans = ctx.game_interface.get_scans()
+        await handle_artifact_hints(ctx, scans)
 
         if ctx.death_link_enabled:
             await handle_check_deathlink(ctx)
