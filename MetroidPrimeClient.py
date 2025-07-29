@@ -276,7 +276,6 @@ async def handle_artifact_hints(ctx: MetroidPrimeContext, scans: Dict[int, bool]
     if not artifact_locations:
         return
 
-    scans = ctx.game_interface.get_scans()
     scanned_hints: DefaultDict[int, List[int]] = DefaultDict(list)
     for artifact_name, asset_id in artifact_hint_scans.items():
         if scans.get(asset_id):
