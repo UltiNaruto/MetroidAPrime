@@ -342,6 +342,16 @@ Metroid Prime:
     random-low: 0
     random-high: 0
 
+  display_nonlocal_items:
+    # How are displayed non-local items.
+    #
+    # None means only local items have matching models.
+    # Match Game means that only Metroid Prime game have matching models.
+    # Match Series means that any supported Metroid games will use Metroid Prime models that matches the item from the other world.
+    none: 50
+    match_game: 0
+    match_series: 0
+
   # Item & Location Options
   local_items:
     # Forces these items to be in their native world.

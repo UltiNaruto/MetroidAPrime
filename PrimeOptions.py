@@ -410,6 +410,16 @@ class HudColorOverrideBlue(Range):
     default = 0
 
 
+class DisplayNonLocalItems(Choice):
+    """How are displayed non-local items. None means only local items have matching models. Match Game means that only Metroid Prime game have matching models. Match Series means that any supported Metroid games will use Metroid Prime models that matches the item from the other world."""
+
+    display_name = "Display Non-Local Items"
+    option_none = 0
+    option_match_game = 1
+    option_match_series = 2
+    default = 0
+
+
 @dataclass
 class MetroidPrimeOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
@@ -455,6 +465,7 @@ class MetroidPrimeOptions(PerGameCommonOptions):
     varia_suit_color: VariaSuitColorOverride
     gravity_suit_color: GravitySuitColorOverride
     phazon_suit_color: PhazonSuitColorOverride
+    display_nonlocal_items: DisplayNonLocalItems
 
     death_link: DeathLink
 
@@ -523,6 +534,7 @@ prime_option_groups = [
             VariaSuitColorOverride,
             GravitySuitColorOverride,
             PhazonSuitColorOverride,
+            DisplayNonLocalItems,
         ],
     ),
 ]

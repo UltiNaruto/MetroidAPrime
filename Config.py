@@ -212,7 +212,6 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
             "autoEnabledElevators": bool(options.pre_scan_elevators.value),
             "skipRidley": skip_ridley(options.final_bosses.value),
             "removeHiveMecha": bool(options.remove_hive_mecha.value),
-            "multiworldDolPatches": False,
             "startingItems": {
                 "combatVisor": True,
                 "powerSuit": True,
