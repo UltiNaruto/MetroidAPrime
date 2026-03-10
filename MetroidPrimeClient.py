@@ -17,6 +17,7 @@ from CommonClient import (
     gui_enabled,
 )
 from NetUtils import ClientStatus
+from settings import get_settings
 import Utils
 from .Config import make_version_specific_changes
 from .PrimeUtils import get_apworld_version
@@ -297,7 +298,8 @@ async def _handle_game_not_ready(ctx: MetroidPrimeContext):
 
 
 async def run_game(romfile: str):
-    auto_start: bool = Utils.get_options()["metroidprime_options"].get(
+    metroidprime_options = get_settings()["metroidprime_options"]
+    auto_start: bool = metroidprime_options.get(
         "rom_start", True
     )
 
@@ -369,8 +371,9 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
 
 
 async def patch_and_run_game(apmp1_file: str):
+    metroidprime_options = get_settings()["metroidprime_options"]
     apmp1_file = os.path.abspath(apmp1_file)
-    input_iso_path = Utils.get_options()["metroidprime_options"]["rom_file"]
+    input_iso_path = metroidprime_options["rom_file"]
     game_version = get_version_from_iso(input_iso_path)
     base_name = os.path.splitext(apmp1_file)[0]
     output_path = base_name + ".iso"
