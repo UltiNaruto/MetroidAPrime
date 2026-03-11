@@ -1,6 +1,7 @@
 .git*
 __pycache__
 build
+debug
 LICENSE.md
 README.md
 requirements.txt
