@@ -376,7 +376,7 @@ async def patch_and_run_game(apmp1_file: str):
     input_iso_path = metroidprime_options["rom_file"]
     game_version = get_version_from_iso(input_iso_path)
     base_name = os.path.splitext(apmp1_file)[0]
-    output_path = base_name + ".iso"
+    output_path = f"{base_name}.iso"
 
     if not os.path.exists(output_path):
         if not zipfile.is_zipfile(apmp1_file):

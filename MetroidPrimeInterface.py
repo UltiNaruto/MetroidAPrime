@@ -124,11 +124,11 @@ class MetroidPrimeLevel(Enum):
     End_of_Game = 332894565
 
 
-def world_by_id(id: int) -> Optional[MetroidPrimeLevel]:
-    for world in MetroidPrimeLevel:
-        if world.value == id:
-            return world
-    return None
+def world_by_id(mlvl: int) -> Optional[MetroidPrimeLevel]:
+    result = [w for w in MetroidPrimeLevel if w.value == mlvl]
+    if len(result) == 0:
+        return None
+    return result[0]
 
 
 class Area:
@@ -172,7 +172,7 @@ ITEMS_USED_FOR_LOCATION_TRACKING = [
 
 
 class InventoryItemData(ItemData):
-    """Class used to track the player'scurrent items and their quantities"""
+    """Class used to track the player's current items and their quantities"""
 
     current_amount: int
     current_capacity: int
@@ -200,7 +200,7 @@ class MetroidPrimeInterface:
     game_id_error: Optional[str] = None
     game_rev_error: int
     current_game: Optional[str]
-    relay_trackers: Optional[Dict[Any, Any]]
+    relay_trackers: Optional[Dict[str, dict[str, Union[str, int, list[int]]]]]
 
     def __init__(self, logger: Logger) -> None:
         self.logger = logger
@@ -232,7 +232,7 @@ class MetroidPrimeInterface:
             )
 
         # This will be overriden by handle_cosmetic_suit
-        if item_id > 20 and item_id <= 23:
+        if 20 < item_id <= 23:
             current_suit = self.get_current_cosmetic_suit()
             if current_suit == MetroidPrimeSuit.Phazon:
                 return
@@ -593,6 +593,8 @@ class MetroidPrimeInterface:
 
     def get_artifact_layer(self, item_id: int):
         # Artifact of truth is handled differently since it is the first thing you interact with in the room
+        if item_id <= 28 or item_id > 40:
+            raise Exception(f'Item {item_id} is not an artifact. So we cannot get its layer.')
         return item_id - 28 if item_id > 29 else 23
 
     def get_layer_active(self, area_index: int, layer_id: int):
@@ -605,7 +607,7 @@ class MetroidPrimeInterface:
             current_inventory = self.get_current_inventory()
             # for each item in the inventory, check if it is an artifact and update the layer
             for item in current_inventory.values():
-                if item.id >= 29 and item.id <= 40:
+                if 29 <= item.id <= 40:
                     layer_id = self.get_artifact_layer(item.id)
                     active = self.get_layer_active(ARTIFACT_TEMPLE_ROOM_INDEX, layer_id)
                     if active != (item.current_amount > 0):
@@ -661,13 +663,13 @@ class MetroidPrimeInterface:
                 ),
             )[0]
             # getting WorldState.x8_mailbox.x0_relays content
-            relay_tracker["memory_relays"] = struct.unpack(
+            relay_tracker["memory_relays"] = list(struct.unpack(
                 ">" + ("I" * relay_tracker["count"]),
                 self.dolphin_client.read_address(
                     relay_tracker["address"] + 4,
                     relay_tracker["count"] * struct.calcsize(">I"),
                 ),
-            )
+            ))
             # remove layer specific stuff from object id
             relay_tracker["memory_relays"] = [
                 mr & 0x00FFFFFF for mr in relay_tracker["memory_relays"]
@@ -677,7 +679,7 @@ class MetroidPrimeInterface:
         if self.relay_trackers is None:
             return False
 
-        relay_tracker = self.relay_trackers[mlvl]
+        relay_tracker = self.relay_trackers[mlvl] if mlvl in self.relay_trackers.keys() else {}
         for i in range(relay_tracker["count"]):
             if relay_tracker["memory_relays"][i] == idx:
                 return True
