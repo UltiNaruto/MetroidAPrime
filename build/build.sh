@@ -45,17 +45,6 @@ function get_deps() {
   local platform="$1" requirements_file="$2" to="$3"
   echo "=> Bundle requirements for ${platform}"
 
-  # DME doesn't publish to the same version as randomprime, this installs the most recent supported linux platform and uses a
-  #  requirements.txt that excludes it
-  if [ "${platform}" = "manylinux_2_28_x86_64" ]; then
-    echo "  -> Installing dolphin-memory-engine override for ${platform}"
-    pip install dolphin-memory-engine==1.2.0 \
-      --target ${to}/${platform} \
-      --platform ${OLD_LINUX_FOR_DME} \
-      --only-binary=:all: \
-      --no-user
-  fi
-
   # Fetch the libraries binary files for the specified platform.
   echo "  -> Fetch requirements"
   pip install \
