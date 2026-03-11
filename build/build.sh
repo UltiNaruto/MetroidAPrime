@@ -97,6 +97,25 @@ function get_deps() {
 }
 
 ##
+# Generate AP manifest into the destination directory.
+##
+function generate_ap_manifest() {
+  local destdir="$1" world_version="$2"
+  echo "=> Generating Archipelago Manifest"
+
+  cat <<-EOF > "$destdir/archipelago.json"
+{
+    "game": "Metroid Prime",
+    "authors": ["hesto2", "Electro15", "UltiNaruto"],
+    "world_version": "$world_version",
+    "minimum_ap_version": "0.6.3",
+    "compatible_version": 7,
+    "version": 7
+}
+EOF
+}
+
+##
 # Create the `apworld` file used by Archipelago.
 #
 # Arguments:
@@ -116,6 +135,7 @@ function mk_apworld() {
     "${root}/" "${destdir}/metroidprime"
 
   echo "${tag}" >"${destdir}/metroidprime/version.txt"
+  generate_ap_manifest "${destdir}/metroidprime" "${tag}"
 
   # If this already exists then ovewrite it
   rm -rf "${destdir}/metroidprime/lib"
