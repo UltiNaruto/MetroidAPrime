@@ -89,7 +89,7 @@ function get_deps() {
 # Generate AP manifest into the destination directory.
 ##
 function generate_ap_manifest() {
-  local destdir="$1" world_version="$2"
+  local destdir="$1" world_version="$(echo $2 | grep -Po '(?<=v)\d+.\d+.\d+')"
   echo "=> Generating Archipelago Manifest"
 
   cat <<-EOF > "$destdir/archipelago.json"
@@ -188,8 +188,6 @@ function main() {
     local tag="${TAG:-$(date '+%Y-%m-%d_%H%M')}"
     local py_version="${PY_VERSION}"
     local project="$(realpath ${CWD}/..)"
-    local bundle="${bundle_base}-${tag}-${py_version}"
-    local destdir="${target_path}/${bundle}"
     local local_install=false
 
     # Loop through all the arguments
@@ -198,7 +196,16 @@ function main() {
         local_install=true
         break
       fi
+      if [[ $arg == --tag=* ]]; then
+        tag=${arg#*=}
+      fi
+      if [[ $arg == --py_version=* ]]; then
+        py_version=${arg#*=}
+      fi
     done
+
+    local bundle="${bundle_base}-${tag}-${py_version}"
+    local destdir="${target_path}/${bundle}"
 
     if [ "$local_install" == true ]; then
       # Copy project/lib to destdir
