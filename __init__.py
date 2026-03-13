@@ -359,6 +359,7 @@ class MetroidPrimeWorld(World):
             "artifact_hints",
             "staggered_suit_damage",
             "start_hints",
+            "plando_items",
         ]
         non_cosmetic_options = [
             o
