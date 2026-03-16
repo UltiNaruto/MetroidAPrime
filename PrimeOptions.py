@@ -426,6 +426,15 @@ class DisplayNonLocalItems(Choice):
     default = 0
 
 
+class EnergyTankCapacity(Range):
+    """Sets how much energy an energy tank stores. Defaults to 100 HP."""
+    display_name = "Energy Tank Capacity"
+    range_start = 100
+    range_end = 1000
+    range_step = 100
+    default = 100
+
+
 @dataclass
 class MetroidPrimeOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
@@ -472,6 +481,7 @@ class MetroidPrimeOptions(PerGameCommonOptions):
     gravity_suit_color: GravitySuitColorOverride
     phazon_suit_color: PhazonSuitColorOverride
     display_nonlocal_items: DisplayNonLocalItems
+    etank_capacity: EnergyTankCapacity
 
     death_link: DeathLink
 
@@ -541,6 +551,7 @@ prime_option_groups = [
             GravitySuitColorOverride,
             PhazonSuitColorOverride,
             DisplayNonLocalItems,
+            EnergyTankCapacity,
         ],
     ),
 ]
