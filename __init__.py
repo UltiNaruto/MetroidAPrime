@@ -1,7 +1,3 @@
-from .PrimeUtils import setup_lib_path
-
-setup_lib_path()  # NOTE: This MUST be called before importing any other metroidprime modules (other than PrimeUtils)
-# Setup local dependencies if running in an apworldimport typing
 import typing
 from collections import defaultdict
 from .ItemPool import generate_item_pool
