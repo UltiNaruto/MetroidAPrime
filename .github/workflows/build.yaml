@@ -50,6 +50,10 @@ jobs:
         with:
           name: metroidprime_apworld-${{ steps.tag.outputs.tag }}-${{ matrix.python-version }}
           path: build/target/metroidprime_apworld-${{ steps.tag.outputs.tag }}-${{ matrix.python-version }}.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libs-${{ matrix.python-version }}
+          path: build/target/libs-*-${{ matrix.python-version }}.zip
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
@@ -57,4 +61,6 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-rc') }}
           draft: true
           generate_release_notes: true
-          files: build/target/metroidprime_apworld-${{ steps.tag.outputs.tag }}-${{ matrix.python-version }}.zip
+          files: |
+            build/target/libs-*-${{ matrix.python-version }}.zip
+            build/target/metroidprime_apworld-${{ steps.tag.outputs.tag }}-${{ matrix.python-version }}.zip
