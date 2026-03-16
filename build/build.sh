@@ -18,8 +18,9 @@ shopt -s globstar
 
 CWD="$(dirname $(realpath $0))"
 REQS=("zip" "rsync" "pip")
-OLD_LINUX_FOR_DME="manylinux2014_x86_64"
-SUPPORTED_PLATFORMS=("win_amd64" "manylinux_2_28_x86_64")
+SUPPORTED_PLATFORMS=("win_amd64" "manylinux_2_28_x86_64" "macosx_10_9_x86_64")
+GAME="metroidprime"
+EXTRAS_TO_COPY=("LICENSE.md" "README.md" "Metroid Prime.yaml")
 
 ##
 # Make sure all the required utilities are installed.
@@ -36,14 +37,30 @@ function pre_flight() {
   [ "${bad}" = "1" ] && exit 1 || :
 }
 
+function do_we_build_libs() {
+  local platform="$1" py_version="$2"
+
+  case "$py_version-$platform" in
+    3.11-macosx) echo 1 ;;
+	3.12-win|3.12-linux) echo 1 ;;
+  esac
+
+  echo 0
+}
+
 ##
 # Generate the `lib` folder within the target directory.
 # Uses the `requirements.txt` file of the project to get every dependencies and copy them over.
 # Uses `requirements.ignore` to specify which files not to copy over from within each of the requirements.
 ##
 function get_deps() {
-  local platform="$1" requirements_file="$2" to="$3"
-  echo "=> Bundle requirements for ${platform}"
+  local platform="$1" requirements_file="$2" to="$3" py_version="$4"
+  local platform_short_name="${platform%%_*}"; platform_short_name="${platform_short_name#many}"
+  local build_libs=$(do_we_build_libs "${platform_short_name}" "${py_version}" 2>/dev/null)
+  if [ "$build_libs" == 0 ]; then
+    return
+  fi
+  echo "=> Bundle requirements for ${platform_short_name}"
 
   # Fetch the libraries binary files for the specified platform.
   echo "  -> Fetch requirements"
@@ -54,12 +71,10 @@ function get_deps() {
     --requirement ${requirements_file} \
     --no-user
 
-  # If platform is manylinux_2_28_x86_64 then also install dolphin memory engine 1.2.0
-
   # This is for the `.dist-info` folder, which contains the metadata of the mod.
   # We just copy over the license file into the main library folder
   echo "  -> Processing metadata"
-  for folder in ${to}/${platform}/*.dist-info; do
+  for folder in "${to}/${platform}"/*.dist-info; do
     local dir="$(basename ${folder} | cut -d '-' -f 1)"
     cp --verbose "${folder}/LICENSE" "${folder}/../${dir}/" || :
     rm --force --recursive ${folder}
@@ -67,12 +82,12 @@ function get_deps() {
 
   # Go though each of the downloaded libraries and copy the relevant parts.
   echo "  -> Transfer requirements to bundle"
-  for folder in ${to}/${platform}/*; do
+  for folder in "${to}/${platform}"/*; do
     echo "    - Processing: ${folder}"
 
     # The actual code of the library.
     local dir="$(basename ${folder})"
-    mkdir -p ${to}/${dir}
+    mkdir -p "${to}/${dir}"
     rsync \
       --progress \
       --recursive \
@@ -81,8 +96,11 @@ function get_deps() {
       "${folder}/" "${to}/${dir}"
   done
 
+  bundle "${to}/${platform}" "${to}/../libs-${platform_short_name}-${py_version}.zip"
+  echo "  -> Libs bundle finalized for platform ${platform_short_name}-${py_version}"
+
   echo "  -> Cleaning"
-  rm --force --recursive ${to}/${platform}
+  rm --force --recursive "${to}/${platform}"
 }
 
 ##
@@ -116,24 +134,21 @@ function mk_apworld() {
   echo "=> Bundling apworld"
   echo "From: ${root}"
   echo "To: ${destdir}"
-  mkdir --parents "${destdir}/metroidprime"
+  mkdir --parents "${destdir}/${GAME}"
   rsync --progress \
     --recursive \
     --prune-empty-dirs \
     --exclude-from="${CWD}/apworld.ignore" \
-    "${root}/" "${destdir}/metroidprime"
+    "${root}/" "${destdir}/${GAME}"
 
-  echo "${tag}" >"${destdir}/metroidprime/version.txt"
-  generate_ap_manifest "${destdir}/metroidprime" "${tag}"
+  echo "${tag}" >"${destdir}/${GAME}/version.txt"
+  generate_ap_manifest "${destdir}/${GAME}" "${tag}"
 
-  # If this already exists then ovewrite it
-  rm -rf "${destdir}/metroidprime/lib"
-  mv "${destdir}/lib" "${destdir}/metroidprime/lib"
   pushd "${destdir}"
-  zip -9r "metroidprime.apworld" "metroidprime"
+  zip -9r "${GAME}.apworld" "${GAME}"
   popd
 
-  rm --force --recursive "${destdir}/metroidprime"
+  rm --force --recursive "${destdir}/${GAME}"
 }
 
 ##
@@ -142,9 +157,9 @@ function mk_apworld() {
 function cp_data() {
   local root="$1" destdir="$2"
   echo "=> Copying over the extra data"
-  cp --verbose ${root}/LICENSE.md ${destdir}
-  cp --verbose ${root}/README.md ${destdir}
-  cp --verbose "${root}/Metroid Prime.yaml" ${destdir}
+  for file in "${EXTRAS_TO_COPY[@]}"; do
+    cp --verbose "${root}/${file}" ${destdir}
+  done
 }
 
 ##
@@ -170,7 +185,7 @@ function main() {
   pre_flight
 
   local target_path="${CWD}/target"
-  local bundle_base="metroidprime_apworld"
+  local bundle_base="${GAME}_apworld"
   mkdir --parents ${target_path}
 
   case "$1" in
@@ -192,10 +207,6 @@ function main() {
 
     # Loop through all the arguments
     for arg in "$@"; do
-      if [ "$arg" == "--local" ]; then
-        local_install=true
-        break
-      fi
       if [[ $arg == --tag=* ]]; then
         tag=${arg#*=}
       fi
@@ -207,27 +218,20 @@ function main() {
     local bundle="${bundle_base}-${tag}-${py_version}"
     local destdir="${target_path}/${bundle}"
 
-    if [ "$local_install" == true ]; then
-      # Copy project/lib to destdir
-      mkdir -p "${destdir}"
-      cp -r "${project}/lib" "${destdir}"
-      echo "=> Local install, copying ${project}/lib to ${destdir}"
-    else
-      for platform in "${SUPPORTED_PLATFORMS[@]}"; do
-        local requirements_file="${project}/requirements.txt"
-        if [ "${platform}" = "manylinux_2_28_x86_64" ]; then
-          requirements_file="${project}/requirements-linux.txt"
-        fi
-        get_deps "${platform}" ${requirements_file} "${destdir}/lib"
-        # copy deps to project folder as well for local dev
-        cp -r "${destdir}/lib" "${project}"
-      done
-    fi
+    for platform in "${SUPPORTED_PLATFORMS[@]}"; do
+      local requirements_file="${project}/requirements.txt"
+      if [ "${platform}" = "manylinux_2_28_x86_64" ]; then
+        requirements_file="${project}/requirements-linux.txt"
+      fi
+      get_deps "${platform}" ${requirements_file} "${target_path}/lib" ${py_version}
+    done
+    rm --force --recursive "${target_path}/lib"
 
     mk_apworld "${project}" "${destdir}"
     cp_data "${project}" "${destdir}"
     bundle "${destdir}" "${target_path}/${bundle}.zip"
     echo "! Bundle finalized as ${target_path}/${bundle}.zip"
+    rm --force --recursive "${destdir}"
     ;;
   esac
 }
