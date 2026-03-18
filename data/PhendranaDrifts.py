@@ -809,6 +809,7 @@ class PhendranaDriftsAreaData(AreaData):
                     ),
                     1: DoorData(
                         RoomName.Transport_to_Magmoor_Caverns_South,
+                        rule_func=can_morph_ball,
                         defaultLock=DoorLockType.Wave,
                         destination_area=MetroidPrimeArea.Phendrana_Drifts,
                     ),
