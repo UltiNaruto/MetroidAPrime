@@ -803,7 +803,9 @@ class PhendranaDriftsAreaData(AreaData):
             RoomName.South_Quarantine_Tunnel: RoomData(
                 doors={
                     0: DoorData(
-                        RoomName.Quarantine_Cave, defaultLock=DoorLockType.Wave
+                        RoomName.Quarantine_Cave, 
+                        rule_func=can_morph_ball,
+                        defaultLock=DoorLockType.Wave
                     ),
                     1: DoorData(
                         RoomName.Transport_to_Magmoor_Caverns_South,
