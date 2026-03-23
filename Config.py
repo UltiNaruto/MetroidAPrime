@@ -230,6 +230,13 @@ def make_version_specific_changes(
     return config_json
 
 
+def get_spring_ball_item(spring_ball: bool) -> str:
+    if spring_ball:
+        return "Morph Ball Bomb"
+    else:
+        return "Spring Ball"
+
+
 def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
     options: MetroidPrimeOptions = world.options
     config: Dict[str, Any] = {
@@ -264,7 +271,7 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
             "resultsString": f"{get_apworld_version()} | {'_'.join(world.multiworld.get_out_file_name_base(world.player).split('_')[:2])}",
             "mainMenuMessage": f"Archipelago Metroid Prime {get_apworld_version()}",
             "startingRoom": f"{world.starting_room_data.area.value}:{world.starting_room_data.name}",
-            "springBall": bool(options.spring_ball.value),
+            "springBallItem": get_spring_ball_item(bool(options.spring_ball.value)),
             "warpToStart": True,
             "multiworldDolPatches": True,
             "nonvariaHeatDamage": bool(options.non_varia_heat_damage.value),
