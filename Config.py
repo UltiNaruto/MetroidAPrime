@@ -344,7 +344,6 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
             "disableItemLoss": True,
             "startingVisor": "Combat",
             "startingBeam": get_starting_beam(world),
-            "enableIceTraps": False,
             "missileStationPbRefill": True,
             "doorOpenMode": "PrimaryBlastShield",
             "etankCapacity": 100,
