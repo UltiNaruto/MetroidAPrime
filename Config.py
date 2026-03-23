@@ -1,6 +1,7 @@
 import os
 from typing import TYPE_CHECKING, Dict, Any, List
 
+from .PrimeUtils import get_apworld_version
 from .Items import PROGRESSIVE_ITEM_EXCLUSION_LIST, ProgressiveUpgrade, SuitUpgrade, artifact_table
 
 
@@ -260,7 +261,8 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
         },
         "tweaks": get_tweaks(world),
         "gameConfig": {
-            "mainMenuMessage": "Archipelago Metroid Prime",
+            "resultsString": f"{get_apworld_version()} | {'_'.join(world.multiworld.get_out_file_name_base(world.player).split('_')[:2])}",
+            "mainMenuMessage": f"Archipelago Metroid Prime {get_apworld_version()}",
             "startingRoom": f"{world.starting_room_data.area.value}:{world.starting_room_data.name}",
             "springBall": bool(options.spring_ball.value),
             "warpToStart": True,
