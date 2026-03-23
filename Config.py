@@ -346,7 +346,7 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
             "startingBeam": get_starting_beam(world),
             "enableIceTraps": False,
             "missileStationPbRefill": True,
-            "doorOpenMode": "Original",
+            "doorOpenMode": "PrimaryBlastShield",
             "etankCapacity": 100,
             "itemMaxCapacity": {
                 "Power Beam": (

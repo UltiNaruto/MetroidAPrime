@@ -9,7 +9,7 @@ from BaseClasses import (
 )
 
 from ..PrimeOptions import DisplayNonLocalItems, DoorColorRandomization
-from ..BlastShieldRando import BlastShieldType
+from ..BlastShieldRando import BlastShieldType, DoorShieldFromBlastShieldType
 from ..DoorRando import DoorLockType
 from ..Items import ProgressiveUpgrade, SuitUpgrade
 from ..Logic import (
@@ -148,10 +148,8 @@ class RoomData:
             if door.blast_shield is not None:
                 if f"{door_id}" not in door_data:
                     door_data[f"{door_id}"] = {}
-                if door.blast_shield == BlastShieldType.Disabled:
-                    door_data[f"{door_id}"]["shieldType"] = door.blast_shield.value
-                else:
-                    door_data[f"{door_id}"]["blastShieldType"] = door.blast_shield.value
+                door_data[f"{door_id}"]["shieldType"] = DoorShieldFromBlastShieldType[door.blast_shield]
+                door_data[f"{door_id}"]["blastShieldType"] = door.blast_shield.value
 
         return door_data
 

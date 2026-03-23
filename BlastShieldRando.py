@@ -26,6 +26,20 @@ class BlastShieldType(Enum):
     No_Blast_Shield = "None"
 
 
+DoorShieldFromBlastShieldType: dict[BlastShieldType, str] = {
+    BlastShieldType.Bomb: "Blue",
+    BlastShieldType.Charge_Beam: "Blue",
+    BlastShieldType.Flamethrower: "Plasma",
+    BlastShieldType.Ice_Spreader: "Ice",
+    BlastShieldType.Wavebuster: "Wave",
+    BlastShieldType.Power_Bomb: "Blue",
+    BlastShieldType.Super_Missile: "Blue",
+    BlastShieldType.Missile: "Blue",
+    BlastShieldType.Disabled: "Disabled",
+    BlastShieldType.No_Blast_Shield: "Blue",
+}
+
+
 class BlastShieldMapping(Dict[str, Dict[int, BlastShieldType]]):
     pass
 
