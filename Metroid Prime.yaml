@@ -1,14 +1,45 @@
-﻿name: Player{number}
+# Q. What is this file?
+# A. This file contains options which allow you to configure your multiworld experience while allowing
+#    others to play how they want as well.
+#
+# Q. How do I use it?
+# A. The options in this file are weighted. This means the higher number you assign to a value, the
+#    more chances you have for that option to be chosen. For example, an option like this:
+#
+#    map_shuffle:
+#      on: 5
+#      off: 15
+#
+#    Means you have 5 chances for map shuffle to occur, and 15 chances for map shuffle to be turned
+#    off.
+#
+# Q. I've never seen a file like this before. What characters am I allowed to use?
+# A. This is a .yaml file. You are allowed to use most characters.
+#    To test if your yaml is valid or not, you can use this website:
+#        http://www.yamllint.com/
+#    You can also verify that your Archipelago options are valid at this site:
+#        https://archipelago.gg/check
+
+# Your name in-game, limited to 16 characters.
+#     {player} will be replaced with the player's slot number.
+#     {PLAYER} will be replaced with the player's slot number, if that slot number is greater than 1.
+#     {number} will be replaced with the counter value of the name.
+#     {NUMBER} will be replaced with the counter value of the name, if the counter value is greater than 1.
+name: Player{number}
 
 # Used to describe your yaml. Useful if you have multiple files.
 description: Default Metroid Prime Template
 
 game: Metroid Prime
 requires:
-  version: 0.5.0 # Version of Archipelago required for this yaml to work as expected.
+  version: 0.6.6 # Version of Archipelago required for this yaml to work as expected.
+  game:
+    Metroid Prime: 0.5.2 # Version of the world required for this yaml to work as expected.
 
 Metroid Prime:
-  # Game Options
+  ################
+  # Game Options #
+  ################
   progression_balancing:
     # A system that can move progression earlier, to try and prevent the player from getting stuck and bored early.
     #
@@ -18,8 +49,9 @@ Metroid Prime:
     # Minimum value is 0
     # Maximum value is 99
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-99: 0 # random value between 0 and 99
     disabled: 0 # equivalent to 0
     normal: 50 # equivalent to 50
     extreme: 0 # equivalent to 99
@@ -38,7 +70,9 @@ Metroid Prime:
     'false': 50
     'true': 0
 
-  # General
+  ###########
+  # General #
+  ###########
   required_artifacts:
     # Determines the number of Artifacts needed to begin the endgame sequence.
     #
@@ -47,14 +81,15 @@ Metroid Prime:
     # Maximum value is 12
     12: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-12: 0 # random value between 1 and 12
 
   artifact_hints:
     # If enabled, scanning the artifact stones in the temple will give a hint to their location. Additionally, hints may be pre-collected in the client.
-    'disable': 0
-    'enable_precollected': 50
-    'enable_scanned': 0
+    disable: 0
+    enable_precollected: 50
+    enable_scanned: 0
 
   final_bosses:
     # Determines the final bosses required to beat the seed. Choose from Meta Ridley, Metroid Prime,
@@ -67,7 +102,7 @@ Metroid Prime:
   starting_room:
     # Determines the starting room of the game. This will change your starting loadout depending on the room.
     # Normal: Start at the Talon Overworld Landing Site. Most randomization options, when enabled, will move the starting room to Save Station 1 in Chozo Ruins due to the restrictive nature of the landing site starting room.
-    # Safe: Start in rooms that will not require a significant combat challenge to progress from. Without disable_starting_room_bk_prevention enabled, this may assign you a new beam and an item in order to make the seed feasible
+    # Safe: Start in rooms that will not require a significant combat challenge to progress from.
     # Buckle Up: Start in rooms that will pose a significant challenge to players with no energy tanks or suit upgrades. Fun for the aspiring masochist (less fun for their friends waiting in BK).
     normal: 50
     safe: 0
@@ -79,7 +114,9 @@ Metroid Prime:
     normal_logic: 50
     minimal_logic: 0
 
-  # Gameplay Tweaks
+  ###################
+  # Gameplay Tweaks #
+  ###################
   progressive_beam_upgrades:
     # If enabled, 3 progressive beam items will be added into the item pool per beam. These unlock the beam itself, charging capabilities, and the associated missile combo.
     'false': 50
@@ -129,7 +166,9 @@ Metroid Prime:
     'false': 0
     'true': 50
 
-  # Door Randomization
+  ######################
+  # Door Randomization #
+  ######################
   elevator_randomization:
     # Randomizes the elevators between regions.
     'false': 50
@@ -177,8 +216,9 @@ Metroid Prime:
     # Maximum value is 2
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-2: 0 # random value between 0 and 2
 
   include_power_beam_doors:
     # If enabled, Power Beam doors will be an available door color for randomization. If the starting beam is also randomized, it will remove the new starting beam's color from the pool of available door colors.
@@ -190,7 +230,9 @@ Metroid Prime:
     'false': 50
     'true': 0
 
-  # Tricks
+  ##########
+  # Tricks #
+  ##########
   trick_difficulty:
     # Determines which tricks, if any, are required to complete the seed. This will affect the logic of the game
     no_tricks: 50
@@ -239,7 +281,9 @@ Metroid Prime:
     # A list of trick names to explicitly deny in logic, regardless of selected difficulty.  For example, "Crashed Frigate Scan Dash" or "Alcove Escape".
     []
 
-  # Cosmetic
+  ############
+  # Cosmetic #
+  ############
   fusion_suit:
     # If enabled, will replace all the suits in game with the Fusion Suit variants (cosmetic only). Suit color randomization will have no effect if this is enabled.
     'false': 50
@@ -269,8 +313,9 @@ Metroid Prime:
     # Maximum value is 255
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-255: 0 # random value between 0 and 255
 
   hud_color_green:
     # 0 to 255, sets the Green channel of the HUD color.
@@ -280,8 +325,9 @@ Metroid Prime:
     # Maximum value is 255
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-255: 0 # random value between 0 and 255
 
   hud_color_blue:
     # 0 to 255, sets the Blue channel of the HUD color.
@@ -291,8 +337,9 @@ Metroid Prime:
     # Maximum value is 255
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-255: 0 # random value between 0 and 255
 
   randomize_suit_colors:
     # Randomize the colors of the suits. Is overridden if any of the color overrides are greater than 0. Note: This is not compatible with the Fusion Suit and will have no effect.
@@ -307,8 +354,9 @@ Metroid Prime:
     # Maximum value is 359
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-359: 0 # random value between 0 and 359
 
   varia_suit_color:
     # Override the color of the Varia Suit using an index from the game's color wheel.
@@ -318,8 +366,9 @@ Metroid Prime:
     # Maximum value is 359
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-359: 0 # random value between 0 and 359
 
   gravity_suit_color:
     # Override the color of the Gravity Suit using an index from the game's color wheel.
@@ -329,8 +378,9 @@ Metroid Prime:
     # Maximum value is 359
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-359: 0 # random value between 0 and 359
 
   phazon_suit_color:
     # Override the color of the Phazon Suit using an index from the game's color wheel.
@@ -340,20 +390,31 @@ Metroid Prime:
     # Maximum value is 359
     0: 50
     random: 0
-    random-low: 0
-    random-high: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-359: 0 # random value between 0 and 359
 
   display_nonlocal_items:
-    # How are displayed non-local items.
-    #
-    # None means only local items have matching models.
-    # Match Game means that only Metroid Prime game have matching models.
-    # Match Series means that any supported Metroid games will use Metroid Prime models that matches the item from the other world.
+    # How are displayed non-local items. None means only local items have matching models. Match Game means that only Metroid Prime game have matching models. Match Series means that any supported Metroid games will use Metroid Prime models that matches the item from the other world.
     none: 50
     match_game: 0
     match_series: 0
 
-  # Item & Location Options
+  etank_capacity:
+    # Sets how much energy an energy tank stores. Defaults to 100 HP.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 100
+    # Maximum value is 1000
+    100: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-100-1000: 0 # random value between 100 and 1000
+
+  ###########################
+  # Item & Location Options #
+  ###########################
   local_items:
     # Forces these items to be in their native world.
     []
@@ -363,11 +424,11 @@ Metroid Prime:
     []
 
   start_inventory:
-    # Start with these items.
+    # Start with the specified amount of these items. Example: "Bomb: 1"
     {}
 
   start_inventory_from_pool:
-    # Start with these items and don't place them in the world.
+    # Start with the specified amount of these items and don't place them in the world. Example: "Bomb: 1"
     #
     # The game decides what the replacement items will be.
     {}
@@ -390,4 +451,8 @@ Metroid Prime:
 
   item_links:
     # Share part of your item pool with other players.
+    []
+
+  plando_items:
+    # Generic items plando.
     []
