@@ -105,7 +105,7 @@ class MetroidPrimeWeb(WebWorld):
             "English",
             "setup.md",
             "setup/en",
-            ["hesto2", "Electro15"],
+            ["hesto2", "Electro15", "UltiNaruto"],
         )
     ]
     option_groups = prime_option_groups
