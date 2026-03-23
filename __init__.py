@@ -1,3 +1,6 @@
+from .PrimeUtils import setup_libs
+setup_libs()
+
 import typing
 from collections import defaultdict
 from .ItemPool import generate_item_pool
