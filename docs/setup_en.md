@@ -21,22 +21,14 @@ The following are required in order to play _Metroid Prime_ in Archipelago:
 3. In the Archipelago Launcher, select `Install APWorld`, and then select `metroidprime.apworld` file from the previous step.
 
 >[!NOTE]
-> Because Archipelago 5.1 on Windows transitioned to using Python 3.12, current releases of Metroid Prime AP offers two options to download:
-> | Archipelago Version                             |                                              |
+> Here's the version you must download depending on your OS:
+> | Operating System                                |                                              |
 > |-------------------------------------------------|----------------------------------------------|
-> | Archipelago 5.1 or later for Windows            | Download APWorld file ending with `3.12.zip`.|
-> | Archipelago 5.1 AppImage or Tarball for Linux   | Download APWorld file ending with `3.11.zip`.|
-> | Archipelago 5.0 or earlier for Windows          | Download APWorld file ending with `3.11.zip`.|
+> | Windows                                         | Download zip files ending with `3.12.zip`.   |
+> | Linux                                           | Download zip files ending with `3.12.zip`.   |
+> | MacOS                                           | Download zip files ending with `3.11.zip`.   |
 >
->  Future versions after Metroid Prime AP 0.4.9 will likely target only Python 3.12 and will only work on Archipelago 5.1.
-
->[!IMPORTANT]
-> If you have used a previous version of Metroid Prime AP that required copying folders into the `/lib` folder, go to your `Archipelago/lib` folder and delete the following directories:
-> - `dolphin_memory_engine` (This may be kept if another APWorld depends on this folder, but may cause issues if versions are mismatched.)
-> - `ppc_asm`
-> - `py_randomprime`
->
-> These are now included in the APWorld file.
+> Libs zip must be extracted in Archipelago/lib folder. This will change in 0.5.3 though.
 
 ## Setting Up Player Options YAML File
 
@@ -52,10 +44,6 @@ As usual, randomized Archipelago games with custom worlds must be generated loca
 
 If you're generating the multiworld, follow the instructions in the previous section.
 Once you have the zip file corresponding to your multiworld, follow [Archipelago Setup Guide: Hosting an Archipelago Server](https://archipelago.gg/tutorial/Archipelago/setup/en#hosting-an-archipelago-server) to host a room.
-
-> [!NOTE]
-> When hosting with the Archipelago website, the website will *not* host patch files from imported custom worlds, such as Metroid Prime AP.
-> The person generating must manually distribute the `.apmp1` patch files to the corresponding players.
 
 ## Starting the Game and Connecting to a Room
 
@@ -86,7 +74,7 @@ Once you do, follow these steps to connect to the room:
 
 ### General Troubleshooting Tips
 - Use the latest Metroid Prime Archipelago release
-  - Metroid Prime Archipelago: [Releases · Electro1512_MetroidAPrime](https://github.com/Electro1512/MetroidAPrime/releases)
+  - Metroid Prime Archipelago: [Releases · Electro1512_MetroidAPrime](https://github.com/UltiNaruto/MetroidAPrime/releases)
 
 - Use the latest Dolphin Emulator
   - Dolphin Emulator Release (**Recommended**): [Dolphin Emulator - Download](https://dolphin-emu.org/download/)
@@ -99,7 +87,6 @@ Once you do, follow these steps to connect to the room:
 - If you do not see the client in the Archipelago Launcher
   - Ensure you have your `metroidprime.apworld` in the correct folder (The `custom_worlds` folder).
   - Check if you have residual files from previous versions in the lib/worlds folder - see the [APWorld Installation section](#apworld-installation)
-  - Go to `%TEMP%` (C:\Users\<Username>\AppData\Local\Temp) and delete the folder `ap_metroidprime_temp_lib_vX.Y.Z`. Then restart the Archipelago Launcher.
 
 - If you receive this error in a dialog box after opening the AP_XXXXX_PX.apmp1 file:
   > Count Mount File
@@ -107,6 +94,8 @@ Once you do, follow these steps to connect to the room:
 
   This is not an error related to the patcher - this is Windows File Explorer attempting to mount the GameCube ISO as a removable drive. It's likely that the patcher did sucessfully patch the game.
   See if the patched ISO exists (often named AP_XXXXX_PX.iso). If it does, you can load it manually in Dolphin.
+
+- Also any non-ISO format will throw an error telling you which format your disc is. Remember you need to dump your disc, not download it.
 
 ### Connection Troubleshooting
 - I have the randomized game open in Dolphin, but the Metroid Prime client says it can't connect to it!
@@ -140,5 +129,5 @@ Once you do, follow these steps to connect to the room:
 
 ## Feedback
 
-In the offical [Archipelago Discord](https://discord.com/invite/8Z65BR2) under the `future-game-design` channel, there is a [_Metroid Prime_ thread](https://discord.com/channels/731205301247803413/1172631093837570068).
-Feel free to ping `@Electro15` or `@hesto2` with any bugs/thoughts/complaints/wishes/jokes you may have!
+In the offical [Archipelago Discord](https://discord.com/invite/8Z65BR2) there is the `metroid-prime` [channel](https://discord.com/channels/731205301247803413/1425600401733980301).
+Feel free to ping `@Electro15` or `@hesto2` or `@UltiNaruto` with any bugs/thoughts/complaints/wishes/jokes you may have!
