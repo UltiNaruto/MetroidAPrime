@@ -10,7 +10,6 @@ from ..data.RoomNames import RoomName
 from ..Config import make_config
 from Fill import distribute_items_restrictive
 from ..Items import SuitUpgrade
-from .. import MetroidPrimeWorld
 from . import MetroidPrimeTestBase, MetroidPrimeWithOverridesTestBase
 
 if typing.TYPE_CHECKING:

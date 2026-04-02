@@ -26,7 +26,7 @@ class TestStartingRoomsGenerate(MetroidPrimeWithOverridesTestBase):
                     self.world_setup()  # type: ignore
                     distribute_items_restrictive(self.multiworld)
                     self.assertBeatable(True)
-                except Exception:
+                except (Exception,):
                     self.fail(
                         f"Failed to generate beatable game with start room: {room_name}. "
                     )
@@ -53,7 +53,7 @@ class TestStartingRoomsGenerateWithElevatorRando(MetroidPrimeWithOverridesTestBa
                     self.world_setup()  # type: ignore
                     distribute_items_restrictive(self.multiworld)
                     self.assertBeatable(True)
-                except Exception:
+                except (Exception,):
                     failures.append(room_name)
         if len(failures):
             self.fail(

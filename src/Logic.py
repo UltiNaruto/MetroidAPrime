@@ -38,7 +38,7 @@ def can_power_beam(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
 
 
 def can_power_bomb(
-    world: "MetroidPrimeWorld", state: CollectionState, num_expansions: int = 1
+    world: "MetroidPrimeWorld", state: CollectionState, _num_expansions: int = 1
 ) -> bool:
     if world.options.main_power_bomb:
         return state.has_all(
@@ -261,7 +261,7 @@ def can_defeat_sheegoth(world: "MetroidPrimeWorld", state: CollectionState) -> b
 
 
 def can_backwards_lower_mines(
-    world: "MetroidPrimeWorld", state: CollectionState
+    world: "MetroidPrimeWorld", _state: CollectionState
 ) -> bool:
     return bool(world.options.backwards_lower_mines.value)
 

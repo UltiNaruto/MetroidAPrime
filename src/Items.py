@@ -16,11 +16,11 @@ class ItemData:
     id: int
 
     def __init__(
-        self, name: str, id: int, progression: ItemClassification, max_capacity: int = 1
+        self, name: str, id_: int, progression: ItemClassification, max_capacity: int = 1
     ) -> None:
         self.name = name
-        self.id = id
-        self.code = id + AP_METROID_PRIME_ITEM_ID_BASE
+        self.id = id_
+        self.code = id_ + AP_METROID_PRIME_ITEM_ID_BASE
         self.classification = progression
         self.max_capacity = max_capacity
 

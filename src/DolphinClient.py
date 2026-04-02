@@ -23,7 +23,7 @@ class DolphinClient:
         try:
             self.__assert_connected()
             return True
-        except Exception:
+        except (Exception,):
             return False
 
     def connect(self):
@@ -58,7 +58,6 @@ class DolphinClient:
     def read_pointer(self, pointer: int, offset: int, byte_count: int) -> Any:
         self.__assert_connected()
 
-        address = None
         try:
             address = self.dolphin.follow_pointers(pointer, [0])
         except RuntimeError:
@@ -78,7 +77,6 @@ class DolphinClient:
 
     def write_pointer(self, pointer: int, offset: int, data: Any):
         self.__assert_connected()
-        address = None
         try:
             address = self.dolphin.follow_pointers(pointer, [0])
         except RuntimeError:
@@ -113,5 +111,5 @@ def get_num_dolphin_instances() -> int:
             count = sum("Dolphin.exe" in line for line in lines)
             return count
         return 0
-    except:
+    except (Exception,):
         return 0

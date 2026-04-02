@@ -17,7 +17,6 @@ LIBS: dict[str, str] = {
 
 def setup_libs():
     """Downloads the libraries if they are not present."""
-    import importlib
     import Utils
 
     lib_path = Utils.home_path('lib')
@@ -64,7 +63,6 @@ def get_apworld_version():
 
 def count_ammo(items: List[str], main: str, expansion: str, requires_main: bool) -> int:
     has_main: bool = main in [item for item in items if item == main]
-    requires_main: bool = False
     ammo_with_main: int = 0
     expansion_count: int = sum([1 for item in items if item == expansion])
     ammo_per_expansion: int = 0

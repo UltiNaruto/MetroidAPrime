@@ -134,7 +134,7 @@ def get_world_door_mapping(world: "MetroidPrimeWorld") -> WorldDoorColorMapping:
 
 
 def get_available_lock_types(
-    world: "MetroidPrimeWorld", area: MetroidPrimeArea
+    world: "MetroidPrimeWorld", _area: MetroidPrimeArea
 ) -> List[DoorLockType]:
     locks = COLOR_LOCK_TYPES[:]
     # If start beam is randomized, we replace whatever the mapping to starting beam is with Power Beam Only

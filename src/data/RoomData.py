@@ -128,8 +128,8 @@ class RoomData:
                 for pickup in self.pickups
                 if not pickup.exclude_from_config
             ],
+            "doors": self.get_door_config_data(world, parent_area)
         }
-        config["doors"] = self.get_door_config_data(world, parent_area)
 
         return config
 

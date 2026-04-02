@@ -99,7 +99,7 @@ def make_artifact_hints(world: "MetroidPrimeWorld") -> Dict[str, str]:
             else:
                 return f"The {item_string} has not been collected."
             # This will error when trying to find an artifact that does not have a location since was pre collected
-        except:
+        except (Exception,):
             return f"The {item_string} does not need to be collected."
 
     return {
@@ -127,6 +127,7 @@ def make_credits(world: "MetroidPrimeWorld") -> str:
                 return spoiler + "<Started With>\n"
             else:
                 return spoiler + "<Not Placed>\n"
+
         for location in locations:
             if world.multiworld.players == 1:
                 spoiler += f"{location.name}\n"

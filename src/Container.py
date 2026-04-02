@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class MetroidPrimeContainer(APPlayerContainer):
-    game: str = "Metroid Prime"  # type: ignore
+    game: str = "Metroid Prime"  # noqa
     patch_file_ending = ".apmp1"
 
     def __init__(
@@ -309,7 +309,6 @@ def construct_progressive_beam_patch(
 
     if not progressive_beams:
         return []
-    cstate_manager_global = GAMES[game_version]["cstate_manager_global"]
     charge_beam_offset = 0x7C
     instructions: List = [
         # Step 0: Get the player state address

@@ -1,9 +1,6 @@
-import argparse
-import json
 import os
 
 import yaml
-from ..Items import SuitUpgrade
 from ..data.AreaNames import MetroidPrimeArea
 from ..data.Transports import default_elevator_mappings
 from ..data.RoomNames import RoomName
@@ -38,9 +35,8 @@ for room in all_rooms:
             for target_elevator in target_elevators.keys():
                 if target_elevator == source_elevators[source_elevator]:
                     continue
-                config = None
-                with open("Players/Hesto2.yaml", "r") as file:
-                    config = yaml.safe_load(file)
+                with open("Players/Hesto2.yaml", "r") as f:
+                    config = yaml.safe_load(f)
 
                 config["Metroid Prime"]["elevator_mapping"] = {}
                 config["Metroid Prime"]["elevator_mapping"][source_area] = {}
@@ -54,8 +50,8 @@ for room in all_rooms:
                 ] = source_elevator
                 config["Metroid Prime"]["starting_room"] = room
 
-                with open("Players/Hesto2.yaml", "w") as file:
-                    yaml.safe_dump(config, file, default_flow_style=False)
+                with open("Players/Hesto2.yaml", "w") as f2:
+                    yaml.safe_dump(config, f2, default_flow_style=False)
 
                 for time in range(times_to_try):
                     os.environ["skip_output"] = "true"
@@ -65,7 +61,7 @@ for room in all_rooms:
                         failures[name] = 0
                     try:
                         main()
-                    except Exception as e:
+                    except (Exception,):
                         failures[name] += 1
                         continue
 

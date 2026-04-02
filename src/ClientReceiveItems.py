@@ -86,7 +86,7 @@ def disable_item_if_owned(ctx: "MetroidPrimeContext", item_data: InventoryItemDa
 
 
 async def handle_cosmetic_suit(
-    ctx: "MetroidPrimeContext", current_items: Dict[str, InventoryItemData]
+    ctx: "MetroidPrimeContext", _current_items: Dict[str, InventoryItemData]
 ):
     if ctx.cosmetic_suit is None:
         return

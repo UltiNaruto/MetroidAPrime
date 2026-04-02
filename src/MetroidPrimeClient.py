@@ -52,7 +52,7 @@ class MetroidPrimeCommandProcessor(ClientCommandProcessor):
         """Send a message to the game interface."""
         self.ctx.notification_manager.queue_notification(" ".join(map(str, args)))
 
-    def _cmd_status(self, *args: List[Any]):
+    def _cmd_status(self, *_args: List[Any]):
         """Display the current dolphin connection status."""
         logger.info(f"Connection status: {status_messages[self.ctx.connection_state]}")
 
@@ -76,9 +76,9 @@ class MetroidPrimeCommandProcessor(ClientCommandProcessor):
             f"{'Enabling' if self.ctx.gravity_suit_enabled else 'Disabling'} Gravity Suit..."
         )
 
-    def _cmd_set_cosmetic_suit(self, input: str):
+    def _cmd_set_cosmetic_suit(self, val: str):
         """Set the cosmetic suit of the player. This will not affect the player's current suit but will change the appearance of the suit in the game. Note that if you start a new seed without closing the client, the option will persist. If you close the client and get a new suit, you may need to re set this."""
-        if input == "None":
+        if val == "None":
             logger.info("Removing cosmetic suit")
             self.ctx.cosmetic_suit = None
             suit = self.ctx.game_interface.get_highest_owned_suit()
@@ -89,7 +89,7 @@ class MetroidPrimeCommandProcessor(ClientCommandProcessor):
                 self.ctx.game_interface.get_current_cosmetic_suit()
             )
             return
-        suit = MetroidPrimeSuit.get_by_key(input)
+        suit = MetroidPrimeSuit.get_by_key(val)
         if suit is None:
             options = ", ".join(
                 [suit.name for suit in MetroidPrimeSuit if "Fusion" not in suit.name]
@@ -203,7 +203,7 @@ async def dolphin_sync_task(ctx: MetroidPrimeContext):
         # This will not work if the client is running from source
         version = get_apworld_version()
         logger.info(f"Using metroidprime.apworld version: {version}")
-    except:
+    except (Exception,):
         pass
 
     if ctx.apmp1_file:
@@ -234,7 +234,7 @@ async def dolphin_sync_task(ctx: MetroidPrimeContext):
 
 
 async def handle_checked_location(
-    ctx: MetroidPrimeContext, current_inventory: Dict[str, InventoryItemData]
+    ctx: MetroidPrimeContext, _current_inventory: Dict[str, InventoryItemData]
 ):
     """Checks for active memory relays in each worlds"""
     checked_locations: List[int] = []

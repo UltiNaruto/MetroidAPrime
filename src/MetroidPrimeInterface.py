@@ -575,7 +575,7 @@ class MetroidPrimeInterface:
             return SuitUpgrade.Plasma_Beam
         return None
 
-    def set_progressive_beam_charge_state(self, charge_beam: SuitUpgrade, state: bool):
+    def set_progressive_beam_charge_state(self, charge_beam: SuitUpgrade, _state: bool):
         cplayer_state = self.__get_player_state_pointer()
         beam_upgrade = self.__progressive_beam_to_beam(charge_beam)
 

@@ -151,7 +151,7 @@
     "removeHiveMecha": false,
     "startingItems": {
       "combatVisor": true,
-      "powerSuit": true,
+      "powerSuit": 0,
       "powerBeam": true,
       "scanVisor": true,
       "missiles": 0,
@@ -175,7 +175,13 @@
       "superMissile": false,
       "wavebuster": false,
       "iceSpreader": false,
-      "flamethrower": false
+      "flamethrower": false,
+      "unknownItem1": 0,
+      "missileLauncher": false,
+      "powerBombLauncher": false,
+      "unlimitedMissiles": false,
+      "unlimitedPowerBombs": false,
+      "springBall": false
     },
     "disableItemLoss": true,
     "startingVisor": "Combat",
