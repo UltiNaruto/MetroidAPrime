@@ -40,7 +40,7 @@ async def handle_receive_items(
         elif item_data.max_capacity > 1:
             continue
     # Not used until consumables are implemented but keeping it here to see if it breaks anything and gets reported
-    new_index = len(ctx.items_received) - 1
+    new_index = max(len(ctx.items_received) - 1, 0)
     ctx.game_interface.set_last_received_index(new_index)
 
     await handle_receive_missiles(ctx, current_items)
