@@ -139,7 +139,7 @@ function mk_apworld() {
     --recursive \
     --prune-empty-dirs \
     --exclude-from="${CWD}/apworld.ignore" \
-    "${root}/" "${destdir}/${GAME}"
+    "${root}/src/" "${destdir}/${GAME}"
 
   echo "${tag}" >"${destdir}/${GAME}/version.txt"
   generate_ap_manifest "${destdir}/${GAME}" "${tag}"
