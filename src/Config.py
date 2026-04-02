@@ -21,7 +21,7 @@ def starting_inventory(world: "MetroidPrimeWorld", item: str) -> bool:
 
 
 def starting_etanks(world: "MetroidPrimeWorld") -> int:
-    return sum([item.count for item in world.multiworld.precollected_items[world.player] if item.name == "Energy Tank"])
+    return sum([1 for item in world.multiworld.precollected_items[world.player] if item.name == "Energy Tank"])
 
 
 def skip_ridley(boss: int) -> bool:
