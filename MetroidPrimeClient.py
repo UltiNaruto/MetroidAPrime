@@ -135,7 +135,7 @@ class MetroidPrimeContext(CommonContext):
     game_interface: MetroidPrimeInterface
     notification_manager: NotificationManager
     game = "Metroid Prime"
-    items_handling = 0b111
+    items_handling = 0b011
     dolphin_sync_task: Optional[asyncio.Task[Any]] = None
     connection_state = ConnectionState.DISCONNECTED
     slot_data: Dict[str, Utils.Any] = {}

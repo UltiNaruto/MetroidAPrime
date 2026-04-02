@@ -62,6 +62,12 @@ class SuitUpgrade(Enum):
     Wave_Charge_Beam = "Charge Beam (Wave)"
     Ice_Charge_Beam = "Charge Beam (Ice)"
     Plasma_Charge_Beam = "Charge Beam (Plasma)"
+    Unlimited_Missiles = "Unlimited Missiles"
+    Unlimited_Power_Bombs = "Unlimited Power Bombs"
+    Spring_Ball = "Spring Ball"
+    Nothing = "Nothing"
+    #Floaty_Jump = "Floaty Jump"
+    #Ice_Trap = "Ice Trap"
 
     def __str__(self):
         return self.value
@@ -242,6 +248,30 @@ suit_upgrade_table: Dict[str, ItemData] = {
     SuitUpgrade.Wavebuster.value: ItemData(
         SuitUpgrade.Wavebuster.value, 28, ItemClassification.useful
     ),
+    SuitUpgrade.Unlimited_Missiles.value: ItemData(
+        SuitUpgrade.Unlimited_Missiles.value, 41, ItemClassification.useful
+    ),
+    SuitUpgrade.Unlimited_Power_Bombs.value: ItemData(
+        SuitUpgrade.Unlimited_Power_Bombs.value, 42, ItemClassification.useful
+    ),
+    SuitUpgrade.Missile_Launcher.value: ItemData(
+        SuitUpgrade.Missile_Launcher.value, 43, ItemClassification.progression
+    ),
+    SuitUpgrade.Main_Power_Bomb.value: ItemData(
+        SuitUpgrade.Main_Power_Bomb.value, 44, ItemClassification.progression
+    ),
+    SuitUpgrade.Spring_Ball.value: ItemData(
+        SuitUpgrade.Spring_Ball.value, 45, ItemClassification.progression
+    ),
+    SuitUpgrade.Nothing.value: ItemData(
+        SuitUpgrade.Nothing.value, 46, ItemClassification.filler
+    ),
+    #SuitUpgrade.Floaty_Jump.value: ItemData(
+    #    SuitUpgrade.Floaty_Jump.value, 47, ItemClassification.useful
+    #),
+    #SuitUpgrade.Ice_Trap.value: ItemData(
+    #    SuitUpgrade.Ice_Trap.value, 48, ItemClassification.trap
+    #),
 }
 
 misc_item_table: Dict[str, ItemData] = {
@@ -254,49 +284,43 @@ misc_item_table: Dict[str, ItemData] = {
 
 # These item ids are invalid in the player state, we'll need to exclude it from logic relying on that
 custom_suit_upgrade_table: Dict[str, ItemData] = {
-    SuitUpgrade.Missile_Launcher.value: ItemData(
-        SuitUpgrade.Missile_Launcher.value, 41, ItemClassification.progression
-    ),
-    SuitUpgrade.Main_Power_Bomb.value: ItemData(
-        SuitUpgrade.Main_Power_Bomb.value, 42, ItemClassification.progression
-    ),
     ProgressiveUpgrade.Progressive_Power_Beam.value: ItemData(
         ProgressiveUpgrade.Progressive_Power_Beam.value,
-        43,
+        49,
         ItemClassification.progression,
         3,
     ),
     ProgressiveUpgrade.Progressive_Ice_Beam.value: ItemData(
         ProgressiveUpgrade.Progressive_Ice_Beam.value,
-        44,
+        51,
         ItemClassification.progression,
         3,
     ),
     ProgressiveUpgrade.Progressive_Wave_Beam.value: ItemData(
         ProgressiveUpgrade.Progressive_Wave_Beam.value,
-        45,
+        52,
         ItemClassification.progression,
         3,
     ),
     ProgressiveUpgrade.Progressive_Plasma_Beam.value: ItemData(
         ProgressiveUpgrade.Progressive_Plasma_Beam.value,
-        46,
+        53,
         ItemClassification.progression,
         3,
     ),
 
     # These aren't used in item generation but are referenced in the client
     SuitUpgrade.Power_Charge_Beam.value: ItemData(
-        SuitUpgrade.Power_Charge_Beam.value, 47, ItemClassification.progression, 1
+        SuitUpgrade.Power_Charge_Beam.value, 54, ItemClassification.progression, 1
     ),
     SuitUpgrade.Wave_Charge_Beam.value: ItemData(
-        SuitUpgrade.Wave_Charge_Beam.value, 48, ItemClassification.progression, 1
+        SuitUpgrade.Wave_Charge_Beam.value, 55, ItemClassification.progression, 1
     ),
     SuitUpgrade.Ice_Charge_Beam.value: ItemData(
-        SuitUpgrade.Ice_Charge_Beam.value, 49, ItemClassification.progression, 1
+        SuitUpgrade.Ice_Charge_Beam.value, 56, ItemClassification.progression, 1
     ),
     SuitUpgrade.Plasma_Charge_Beam.value: ItemData(
-        SuitUpgrade.Plasma_Charge_Beam.value, 50, ItemClassification.progression, 1
+        SuitUpgrade.Plasma_Charge_Beam.value, 57, ItemClassification.progression, 1
     ),
 }
 

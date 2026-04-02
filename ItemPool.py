@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, List
 from BaseClasses import ItemClassification
-from .PrimeOptions import BlastShieldAvailableTypes, BlastShieldRandomization
+
+from .PrimeOptions import BlastShieldAvailableTypes, BlastShieldRandomization, SpringBall
 from .Items import (
     PROGRESSIVE_ITEM_MAPPING,
     MetroidPrimeItem,
@@ -9,7 +10,6 @@ from .Items import (
     get_item_for_options,
     artifact_table,
 )
-from .Items import MetroidPrimeItem
 
 if TYPE_CHECKING:
     from . import MetroidPrimeWorld
@@ -127,6 +127,15 @@ def generate_item_pool(world: "MetroidPrimeWorld") -> List[MetroidPrimeItem]:
                 world.create_item(SuitUpgrade.Flamethrower.value, combo_classification),
             )
         )
+
+    if world.options.shuffle_unlimited_missiles:
+        items.append(world.create_item(SuitUpgrade.Unlimited_Missiles.value, ItemClassification.useful))
+
+    if world.options.shuffle_unlimited_power_bombs:
+        items.append(world.create_item(SuitUpgrade.Unlimited_Power_Bombs.value, ItemClassification.useful))
+
+    if world.options.spring_ball == SpringBall.option_its_own_item:
+        items.append(world.create_item(SuitUpgrade.Spring_Ball.value, ItemClassification.progression))
 
     assert world.starting_room_data.selected_loadout
 

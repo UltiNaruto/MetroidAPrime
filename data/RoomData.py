@@ -61,8 +61,12 @@ def get_config_item_model(world: "MetroidPrimeWorld", location: str) -> str:
             return "Missile"
         if name == SuitUpgrade.Missile_Launcher.value:
             return "Shiny Missile"
+        if name == SuitUpgrade.Unlimited_Missiles.value:
+            return "Missile Refill"
         if name == SuitUpgrade.Main_Power_Bomb.value:
             return "Power Bomb"
+        if name == SuitUpgrade.Unlimited_Power_Bombs.value:
+            return "Power Bomb Refill"
         if (
             name == ProgressiveUpgrade.Progressive_Power_Beam.value
             or name == SuitUpgrade.Power_Beam.value
@@ -74,6 +78,8 @@ def get_config_item_model(world: "MetroidPrimeWorld", location: str) -> str:
             return "Ice Beam"
         if name == ProgressiveUpgrade.Progressive_Plasma_Beam.value:
             return "Plasma Beam"
+        if name == SuitUpgrade.Spring_Ball.value:
+            return "Cog"
         return name
     else:
         return get_offworld_model(loc.item, display_nonlocal_items == DisplayNonLocalItems.option_match_series)

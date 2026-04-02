@@ -1,11 +1,11 @@
 import os
 from typing import TYPE_CHECKING, Dict, Any, List
 
-from .PrimeUtils import get_apworld_version
+from .PrimeUtils import count_ammo, get_apworld_version
 from .Items import PROGRESSIVE_ITEM_EXCLUSION_LIST, ProgressiveUpgrade, SuitUpgrade, artifact_table
 
 
-from .PrimeOptions import ArtifactHints, HudColor, MetroidPrimeOptions
+from .PrimeOptions import ArtifactHints, HudColor, MetroidPrimeOptions, SpringBall
 from .data.RoomData import MetroidPrimeArea
 from .data.Transports import get_transport_data
 
@@ -18,6 +18,10 @@ if TYPE_CHECKING:
 def starting_inventory(world: "MetroidPrimeWorld", item: str) -> bool:
     items = [item.name for item in world.multiworld.precollected_items[world.player]]
     return item in items
+
+
+def starting_etanks(world: "MetroidPrimeWorld") -> int:
+    return sum([item.count for item in world.multiworld.precollected_items[world.player] if item.name == "Energy Tank"])
 
 
 def skip_ridley(boss: int) -> bool:
@@ -119,7 +123,10 @@ def make_credits(world: "MetroidPrimeWorld") -> str:
         spoiler = f"{style(item, font='C29C51F1', main_color='#89a1ff')}\n"
         locations = world.multiworld.find_item_locations(item, world.player, True)
         if not locations:
-            return spoiler + "<Not Placed>\n"
+            if any([i for i in world.multiworld.precollected_items[world.player] if i.name == item]):
+                return spoiler + "<Started With>\n"
+            else:
+                return spoiler + "<Not Placed>\n"
         for location in locations:
             if world.multiworld.players == 1:
                 spoiler += f"{location.name}\n"
@@ -133,6 +140,7 @@ def make_credits(world: "MetroidPrimeWorld") -> str:
         return spoiler
 
     excluded_items = {
+        SuitUpgrade.Nothing,
         SuitUpgrade.Missile_Expansion,
         SuitUpgrade.Power_Bomb_Expansion,
         SuitUpgrade.Energy_Tank,
@@ -155,6 +163,10 @@ def make_credits(world: "MetroidPrimeWorld") -> str:
         excluded_items.add(SuitUpgrade.Missile_Launcher)
     if not world.options.main_power_bomb.value:
         excluded_items.add(SuitUpgrade.Main_Power_Bomb)
+    if not world.options.shuffle_unlimited_missiles.value:
+        excluded_items.add(SuitUpgrade.Unlimited_Missiles)
+    if not world.options.shuffle_unlimited_power_bombs.value:
+        excluded_items.add(SuitUpgrade.Unlimited_Power_Bombs)
 
     spoilers = [f"{style('Major Item Locations', font='C29C51F1', main_color='#89D6FF')}\n"]
     if world.options.progressive_beam_upgrades.value:
@@ -230,8 +242,8 @@ def make_version_specific_changes(
     return config_json
 
 
-def get_spring_ball_item(spring_ball: bool) -> str:
-    if spring_ball:
+def get_spring_ball_item(spring_ball: SpringBall) -> str:
+    if spring_ball == SpringBall.option_when_bombs_acquired:
         return "Morph Ball Bomb"
     else:
         return "Spring Ball"
@@ -271,7 +283,7 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
             "resultsString": f"{get_apworld_version()} | {'_'.join(world.multiworld.get_out_file_name_base(world.player).split('_')[:2])}",
             "mainMenuMessage": f"Archipelago Metroid Prime {get_apworld_version()}",
             "startingRoom": f"{world.starting_room_data.area.value}:{world.starting_room_data.name}",
-            "springBallItem": get_spring_ball_item(bool(options.spring_ball.value)),
+            "springBallItem": get_spring_ball_item(options.spring_ball),
             "warpToStart": True,
             "multiworldDolPatches": True,
             "nonvariaHeatDamage": bool(options.non_varia_heat_damage.value),
@@ -285,21 +297,25 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
             "removeHiveMecha": bool(options.remove_hive_mecha.value),
             "startingItems": {
                 "combatVisor": True,
-                "powerSuit": True,
+                "powerSuit": 0,
                 "powerBeam": starting_inventory(world, SuitUpgrade.Power_Beam.value)
                 or starting_inventory(
                     world, ProgressiveUpgrade.Progressive_Power_Beam.value
                 ),
                 "scanVisor": starting_inventory(world, SuitUpgrade.Scan_Visor.value),
-                # These are handled by the client
-                "missiles": (
-                    5
-                    if starting_inventory(world, SuitUpgrade.Missile_Launcher.value)
-                    or starting_inventory(world, SuitUpgrade.Missile_Expansion.value)
-                    else 0
+                "missiles": count_ammo(
+                    [item.name for item in world.multiworld.precollected_items[world.player]],
+                    str(SuitUpgrade.Missile_Launcher),
+                    str(SuitUpgrade.Missile_Expansion),
+                    bool(world.options.missile_launcher),
                 ),
-                "energyTanks": 0,
-                "powerBombs": 0,
+                "energyTanks": starting_etanks(world),
+                "powerBombs": count_ammo(
+                    [item.name for item in world.multiworld.precollected_items[world.player]],
+                    str(SuitUpgrade.Main_Power_Bomb),
+                    str(SuitUpgrade.Power_Bomb_Expansion),
+                    bool(world.options.main_power_bomb),
+                ),
                 "wave": starting_inventory(world, SuitUpgrade.Wave_Beam.value)
                 or starting_inventory(
                     world, ProgressiveUpgrade.Progressive_Wave_Beam.value
@@ -340,6 +356,17 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
                 "flamethrower": starting_inventory(
                     world, SuitUpgrade.Flamethrower.value
                 ),
+                "unlimitedMissiles": starting_inventory(world, SuitUpgrade.Unlimited_Missiles.value),
+                "unlimitedPowerBombs": starting_inventory(world, SuitUpgrade.Unlimited_Power_Bombs.value),
+                "missileLauncher": (
+                    not bool(world.options.missile_launcher) or
+                    starting_inventory(world, SuitUpgrade.Missile_Launcher.value)
+                ),
+                "powerBombLauncher": (
+                    not bool(world.options.main_power_bomb) or
+                    starting_inventory(world, SuitUpgrade.Main_Power_Bomb.value)
+                ),
+                "springBall": starting_inventory(world, SuitUpgrade.Spring_Ball.value),
             },
             "disableItemLoss": True,
             "startingVisor": "Combat",

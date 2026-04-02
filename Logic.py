@@ -3,6 +3,8 @@ import math
 from BaseClasses import CollectionState
 from .data.RoomNames import RoomName
 from .Items import ProgressiveUpgrade, SuitUpgrade, get_progressive_upgrade_for_item
+from .PrimeUtils import count_ammo
+
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
@@ -35,7 +37,9 @@ def can_power_beam(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
     )
 
 
-def can_power_bomb(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
+def can_power_bomb(
+    world: "MetroidPrimeWorld", state: CollectionState, num_expansions: int = 1
+) -> bool:
     if world.options.main_power_bomb:
         return state.has_all(
             [SuitUpgrade.Morph_Ball.value, SuitUpgrade.Main_Power_Bomb.value],
@@ -265,9 +269,14 @@ def can_backwards_lower_mines(
 def has_power_bomb_count(
     world: "MetroidPrimeWorld", state: CollectionState, required_count: int
 ) -> bool:
-    count = state.count(SuitUpgrade.Power_Bomb_Expansion.value, world.player)
-    if state.has(SuitUpgrade.Main_Power_Bomb.value, world.player):
-        count += 4
+    count = count_ammo([
+            *[str(SuitUpgrade.Main_Power_Bomb)] * state.count(SuitUpgrade.Main_Power_Bomb.value, world.player),
+            *[str(SuitUpgrade.Power_Bomb_Expansion)] * state.count(SuitUpgrade.Power_Bomb_Expansion.value, world.player),
+        ],
+        str(SuitUpgrade.Main_Power_Bomb),
+        str(SuitUpgrade.Power_Bomb_Expansion),
+        bool(world.options.main_power_bomb),
+    )
     return count >= required_count
 
 

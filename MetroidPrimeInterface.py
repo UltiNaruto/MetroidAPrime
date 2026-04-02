@@ -7,11 +7,12 @@ from .DolphinClient import GC_GAME_ID_ADDRESS, DolphinClient, DolphinException
 from enum import Enum
 import py_randomprime  # type: ignore
 from .Items import (
-    ItemData,
-    SuitUpgrade,
-    item_table,
     custom_suit_upgrade_table,
+    item_table,
+    ItemData,
+    misc_item_table,
     suit_upgrade_table,
+    SuitUpgrade,
 )
 
 _SUPPORTED_VERSIONS = ["0-00", "0-01", "0-02", "jpn", "kor", "pal"]
@@ -82,6 +83,7 @@ GAMES: Dict[str, Any] = {
         "HUD_TRIGGER_ADDRESS": 0x804344B4,  # When this is 1 the game will display the message and then set it back to 0
     },
 }
+MAX_VANILLA_ITEM_ID = 46
 
 
 def calculate_item_offset(item_id: int) -> int:
@@ -230,6 +232,20 @@ class MetroidPrimeInterface:
             charge_beam = custom_charge_id_to_beam[item_id]
             self.set_progressive_beam_charge_state(charge_beam, True)
             return
+
+        # Custom items
+        if MAX_VANILLA_ITEM_ID - 6 < item_id <= MAX_VANILLA_ITEM_ID - 1:
+            # TODO: find a way to handle temp items like Ice Trap and Floaty Jump Item
+            inventory = self.get_current_inventory()
+            unknown_item_2 = inventory["UnknownItem2"]
+
+            self.dolphin_client.write_pointer(
+                self.__get_player_state_pointer(),
+                calculate_item_offset(unknown_item_2.id) + 4,
+                struct.pack(">I", unknown_item_2.current_capacity | (1 << (item_id - 41))),
+            )
+            return
+
         if ignore_capacity:
             self.dolphin_client.write_pointer(
                 self.__get_player_state_pointer(),
@@ -271,28 +287,39 @@ class MetroidPrimeInterface:
                 if item.id == item_data:
                     return self.get_item(item)
         if isinstance(item_data, ItemData):
-            if item_data.id in custom_charge_id_to_beam:
-                return InventoryItemData(
-                    item_data,
-                    int(
-                        self.get_progressive_beam_charge_state(
-                            custom_charge_id_to_beam[item_data.id]
-                        )
-                    ),
-                    1,
-                )
+            if item_data.id > 40:
+                if item_data.id in custom_charge_id_to_beam:
+                    return InventoryItemData(
+                        item_data,
+                        int(
+                            self.get_progressive_beam_charge_state(
+                                custom_charge_id_to_beam[item_data.id]
+                            )
+                        ),
+                        1,
+                    )
+                else:
+                    return InventoryItemData(
+                        item_data,
+                        0,
+                        struct.unpack(">I", self.dolphin_client.read_pointer(
+                            self.__get_player_state_pointer(),
+                            calculate_item_offset(misc_item_table["UnknownItem2"].id),
+                            4,
+                        ))[0] & (1 << (item_data.id - 41))
+                    )
+
             result = self.dolphin_client.read_pointer(
                 self.__get_player_state_pointer(),
                 calculate_item_offset(item_data.id),
                 8,
             )
             if result is not None:
-                current_ammount, current_capacity = struct.unpack(">II", result)
-                return InventoryItemData(item_data, current_ammount, current_capacity)
+                current_amount, current_capacity = struct.unpack(">II", result)
+                return InventoryItemData(item_data, current_amount, current_capacity)
         return None
 
     def get_current_inventory(self) -> Dict[str, InventoryItemData]:
-        MAX_VANILLA_ITEM_ID = 40
         inventory: Dict[str, InventoryItemData] = {}
         for item in item_table.values():
             i = self.get_item(item)

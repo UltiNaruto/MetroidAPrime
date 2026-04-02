@@ -4,6 +4,9 @@ import platform
 import sys
 
 from importlib.metadata import version, PackageNotFoundError
+from typing import List
+
+from .Items import SuitUpgrade
 
 
 LIBS: dict[str, str] = {
@@ -56,5 +59,35 @@ def get_apworld_version():
         path = os.path.join(os.path.dirname(__file__), "version.txt")
     else:
         path = "version.txt"
-    version = pkgutil.get_data(__name__, path).decode().strip()
-    return version
+    ver = pkgutil.get_data(__name__, path).decode().strip()
+    return ver
+
+def count_ammo(items: List[str], main: str, expansion: str, requires_main: bool) -> int:
+    has_main: bool = main in [item for item in items if item == main]
+    requires_main: bool = False
+    ammo_with_main: int = 0
+    expansion_count: int = sum([1 for item in items if item == expansion])
+    ammo_per_expansion: int = 0
+
+    if main == str(SuitUpgrade.Main_Power_Bomb):
+        ammo_with_main = 4
+        ammo_per_expansion = 1
+    if main == str(SuitUpgrade.Missile_Launcher):
+        ammo_with_main = 5
+        ammo_per_expansion = 5
+
+    result: int = 0
+    if requires_main:
+        if not has_main:
+            return result
+        else:
+            result += ammo_with_main + expansion_count * ammo_per_expansion
+    else:
+        if has_main:
+            result += ammo_with_main
+        elif expansion_count > 0:
+            result += ammo_with_main
+            expansion_count -= 1
+        result += expansion_count * ammo_per_expansion
+
+    return result

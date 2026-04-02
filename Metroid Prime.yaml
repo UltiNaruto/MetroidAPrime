@@ -34,7 +34,7 @@ game: Metroid Prime
 requires:
   version: 0.6.6 # Version of Archipelago required for this yaml to work as expected.
   game:
-    Metroid Prime: 0.5.2 # Version of the world required for this yaml to work as expected.
+    Metroid Prime: 0.5.3 # Version of the world required for this yaml to work as expected.
 
 Metroid Prime:
   ################
@@ -138,9 +138,25 @@ Metroid Prime:
     'true': 0
 
   shuffle_scan_visor:
-    # If enabled, the scan visor will be shuffled into the item pool and will need to be found in order to scan dash and open certain locks.
+    # If enabled, the Scan Visor will be shuffled into the item pool and will need to be found in order to scan dash and open certain locks.
     'false': 50
     'true': 0
+
+  shuffle_unlimited_missiles:
+    # If enabled, Unlimited Missiles will be shuffled into the item pool. This is similar to Unlimited Missiles found in Metroid Prime 2 Echoes Multiplayer.
+    'false': 50
+    'true': 0
+
+  shuffle_unlimited_power_bombs:
+    # If enabled, the Unlimited Power Bombs will be shuffled into the item pool. This is similar to Unlimited Missiles found in Metroid Prime 2 Echoes Multiplayer, but for Power Bombs.
+    'false': 50
+    'true': 0
+
+  spring_ball:
+    # Enables the spring ball when you receive Morph Ball Bombs or Spring Ball. This will allow you to jump while in morph ball form by pressing up on the c stick, reducing the complexity of double bomb jumps.
+    disabled: 50
+    when_bombs_acquired: 0
+    its_own_item: 0
 
   pre_scan_elevators:
     # Pre scans the elevators in the game, allowing for faster transitions between regions. Makes for more interesting gameplay if disabled when the scan visor is shuffled.
@@ -160,11 +176,6 @@ Metroid Prime:
     default: 0
     progressive: 50
     additive: 0
-
-  spring_ball:
-    # Enables the spring ball when you receive Morph Ball Bombs. This will allow you to jump while in morph ball form by pressing up on the c stick, reducing the complexity of double bomb jumps.
-    'false': 0
-    'true': 50
 
   ######################
   # Door Randomization #

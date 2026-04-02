@@ -23,11 +23,7 @@ async def handle_receive_items(
         item_data = inventory_item_by_network_id(network_item.item, current_items)
         if item_data is None:
             continue
-        if item_data.name == SuitUpgrade.Missile_Launcher.value:
-            continue
-        elif item_data.name == SuitUpgrade.Main_Power_Bomb.value:
-            continue
-        elif item_data.name in [key.value for key in PROGRESSIVE_ITEM_MAPPING.keys()]:
+        if item_data.name in [key.value for key in PROGRESSIVE_ITEM_MAPPING.keys()]:
             continue
         elif (
             item_data.name == SuitUpgrade.Gravity_Suit.value
@@ -35,7 +31,7 @@ async def handle_receive_items(
         ):
             continue
 
-            # Handle Single Item Upgrades
+        # Handle Single Item Upgrades
         if (
             item_data.max_capacity == 1
             or item_data.name in ITEMS_USED_FOR_LOCATION_TRACKING
@@ -92,7 +88,7 @@ def disable_item_if_owned(ctx: "MetroidPrimeContext", item_data: InventoryItemDa
 async def handle_cosmetic_suit(
     ctx: "MetroidPrimeContext", current_items: Dict[str, InventoryItemData]
 ):
-    if ctx.cosmetic_suit == None:
+    if ctx.cosmetic_suit is None:
         return
     ctx.game_interface.set_current_suit(ctx.cosmetic_suit)
 
@@ -141,22 +137,20 @@ async def handle_receive_missiles(
                 missile_sender = network_item.player
                 new_capacity += amount_per_expansion
 
-        # If playing with missile launcher and they haven't collected yet, then don't give any missiles
-        if ctx.slot_data["missile_launcher"] and not has_missile_launcher:
-            return
-
         diff = new_capacity - current_capacity
         new_amount = min(current_amount + diff, new_capacity)
 
         ctx.game_interface.give_item_to_player(
             missile_item.id, new_amount, new_capacity
         )
-        if missile_sender != ctx.slot and diff > 0 and missile_sender != None:
+        if missile_sender != ctx.slot and diff > 0 and missile_sender is not None:
             message = (
                 f"Missile capacity increased by {diff}"
                 if diff > 5
                 else f"Missile capacity increased by {diff} ({ctx.player_names[missile_sender]})"
             )
+            if ctx.slot_data["missile_launcher"] and not has_missile_launcher:
+                message += " but Missile Launcher is required to use missiles"
             ctx.notification_manager.queue_notification(message)
 
 
@@ -196,10 +190,6 @@ async def handle_receive_power_bombs(
                 pb_sender = network_item.player
                 new_capacity += amount_per_expansion
 
-        # If playing with main_power_bomb and they haven't collected yet, then don't give any power bombs
-        if ctx.slot_data["main_power_bomb"] and not has_main_pb:
-            return
-
         # First PB expansion is worth 4 power bombs
         if not ctx.slot_data["main_power_bomb"] and new_capacity > 0:
             new_capacity += first_pb_capacity - 1
@@ -208,12 +198,14 @@ async def handle_receive_power_bombs(
         new_amount = min(current_amount + diff, new_capacity)
 
         ctx.game_interface.give_item_to_player(pb_item.id, new_amount, new_capacity)
-        if pb_sender != ctx.slot and diff > 0 and pb_sender != None:
+        if pb_sender != ctx.slot and diff > 0 and pb_sender is not None:
             message = (
                 f"Power Bomb capacity increased by {diff}"
                 if diff > 5
                 else f"Power Bomb capacity increased by {diff} ({ctx.player_names[pb_sender]})"
             )
+            if ctx.slot_data["main_power_bomb"] and not has_main_pb:
+                message += " but Power Bomb (Main) is required to use power bombs"
             ctx.notification_manager.queue_notification(message)
 
 
