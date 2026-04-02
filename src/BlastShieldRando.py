@@ -27,13 +27,13 @@ class BlastShieldType(Enum):
 
 
 DoorShieldFromBlastShieldType: dict[BlastShieldType, str] = {
-    BlastShieldType.Bomb: "Blue",
+    BlastShieldType.Bomb: "Bomb",
     BlastShieldType.Charge_Beam: "Blue",
-    BlastShieldType.Flamethrower: "Plasma",
-    BlastShieldType.Ice_Spreader: "Ice",
-    BlastShieldType.Wavebuster: "Wave",
+    BlastShieldType.Flamethrower: "Plasma Beam",
+    BlastShieldType.Ice_Spreader: "Ice Beam",
+    BlastShieldType.Wavebuster: "Wave Beam",
     BlastShieldType.Power_Bomb: "Blue",
-    BlastShieldType.Super_Missile: "Blue",
+    BlastShieldType.Super_Missile: "Power Beam Only",
     BlastShieldType.Missile: "Blue",
     BlastShieldType.Disabled: "Disabled",
     BlastShieldType.No_Blast_Shield: "Blue",
