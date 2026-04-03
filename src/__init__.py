@@ -383,6 +383,7 @@ class MetroidPrimeWorld(World):
             locations = self.multiworld.find_items_in_locations(set(artifact_table.keys()), self.player)
             slot_data["artifact_locations"] = { location.item.name: (location.address, location.player) for location in locations if location.item }
 
+        slot_data["first_non_starting_item_index"] = len(self.multiworld.precollected_items[self.player])
         return slot_data
 
         # for the universal tracker, doesn't get called in standard gen
