@@ -16,7 +16,7 @@ The following are required in order to play _Metroid Prime_ in Archipelago:
 
 ## APWorld Installation
 
-1. Download the latest version of the [Metroid Prime AP](https://github.com/Electro1512/MetroidAPrime/releases/latest)
+1. Download the latest version of the [Metroid Prime AP](https://github.com/UltiNaruto/MetroidAPrime/releases/latest)
 2. Unzip the downloaded Metroid Prime APWorld zip file and extract its files.
 3. In the Archipelago Launcher, select `Install APWorld`, and then select `metroidprime.apworld` file from the previous step.
 
