@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import cast, List, TYPE_CHECKING
 from BaseClasses import ItemClassification
 
 from .PrimeOptions import BlastShieldAvailableTypes, BlastShieldRandomization, SpringBall
@@ -23,7 +23,7 @@ def generate_base_start_inventory(world: "MetroidPrimeWorld") -> List[str]:
         ).value
     ]
     starting_items.extend(
-        get_item_for_options(world, item).value
+        get_item_for_options(world, cast(SuitUpgrade, item)).value
         for item in world.starting_room_data.selected_loadout.loadout
     )
 

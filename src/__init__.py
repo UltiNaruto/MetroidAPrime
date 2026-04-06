@@ -381,7 +381,7 @@ class MetroidPrimeWorld(World):
             slot_data["starting_beam"] = self.starting_beam
         if self.options.artifact_hints.value == ArtifactHints.option_enable_scanned:
             locations = self.multiworld.find_items_in_locations(set(artifact_table.keys()), self.player)
-            slot_data["artifact_locations"] = { location.item.name: (location.address, location.player) for location in locations if location.item }
+            slot_data["artifact_locations"] = { location.item.name: (location.address, location.player) for location in locations if location.item is not None }
 
         slot_data["first_non_starting_item_index"] = len(self.multiworld.precollected_items[self.player])
         return slot_data

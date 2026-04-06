@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class MetroidPrimeArea(Enum):
+class MetroidPrimeArea(StrEnum):
     Tallon_Overworld = "Tallon Overworld"
     Chozo_Ruins = "Chozo Ruins"
     Magmoor_Caverns = "Magmoor Caverns"

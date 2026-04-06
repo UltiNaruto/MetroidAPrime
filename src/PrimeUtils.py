@@ -55,10 +55,12 @@ def get_apworld_version():
     # Get version from ./version.txt
     # detect if on windows since pathing is handled differently from linux
     if platform.system() == "Windows":
-        path = os.path.join(os.path.dirname(__file__), "version.txt")
+        path = os.path.join(str(os.path.dirname(__file__)), "version.txt")
     else:
         path = "version.txt"
-    ver = pkgutil.get_data(__name__, path).decode().strip()
+    ver = pkgutil.get_data(__name__, path)
+    assert ver is not None
+    ver = ver.decode().strip()
     return ver
 
 def count_ammo(items: List[str], main: str, expansion: str, requires_main: bool) -> int:

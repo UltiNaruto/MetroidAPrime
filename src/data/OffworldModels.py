@@ -85,7 +85,7 @@ _OFFWORLD_MODELS: dict[str, dict[str, str]] = {
 }
 
 
-def get_offworld_model(item: Item, match_series: bool) -> Item:
+def get_offworld_model(item: Item, match_series: bool) -> str:
     if match_series:
         offworld_model = (
             _OFFWORLD_MODELS.get(item.game, {})

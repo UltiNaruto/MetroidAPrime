@@ -48,7 +48,8 @@ class DolphinClient:
             self.disconnect()
             raise DolphinException(e)
 
-    def verify_target_address(self, target_address: int, read_size: int):
+    @staticmethod
+    def verify_target_address(target_address: int, read_size: int):
         """Ensures that the target address is within the valid range for GC memory"""
         if target_address < 0x80000000 or target_address + read_size > 0x81800000:
             raise DolphinException(
@@ -71,7 +72,7 @@ class DolphinClient:
 
     def read_address(self, address: int, bytes_to_read: int) -> Any:
         self.__assert_connected()
-        self.verify_target_address(address, bytes_to_read)
+        DolphinClient.verify_target_address(address, bytes_to_read)
         result = self.dolphin.read_bytes(address, bytes_to_read)
         return result
 

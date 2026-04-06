@@ -1,6 +1,6 @@
 import copy
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional, TYPE_CHECKING
+from typing import Callable, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 from ..Enum import StartRoomDifficulty
 
@@ -8,7 +8,7 @@ from ..PrimeOptions import BlastShieldRandomization, DoorColorRandomization
 
 from ..DoorRando import BEAM_TO_LOCK_MAPPING
 
-from ..Items import SuitUpgrade, get_item_for_options
+from ..Items import get_item_for_options, ProgressiveUpgrade, SuitUpgrade
 from ..data.AreaNames import MetroidPrimeArea
 from ..data.RoomNames import RoomName
 
@@ -25,7 +25,7 @@ BEAM_ITEMS = [
 
 @dataclass
 class StartRoomLoadout:
-    loadout: List[SuitUpgrade] = field(default_factory=list)
+    loadout: List[Union[ProgressiveUpgrade, SuitUpgrade]] = field(default_factory=list)
     item_rules: List[Dict[str, List[SuitUpgrade]]] = field(default_factory=list)
     starting_beam: SuitUpgrade = SuitUpgrade.Power_Beam
     """List of locations that can have a list of possible required items for that location"""
@@ -468,9 +468,9 @@ def init_starting_loadout(world: "MetroidPrimeWorld"):
         world.starting_room_data.selected_loadout.loadout = []
 
     # Update the loadout with the correct items based on options (progressive upgrades, missile launcher, etc.)
-    updated_loadout: List[SuitUpgrade] = []
+    updated_loadout: List[Union[ProgressiveUpgrade, SuitUpgrade]] = []
     for item in world.starting_room_data.selected_loadout.loadout:
-        updated_loadout.append(get_item_for_options(world, item))
+        updated_loadout.append(get_item_for_options(world, cast(SuitUpgrade, item)))
     world.starting_room_data.selected_loadout.loadout = updated_loadout
 
     # If we are preventing bk then set a few items for prefill if available

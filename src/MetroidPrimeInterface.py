@@ -8,9 +8,11 @@ from enum import Enum
 import py_randomprime  # type: ignore
 from .Items import (
     custom_suit_upgrade_table,
+    get_artifact_layer_from_item_index,
     item_table,
     ItemData,
     misc_item_table,
+    progressive_beam_to_beam,
     suit_upgrade_table,
     SuitUpgrade,
 )
@@ -418,7 +420,7 @@ class MetroidPrimeInterface:
     def get_scans(self) -> Dict[int, bool]:
         """Gets the state of each scan by its asset ID"""
         vector_bytes = self.dolphin_client.read_pointer(
-            self.__get_player_state_pointer(), 0x170 + self.__get_vector_item_offset(), struct.calcsize(">iiI")
+            self.__get_player_state_pointer(), 0x170 + MetroidPrimeInterface.__get_vector_item_offset(), struct.calcsize(">iiI")
         )
         length, _capacity, item_pointer = struct.unpack(">iiI", vector_bytes)
         item_bytes = self.dolphin_client.read_address(
@@ -562,22 +564,9 @@ class MetroidPrimeInterface:
             GAMES[self.current_game]["HUD_MESSAGE_ADDRESS"], encoded_message
         )
 
-    def __progressive_beam_to_beam(
-        self, charge_beam: SuitUpgrade
-    ) -> Optional[SuitUpgrade]:
-        if charge_beam == SuitUpgrade.Power_Charge_Beam:
-            return SuitUpgrade.Power_Beam
-        if charge_beam == SuitUpgrade.Wave_Charge_Beam:
-            return SuitUpgrade.Wave_Beam
-        if charge_beam == SuitUpgrade.Ice_Charge_Beam:
-            return SuitUpgrade.Ice_Beam
-        if charge_beam == SuitUpgrade.Plasma_Charge_Beam:
-            return SuitUpgrade.Plasma_Beam
-        return None
-
     def set_progressive_beam_charge_state(self, charge_beam: SuitUpgrade, _state: bool):
         cplayer_state = self.__get_player_state_pointer()
-        beam_upgrade = self.__progressive_beam_to_beam(charge_beam)
+        beam_upgrade = progressive_beam_to_beam(charge_beam)
 
         if beam_upgrade is not None:
             self.dolphin_client.write_pointer(
@@ -588,7 +577,7 @@ class MetroidPrimeInterface:
 
     def get_progressive_beam_charge_state(self, charge_beam: SuitUpgrade) -> bool:
         cplayer_state = self.__get_player_state_pointer()
-        beam_upgrade = self.__progressive_beam_to_beam(charge_beam)
+        beam_upgrade = progressive_beam_to_beam(charge_beam)
 
         if beam_upgrade is not None:
             _, cap = struct.unpack(
@@ -637,7 +626,8 @@ class MetroidPrimeInterface:
             "big",
         )
 
-    def __get_vector_item_offset(self):
+    @staticmethod
+    def __get_vector_item_offset():
         # Calculate the address of the Area at index area_idx
         vector_offset = 4
         vector_item_ptr = 0x0 + vector_offset
@@ -646,7 +636,7 @@ class MetroidPrimeInterface:
     def __get_area_address(self, area_index: int):
         """Gets the address of an area from the world layer state areas vector"""
         vector_bytes = self.dolphin_client.read_pointer(
-            self.__get_world_layer_state_pointer(), self.__get_vector_item_offset(), 12
+            self.__get_world_layer_state_pointer(), MetroidPrimeInterface.__get_vector_item_offset(), 12
         )  # 0x4 is count, 0x8 is max, 0xC is start address of the items in the vector
         # Unpack the bytes into the fields of the Area
         _count, _max, start_address = struct.unpack(">iiI", vector_bytes)
@@ -681,12 +671,6 @@ class MetroidPrimeInterface:
             self.__get_area_address(area_index), new_bytes
         )
 
-    def get_artifact_layer(self, item_id: int):
-        # Artifact of truth is handled differently since it is the first thing you interact with in the room
-        if item_id <= 28 or item_id > 40:
-            raise Exception(f'Item {item_id} is not an artifact. So we cannot get its layer.')
-        return item_id - 28 if item_id > 29 else 23
-
     def get_layer_active(self, area_index: int, layer_id: int):
         area = self.__get_area(area_index)
         return area.layerBitsLo & (1 << layer_id) != 0
@@ -698,7 +682,7 @@ class MetroidPrimeInterface:
             # for each item in the inventory, check if it is an artifact and update the layer
             for item in current_inventory.values():
                 if 29 <= item.id <= 40:
-                    layer_id = self.get_artifact_layer(item.id)
+                    layer_id = get_artifact_layer_from_item_index(item.id)
                     active = self.get_layer_active(ARTIFACT_TEMPLE_ROOM_INDEX, layer_id)
                     if active != (item.current_amount > 0):
                         self.set_layer_active(

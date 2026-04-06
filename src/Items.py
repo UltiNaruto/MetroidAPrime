@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from typing import Dict, List, TYPE_CHECKING, Optional, Union
 from BaseClasses import Item, ItemClassification
 
@@ -29,7 +29,7 @@ class MetroidPrimeItem(Item):
     game: str = "Metroid Prime"
 
 
-class SuitUpgrade(Enum):
+class SuitUpgrade(StrEnum):
     Power_Beam = "Power Beam"
     Ice_Beam = "Ice Beam"
     Wave_Beam = "Wave Beam"
@@ -73,7 +73,7 @@ class SuitUpgrade(Enum):
         return self.value
 
 
-class ProgressiveUpgrade(Enum):
+class ProgressiveUpgrade(StrEnum):
     Progressive_Power_Beam = "Progressive Power Beam"
     Progressive_Ice_Beam = "Progressive Ice Beam"
     Progressive_Wave_Beam = "Progressive Wave Beam"
@@ -369,3 +369,24 @@ item_table: Dict[str, ItemData] = {
     **custom_suit_upgrade_table,
     **misc_item_table,
 }
+
+
+def progressive_beam_to_beam(
+    charge_beam: SuitUpgrade
+) -> Optional[SuitUpgrade]:
+    if charge_beam == SuitUpgrade.Power_Charge_Beam:
+        return SuitUpgrade.Power_Beam
+    if charge_beam == SuitUpgrade.Wave_Charge_Beam:
+        return SuitUpgrade.Wave_Beam
+    if charge_beam == SuitUpgrade.Ice_Charge_Beam:
+        return SuitUpgrade.Ice_Beam
+    if charge_beam == SuitUpgrade.Plasma_Charge_Beam:
+        return SuitUpgrade.Plasma_Beam
+    return None
+
+
+def get_artifact_layer_from_item_index(item_id: int):
+    # Artifact of truth is handled differently since it is the first thing you interact with in the room
+    if item_id <= 28 or item_id > 40:
+        raise Exception(f'Item {item_id} is not an artifact. So we cannot get its layer.')
+    return item_id - 28 if item_id > 29 else 23

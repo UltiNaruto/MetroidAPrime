@@ -6,7 +6,7 @@ from ..PrimeOptions import BlastShieldRandomization, DoorColorRandomization
 from ..Config import make_config
 from . import MetroidPrimeTestBase
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "test_output")
+OUTPUT_DIR = os.path.join(str(os.path.dirname(__file__)), "test_output")
 
 
 def dict_diff(d1: Any, d2: Any, path: str = ""):
@@ -33,7 +33,7 @@ class TestDefaultOutputGeneration(MetroidPrimeTestBase):
         distribute_items_restrictive(self.multiworld)
         output = make_config(self.world)
         expected_output = {}
-        path = os.path.join(os.path.dirname(__file__), "data", "default_config.json")
+        path = os.path.join(str(os.path.dirname(__file__)), "data", "default_config.json")
         with open(path, "r") as f:
             expected_output = json.load(f)
 
@@ -51,7 +51,7 @@ class TestMainPBAndMissileLauncherOutputGeneration(MetroidPrimeTestBase):
         output = make_config(self.world)
         expected_output = {}
         path = os.path.join(
-            os.path.dirname(__file__), "data", "missile_launcher_main_pb_config.json"
+            str(os.path.dirname(__file__)), "data", "missile_launcher_main_pb_config.json"
         )
         with open(path, "r") as f:
             expected_output = json.load(f)
@@ -73,7 +73,7 @@ class TestAllRandomizedOutput(MetroidPrimeTestBase):
         distribute_items_restrictive(self.multiworld)
         output = make_config(self.world)
         expected_output = {}
-        path = os.path.join(os.path.dirname(__file__), "data", "all_randomized.json")
+        path = os.path.join(str(os.path.dirname(__file__)), "data", "all_randomized.json")
         with open(path, "r") as f:
             expected_output = json.load(f)
 
