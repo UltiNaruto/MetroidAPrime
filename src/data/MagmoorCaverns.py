@@ -5,6 +5,7 @@ from .AreaNames import MetroidPrimeArea
 from .RoomData import AreaData, PickupData, RoomData
 from .DoorData import DoorData
 from ..Logic import (
+    can_ball_jump,
     can_bomb,
     can_boost,
     can_grapple,
@@ -48,7 +49,7 @@ class MagmoorCavernsAreaData(AreaData):
                         RoomName.Shore_Tunnel,
                         rule_func=lambda world, state: can_heat(world, state)
                         and (
-                            can_bomb(world, state)
+                            (can_bomb(world, state) or can_ball_jump(world, state))
                             or can_grapple(world, state)
                             or has_energy_tanks(world, state, 4)
                         ),
@@ -57,7 +58,10 @@ class MagmoorCavernsAreaData(AreaData):
                         RoomName.Transport_Tunnel_B,
                         destination_area=MetroidPrimeArea.Magmoor_Caverns,
                         rule_func=lambda world, state: can_heat(world, state)
-                        and (can_bomb(world, state) or can_grapple(world, state)),
+                        and (
+                            (can_bomb(world, state) or can_ball_jump(world, state)) or
+                            can_grapple(world, state)
+                        ),
                     ),
                     # 2: DoorData(RoomName.Warrior_Shrine, rule_func=lambda world, state: False), Can't access, one way trip
                 },
@@ -65,12 +69,12 @@ class MagmoorCavernsAreaData(AreaData):
                     PickupData(
                         "Magmoor Caverns: Fiery Shores - Morph Track",
                         tricks=[Tricks.fiery_shores_morphball_track_sj],
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
                     ),
                     PickupData(
                         "Magmoor Caverns: Fiery Shores - Warrior Shrine Tunnel",
                         rule_func=lambda world, state: can_power_bomb(world, state)
-                        and can_bomb(world, state)
+                        and (can_bomb(world, state) or can_ball_jump(world, state))
                         and (
                             can_warp_to_start(world, state)
                             if world.starting_room_name == RoomName.Warrior_Shrine.value
@@ -120,14 +124,14 @@ class MagmoorCavernsAreaData(AreaData):
                         RoomName.Lake_Tunnel,
                         destination_area=MetroidPrimeArea.Magmoor_Caverns,
                         rule_func=lambda world, state: can_heat(world, state)
-                        and (can_bomb(world, state) or can_power_bomb(world, state)),
+                        and (can_bomb(world, state) or can_power_bomb(world, state, 2)),
                         tricks=[Tricks.lava_lake_item_suitless],
                         indirect_condition_rooms=[RoomName.Burning_Trail],
                     ),
                     1: DoorData(
                         RoomName.Pit_Tunnel,
                         rule_func=lambda world, state: can_heat(world, state)
-                        and (can_bomb(world, state) or can_power_bomb(world, state)),
+                        and (can_bomb(world, state) or can_power_bomb(world, state, 2)),
                         tricks=[Tricks.lava_lake_item_suitless],
                         indirect_condition_rooms=[RoomName.Burning_Trail],
                     ),
@@ -342,12 +346,12 @@ class MagmoorCavernsAreaData(AreaData):
                     0: DoorData(
                         RoomName.Transport_to_Phendrana_Drifts_North,
                         rule_func=lambda world, state: can_heat(world, state)
-                        and can_bomb(world, state),
+                        and (can_bomb(world, state) or can_ball_jump(world, state)),
                     ),
                     1: DoorData(
                         RoomName.Monitor_Station,
                         rule_func=lambda world, state: can_heat(world, state)
-                        and can_bomb(world, state),
+                        and (can_bomb(world, state) or can_ball_jump(world, state)),
                     ),
                 },
                 pickups=[
@@ -475,7 +479,7 @@ class MagmoorCavernsAreaData(AreaData):
                         defaultLock=DoorLockType.None_,
                         rule_func=lambda world, state: can_heat(world, state)
                         and can_power_bomb(world, state)
-                        and can_bomb(world, state),
+                        and (can_bomb(world, state) or can_ball_jump(world, state)),
                         exclude_from_rando=True,
                     ),
                 },

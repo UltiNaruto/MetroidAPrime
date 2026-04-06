@@ -2,6 +2,7 @@ from BaseClasses import CollectionState
 from ..BlastShieldRando import BlastShieldType
 from ..DoorRando import DoorLockType
 from ..Logic import (
+    can_ball_jump,
     can_bomb,
     can_boost,
     can_charge_beam,
@@ -44,7 +45,7 @@ def can_crashed_frigate_front(
 def can_crashed_frigate(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
     return (
         can_crashed_frigate_front(world, state)
-        and can_bomb(world, state)
+        and (can_bomb(world, state) or can_ball_jump(world, state))
         and can_space_jump(world, state)
         and can_move_underwater(world, state)
     )
@@ -56,7 +57,7 @@ def can_crashed_frigate_backwards(
     return (
         can_space_jump(world, state)
         and can_move_underwater(world, state)
-        and can_bomb(world, state)
+        and (can_bomb(world, state) or can_ball_jump(world, state))
     )
 
 
@@ -269,7 +270,7 @@ class TallonOverworldAreaData(AreaData):
                     ),  # Boost is needed to open way in great tree hall
                     1: DoorData(
                         RoomName.Biohazard_Containment,
-                        rule_func=lambda world, state: can_bomb(world, state)
+                        rule_func=lambda world, state: (can_bomb(world, state) or can_ball_jump(world, state))
                         and can_move_underwater(world, state)
                         and can_space_jump(world, state),
                         tricks=[Tricks.hydro_access_tunnel_no_gravity],
@@ -313,7 +314,7 @@ class TallonOverworldAreaData(AreaData):
                         defaultLock=DoorLockType.Ice,
                         rule_func=lambda world, state: can_power_bomb(world, state)
                         and can_boost(world, state)
-                        and can_bomb(world, state),
+                        and (can_bomb(world, state) or can_ball_jump(world, state)),
                     ),
                     1: DoorData(
                         RoomName.Life_Grove,
@@ -322,15 +323,15 @@ class TallonOverworldAreaData(AreaData):
                         and can_combat_ghosts(world, state)
                         and can_power_bomb(world, state)
                         and can_boost(world, state)
-                        and can_bomb(world, state),
+                        and (can_bomb(world, state) or can_ball_jump(world, state)),
                         exclude_from_rando=True,
                     ),
                 },
                 pickups=[
                     PickupData(
                         "Tallon Overworld: Life Grove Tunnel",
-                        rule_func=lambda world, state: can_power_bomb(world, state)
-                        and can_bomb(world, state)
+                        rule_func=lambda world, state: can_power_bomb(world, state, 2)
+                        and (can_bomb(world, state) or can_ball_jump(world, state))
                         and can_boost(world, state),
                     ),
                 ],
@@ -340,10 +341,10 @@ class TallonOverworldAreaData(AreaData):
                     0: DoorData(
                         RoomName.Life_Grove_Tunnel,
                         defaultLock=DoorLockType.None_,
-                        rule_func=lambda world, state: can_power_bomb(world, state)
+                        rule_func=lambda world, state: can_power_bomb(world, state, 2)
                         and can_space_jump(world, state)
                         and can_morph_ball(world, state)
-                        and can_power_beam(world, state),
+                        and can_combat_ghosts(world, state),
                         tricks=[],
                         exclude_from_rando=True,
                     )
@@ -437,7 +438,7 @@ class TallonOverworldAreaData(AreaData):
                         RoomName.Gully,
                         defaultLock=DoorLockType.Blue,
                         rule_func=lambda world, state: can_boost(world, state)
-                        and can_bomb(world, state),
+                        and (can_bomb(world, state) or can_power_bomb(world, state, 3)),
                     ),
                     3: DoorData(RoomName.Root_Tunnel),
                 }

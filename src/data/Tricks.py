@@ -5,6 +5,7 @@ from typing import Callable, TYPE_CHECKING
 from BaseClasses import CollectionState
 from ..LogicCombat import can_combat_beam_pirates, can_combat_ghosts
 from ..Logic import (
+    can_ball_jump,
     can_bomb,
     can_boost,
     can_charge_beam,
@@ -18,7 +19,6 @@ from ..Logic import (
     can_morph_ball,
     can_move_underwater,
     can_plasma_beam,
-    can_power_beam,
     can_power_bomb,
     can_scan,
     can_space_jump,
@@ -293,7 +293,6 @@ class Tricks:
         "Use infinite speed to get the item in the magma pool. Stay in morph ball and navigate to a save station or elevator afterward",
         TrickDifficulty.Medium,
         rule_func=lambda world, state: can_infinite_speed(world, state)
-        and can_bomb(world, state)
         and has_energy_tanks(world, state, 8),
     )
 
@@ -336,11 +335,11 @@ class Tricks:
         TrickDifficulty.Medium,
         lambda world, state: can_bomb(world, state) and can_spider(world, state),
     )
-    furnace_spider_track_sj_bombs = TrickInfo(
-        "Furnace Spider Track SJ Bombs",
-        "You can climb the Furnace and its spider tracks using Space Jump, reach the top of the room, then bomb jump across to the item.",
+    furnace_spider_track_sj_bombs_spring_ball = TrickInfo(
+        "Furnace Spider Track SJ Bombs/Spring Ball",
+        "You can climb the Furnace and its spider tracks using Space Jump, reach the top of the room, then bomb jump or spring jump across to the item.",
         TrickDifficulty.Medium,
-        lambda world, state: can_bomb(world, state) and can_space_jump(world, state),
+        lambda world, state: (can_bomb(world, state) or can_ball_jump(world, state)) and can_space_jump(world, state),
     )
 
     crossway_item_fewer_reqs = TrickInfo(
@@ -363,7 +362,6 @@ class Tricks:
         TrickDifficulty.Easy,
         lambda world, state: can_space_jump(world, state)
         and can_bomb(world, state)
-        and can_power_beam(world, state)
         and can_combat_ghosts(world, state),
     )
     hall_of_elders_reflecting_pool_no_spider = TrickInfo(
@@ -373,7 +371,6 @@ class Tricks:
         lambda world, state: can_space_jump(world, state)
         and can_wave_beam(world, state)
         and can_bomb(world, state)
-        and can_power_beam(world, state)
         and can_combat_ghosts(world, state),
     )
     hall_of_elders_reflecting_pool_no_wave_beam = TrickInfo(
@@ -382,7 +379,6 @@ class Tricks:
         TrickDifficulty.Medium,
         lambda world, state: can_space_jump(world, state)
         and can_bomb(world, state)
-        and can_power_beam(world, state)
         and can_combat_ghosts(world, state),
     )
 
@@ -393,7 +389,6 @@ class Tricks:
         lambda world, state: can_bomb(world, state)
         and can_plasma_beam(world, state)
         and can_space_jump(world, state)
-        and can_power_beam(world, state)
         and can_combat_ghosts(world, state),
     )
     hall_of_elders_item_no_spider = TrickInfo(
@@ -403,7 +398,6 @@ class Tricks:
         lambda world, state: can_bomb(world, state)
         and can_ice_beam(world, state)
         and can_space_jump(world, state)
-        and can_power_beam(world, state)
         and can_combat_ghosts(world, state),
     )
 
@@ -415,9 +409,9 @@ class Tricks:
     )
     reflecting_pool_nsj_climb: TrickInfo = TrickInfo(
         "Reflecting Pool No Space Jump Climb",
-        "Perform an HBJ, UBJ, or BSJ off a stone toad",
+        "Perform an HBJ, UBJ, or BSJ/SSJ off a stone toad",
         TrickDifficulty.Hard,
-        can_bomb,
+        lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
     )
 
     # Magmoor
@@ -511,9 +505,9 @@ class Tricks:
 
     twin_fires_tunnel_no_spider = TrickInfo(
         "Twin Fires Tunnel No Spider Ball",
-        "Traverse the Twin Fires Tunnel by using an R Jump and geometrey near the transport door",
+        "Traverse the Twin Fires Tunnel by using an R Jump and geometry near the transport door",
         TrickDifficulty.Medium,
-        lambda world, state: can_bomb(world, state) and can_space_jump(world, state),
+        can_space_jump,
     )
     cross_twin_fires_suitless = TrickInfo(
         "Cross Twin Fires Suitless",
@@ -600,11 +594,18 @@ class Tricks:
         and can_morph_ball(world, state),
     )
 
+    research_lab_aether_item_dbj = TrickInfo(
+        "Research Lab Aether Upper Item with DBJ",
+        "Reach the morph track with a Double Bomb Jump",
+        TrickDifficulty.Easy,
+        lambda world, state: can_bomb(world, state),
+    )
+
     control_tower_item_no_plasma = TrickInfo(
         "Control Tower Item No Plasma",
-        "Reach the Control Tower item without Plasma Beam by jumping off of crates in the middle and missiling the tower base",
+        "Reach the Control Tower item without Plasma Beam by jumping off of crates in the middle and shooting the tower base with a missile",
         TrickDifficulty.Easy,
-        lambda world, state: can_bomb(world, state)
+        lambda world, state: (can_bomb(world, state) or can_ball_jump(world, state))
         and can_missile(world, state)
         and can_space_jump(world, state),
     )
@@ -690,7 +691,7 @@ class Tricks:
         "You can slope jump onto the top of the crane and R jump over to the item.",
         TrickDifficulty.Medium,
         lambda world, state: can_morph_ball(world, state)
-        and can_bomb(world, state)
+        and (can_bomb(world, state) or can_ball_jump(world, state))
         and can_thermal(world, state)
         and can_wave_beam(world, state)
         and can_scan(world, state)

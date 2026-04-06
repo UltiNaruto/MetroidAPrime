@@ -7,6 +7,7 @@ from ..data.AreaNames import MetroidPrimeArea
 from .RoomData import AreaData, PickupData, RoomData
 from .DoorData import DoorData
 from ..Logic import (
+    can_ball_jump,
     can_bomb,
     can_boost,
     can_grapple,
@@ -53,7 +54,7 @@ def can_climb_sun_tower(world: "MetroidPrimeWorld", state: CollectionState) -> b
     return (
         can_spider(world, state)
         and can_super_missile(world, state)
-        and can_bomb(world, state)
+        and (can_bomb(world, state) or can_ball_jump(world, state))
     )
 
 
@@ -151,7 +152,7 @@ class ChozoRuinsAreaData(AreaData):
                     0: DoorData(RoomName.Burn_Dome, rule_func=can_bomb),
                     1: DoorData(
                         RoomName.Energy_Core,
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
                         defaultLock=DoorLockType.None_,
                         exclude_from_rando=True,
                     ),
@@ -162,7 +163,7 @@ class ChozoRuinsAreaData(AreaData):
                     0: DoorData(RoomName.Burn_Dome_Access),
                 },
                 pickups=[
-                    PickupData("Chozo Ruins: Burn Dome - Missile", rule_func=can_bomb),
+                    PickupData("Chozo Ruins: Burn Dome - Missile", rule_func=lambda world, state: can_bomb(world, state) or can_power_bomb(world, state, 1)),
                     PickupData("Chozo Ruins: Burn Dome - Incinerator Drone"),
                 ],
             ),
@@ -226,7 +227,7 @@ class ChozoRuinsAreaData(AreaData):
                     0: DoorData(
                         RoomName.Watery_Hall,
                         blast_shield=BlastShieldType.Missile,
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_power_bomb(world, state, 1),
                     ),
                     1: DoorData(
                         RoomName.Dynamo, destination_area=MetroidPrimeArea.Chozo_Ruins
@@ -290,7 +291,7 @@ class ChozoRuinsAreaData(AreaData):
                     0: DoorData(
                         RoomName.Burn_Dome_Access,
                         defaultLock=DoorLockType.None_,
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
                         exclude_from_rando=True,
                     ),  # Bombs are required to get out of here
                     1: DoorData(RoomName.West_Furnace_Access, rule_func=can_bomb),
@@ -310,7 +311,7 @@ class ChozoRuinsAreaData(AreaData):
                         defaultLock=DoorLockType.Ice,
                         rule_func=can_space_jump,
                     ),
-                    1: DoorData(RoomName.West_Furnace_Access, rule_func=can_bomb),
+                    1: DoorData(RoomName.West_Furnace_Access, rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state)),
                     2: DoorData(
                         RoomName.Crossway_Access_West,
                         exclude_from_rando=True,
@@ -323,10 +324,11 @@ class ChozoRuinsAreaData(AreaData):
                         "Chozo Ruins: Furnace - Spider Tracks",
                         rule_func=lambda world, state: can_power_bomb(world, state)
                         and can_boost(world, state)
-                        and can_spider(world, state),
+                        and can_spider(world, state)
+                        and (can_bomb(world, state) or can_ball_jump(world, state)), # Required to jump up the last spider track
                         tricks=[
                             Tricks.furnace_spider_track_hbj,
-                            Tricks.furnace_spider_track_sj_bombs,
+                            Tricks.furnace_spider_track_sj_bombs_spring_ball,
                         ],
                     ),
                     PickupData(
@@ -415,7 +417,6 @@ class ChozoRuinsAreaData(AreaData):
                     PickupData(
                         "Chozo Ruins: Hall of the Elders",
                         rule_func=lambda world, state: can_combat_ghosts(world, state)
-                        and can_power_beam(world, state)
                         and can_bomb(world, state)
                         and can_spider(world, state)
                         and can_ice_beam(world, state)
@@ -642,7 +643,7 @@ class ChozoRuinsAreaData(AreaData):
                         rule_func=can_missile,
                     ),
                     PickupData(
-                        "Chozo Ruins: Ruined Gallery - Tunnel", rule_func=can_bomb
+                        "Chozo Ruins: Ruined Gallery - Tunnel", rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state)
                     ),
                 ],
             ),
@@ -655,7 +656,10 @@ class ChozoRuinsAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Chozo Ruins: Ruined Nursery",
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or (
+                            can_power_bomb(world, state, 3) and
+                            can_ball_jump(world, state)
+                        ),
                         tricks=[Tricks.ruined_nursery_no_bombs],
                     ),
                 ],
@@ -727,10 +731,10 @@ class ChozoRuinsAreaData(AreaData):
                     0: DoorData(
                         RoomName.Reflecting_Pool,
                         blast_shield=BlastShieldType.Missile,
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
                     ),
                     1: DoorData(
-                        RoomName.Transport_to_Tallon_Overworld_East, rule_func=can_bomb
+                        RoomName.Transport_to_Tallon_Overworld_East, rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state)
                     ),
                 }
             ),
@@ -863,8 +867,7 @@ class ChozoRuinsAreaData(AreaData):
                         RoomName.Piston_Tunnel,
                         rule_func=lambda world, state: can_boost(world, state)
                         and can_bomb(world, state)
-                        and can_combat_ghosts(world, state)
-                        and can_power_beam(world, state),
+                        and can_combat_ghosts(world, state),
                     ),
                 },
                 pickups=[
@@ -873,7 +876,6 @@ class ChozoRuinsAreaData(AreaData):
                         rule_func=lambda world, state: can_boost(world, state)
                         and can_spider(world, state)
                         and can_bomb(world, state)
-                        and can_power_beam(world, state)
                         and can_combat_ghosts(world, state),
                     )
                 ],
@@ -883,7 +885,7 @@ class ChozoRuinsAreaData(AreaData):
                     0: DoorData(
                         RoomName.Hive_Totem,
                         blast_shield=BlastShieldType.Missile,
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
                     ),
                     1: DoorData(
                         RoomName.Transport_to_Magmoor_Caverns_North,
@@ -893,7 +895,7 @@ class ChozoRuinsAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Chozo Ruins: Transport Access North",
-                        lambda world, state: can_bomb(world, state)
+                        lambda world, state: can_bomb(world, state) or can_ball_jump(world, state)
                         or (
                             state.can_reach(
                                 RoomName.Hive_Totem.value, None, world.player
@@ -1000,7 +1002,7 @@ class ChozoRuinsAreaData(AreaData):
                     1: DoorData(
                         RoomName.Furnace,
                         rule_func=lambda world, state: can_spider(world, state)
-                        and can_bomb(world, state),
+                        and (can_bomb(world, state) or can_ball_jump(world, state)),
                         tricks=[Tricks.furnace_no_spider_ball],
                         exclude_from_rando=True,
                     ),
@@ -1008,7 +1010,7 @@ class ChozoRuinsAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Chozo Ruins: Furnace - Inside Furnace",
-                        rule_func=can_bomb,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
                         exclude_from_config=True,
                     )
                 ],
