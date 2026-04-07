@@ -191,12 +191,12 @@ class PhendranaDriftsAreaData(AreaData):
                     0: DoorData(
                         RoomName.Frozen_Pike,
                         defaultLock=DoorLockType.Wave,
-                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
+                        rule_func=can_morph_ball,
                     ),
                     1: DoorData(
                         RoomName.Frost_Cave,
                         defaultLock=DoorLockType.Wave,
-                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
+                        rule_func=can_morph_ball,
                     ),
                 }
             ),
