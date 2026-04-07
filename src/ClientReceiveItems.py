@@ -257,6 +257,7 @@ async def handle_receive_progressive_items(
     ctx: "MetroidPrimeContext", current_items: Dict[str, InventoryItemData]
 ):
     counts = {upgrade.value: 0 for upgrade in PROGRESSIVE_ITEM_MAPPING}
+    curr = {upgrade.value: 0 for upgrade in PROGRESSIVE_ITEM_MAPPING}
     network_items: Dict[str, List[NetworkItem]] = {
         upgrade.value: [] for upgrade in PROGRESSIVE_ITEM_MAPPING
     }
@@ -268,9 +269,19 @@ async def handle_receive_progressive_items(
             counts[item_data.name] += 1
             network_items[item_data.name].append(network_item)
 
-    for progressive_upgrade, count in counts.items():
+    for item in PROGRESSIVE_ITEM_MAPPING:
+        if item.value in curr:
+            if item.value.endswith(" Beam"):
+                curr[item.value] += current_items[item.value[12:]].current_capacity
+                curr[item.value] += current_items[PROGRESSIVE_ITEM_MAPPING[item][2].value].current_capacity
+            if item.value.endswith(" Bomb"):
+                curr[item.value] += current_items[SuitUpgrade.Morph_Ball_Bomb.value].current_capacity
+                curr[item.value] += (current_items["UnknownItem2"].current_capacity >> 1) & 1
+
+    for progressive_upgrade in counts:
+        count = counts[progressive_upgrade] - curr[progressive_upgrade]
         if count > 0:
-            for i in range(count):
+            for i in range(curr[progressive_upgrade], count):
                 mapping = PROGRESSIVE_ITEM_MAPPING[
                     ProgressiveUpgrade(progressive_upgrade)
                 ]
