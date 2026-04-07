@@ -78,6 +78,8 @@ def get_config_item_model(world: "MetroidPrimeWorld", location: str) -> str:
             return "Ice Beam"
         if name == ProgressiveUpgrade.Progressive_Plasma_Beam.value:
             return "Plasma Beam"
+        if name == ProgressiveUpgrade.Progressive_Bomb.value:
+            return "Morph Ball Bomb"
         if name == SuitUpgrade.Spring_Ball.value:
             return "Cog"
         return name

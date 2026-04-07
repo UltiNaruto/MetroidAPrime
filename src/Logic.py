@@ -25,20 +25,22 @@ def can_boost(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
 
 
 def can_bomb(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
-    return state.has_all(
-        [SuitUpgrade.Morph_Ball.value, SuitUpgrade.Morph_Ball_Bomb.value], world.player
+    return state.has(SuitUpgrade.Morph_Ball.value, world.player) and (
+        state.has(SuitUpgrade.Morph_Ball_Bomb.value, world.player) or
+        state.has(ProgressiveUpgrade.Progressive_Bomb.value, world.player, 2)
     )
 
 
 def can_ball_jump(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
     # We return false if it's not its own item since we either have it disabled or it's only usable with bombs
     # which nullifies the need of Spring Ball
-    if world.options.spring_ball.current_option_name.lower() != "its own item":
+    if not world.options.spring_ball.current_option_name.lower().startswith("its own"):
         return False
 
-    return state.has_all(
-        [SuitUpgrade.Morph_Ball.value, SuitUpgrade.Spring_Ball.value], world.player
-    )
+    return state.has(SuitUpgrade.Morph_Ball.value, world.player) and state.has_any([
+        SuitUpgrade.Spring_Ball.value,
+        ProgressiveUpgrade.Progressive_Bomb.value,
+    ], world.player)
 
 
 def can_power_beam(world: "MetroidPrimeWorld", state: CollectionState) -> bool:

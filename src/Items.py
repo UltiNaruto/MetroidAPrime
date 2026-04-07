@@ -78,6 +78,7 @@ class ProgressiveUpgrade(StrEnum):
     Progressive_Ice_Beam = "Progressive Ice Beam"
     Progressive_Wave_Beam = "Progressive Wave Beam"
     Progressive_Plasma_Beam = "Progressive Plasma Beam"
+    Progressive_Bomb = "Progressive Bomb"
 
     def __str__(self):
         return self.value
@@ -104,9 +105,13 @@ PROGRESSIVE_ITEM_MAPPING: Dict[ProgressiveUpgrade, List[SuitUpgrade]] = {
         SuitUpgrade.Plasma_Charge_Beam,
         SuitUpgrade.Flamethrower,
     ],
+    ProgressiveUpgrade.Progressive_Bomb: [
+        SuitUpgrade.Spring_Ball,
+        SuitUpgrade.Morph_Ball_Bomb,
+    ]
 }
 
-PROGRESSIVE_ITEM_EXCLUSION_LIST: List[SuitUpgrade] = [
+PROGRESSIVE_BEAM_ITEM_EXCLUSION_LIST: List[SuitUpgrade] = [
     SuitUpgrade.Power_Beam,
     SuitUpgrade.Ice_Beam,
     SuitUpgrade.Wave_Beam,
@@ -116,6 +121,11 @@ PROGRESSIVE_ITEM_EXCLUSION_LIST: List[SuitUpgrade] = [
     SuitUpgrade.Wavebuster,
     SuitUpgrade.Flamethrower,
     SuitUpgrade.Charge_Beam,
+]
+
+PROGRESSIVE_BOMB_ITEM_EXCLUSION_LIST: List[SuitUpgrade] = [
+    SuitUpgrade.Spring_Ball,
+    SuitUpgrade.Morph_Ball_Bomb,
 ]
 
 
@@ -162,7 +172,7 @@ def get_item_for_options(
         return __get_missile_item(world)
     if item == SuitUpgrade.Main_Power_Bomb:
         return __get_power_bomb_item(world)
-    if world.options.progressive_beam_upgrades:
+    if world.options.progressive_beam_upgrades or world.options.spring_ball.current_option_name.lower() == "its own progressive item":
         progressive_upgrade = get_progressive_upgrade_for_item(item)
         if progressive_upgrade is not None:
             return progressive_upgrade
@@ -321,6 +331,13 @@ custom_suit_upgrade_table: Dict[str, ItemData] = {
     ),
     SuitUpgrade.Plasma_Charge_Beam.value: ItemData(
         SuitUpgrade.Plasma_Charge_Beam.value, 57, ItemClassification.progression, 1
+    ),
+
+    ProgressiveUpgrade.Progressive_Bomb.value: ItemData(
+        ProgressiveUpgrade.Progressive_Bomb.value,
+        58,
+        ItemClassification.progression,
+        2,
     ),
 }
 

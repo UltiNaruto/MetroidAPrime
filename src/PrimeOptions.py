@@ -98,12 +98,13 @@ class ShuffleUnlimitedPowerBombs(Toggle):
 
 
 class SpringBall(Choice):
-    """Enables the spring ball when you receive Morph Ball Bombs or Spring Ball. This will allow you to jump while in morph ball form by pressing up on the c stick, reducing the complexity of double bomb jumps."""
+    """Enables the spring ball when you receive Morph Ball Bombs or Spring Ball. This will allow you to jump while in morph ball form by pressing up on the c stick, reducing the complexity of double bomb jumps. Progressive means you get Spring Ball then Bombs."""
 
     display_name = "Add Spring Ball"
     option_disabled = 0
     option_when_bombs_acquired = 1
     option_its_own_item = 2
+    option_its_own_progressive_item = 2
     alias_true = 1
     alias_false = 0
 

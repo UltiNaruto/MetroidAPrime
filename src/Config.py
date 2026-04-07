@@ -2,8 +2,13 @@ import os
 from typing import TYPE_CHECKING, Dict, Any, List
 
 from .PrimeUtils import count_ammo, get_apworld_version
-from .Items import PROGRESSIVE_ITEM_EXCLUSION_LIST, ProgressiveUpgrade, SuitUpgrade, artifact_table
-
+from .Items import (
+    artifact_table,
+    PROGRESSIVE_BEAM_ITEM_EXCLUSION_LIST,
+    PROGRESSIVE_BOMB_ITEM_EXCLUSION_LIST,
+    ProgressiveUpgrade,
+    SuitUpgrade,
+)
 
 from .PrimeOptions import ArtifactHints, HudColor, MetroidPrimeOptions, SpringBall
 from .data.RoomData import MetroidPrimeArea
@@ -157,7 +162,9 @@ def make_credits(world: "MetroidPrimeWorld") -> str:
     else:
         excluded_items.add(SuitUpgrade(world.starting_beam))
     if world.options.progressive_beam_upgrades.value:
-        excluded_items.update(PROGRESSIVE_ITEM_EXCLUSION_LIST)
+        excluded_items.update(PROGRESSIVE_BEAM_ITEM_EXCLUSION_LIST)
+    if world.options.spring_ball.current_option_name.lower() == "its own progressive item":
+        excluded_items.update(PROGRESSIVE_BOMB_ITEM_EXCLUSION_LIST)
     if not world.options.shuffle_scan_visor.value:
         excluded_items.add(SuitUpgrade.Scan_Visor)
     if not world.options.missile_launcher.value:
