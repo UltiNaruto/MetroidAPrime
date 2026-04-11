@@ -82,4 +82,6 @@ Some of the changes include:
     In Main Quarry, the barrier is automatically disabled when entering from Mine Security Station.
   - In Elite Research, Phazon Mines, the fight with Phazon Elite can now be started without needing to collect the item in Central Dynamo.
 - QOL Changes:
-  - Spring Ball has been implemented! When Morph Ball Bomb is acquired, Spring Ball can be used. To use Spring Ball, tilt the C-Stick Up.
+  - Spring Ball has been implemented! To use Spring Ball, tilt the C-Stick Up.<br>
+    If set to `when_bombs_acquired`, then when Morph Ball Bomb is acquired, Spring Ball can be used.<br>
+    If set to `its_own_item` or `its_own_progressive_item`, then when Spring Ball is acquired, it can be used.
