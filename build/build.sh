@@ -18,7 +18,7 @@ shopt -s globstar
 
 CWD="$(dirname $(realpath $0))"
 REQS=("zip" "rsync" "pip")
-SUPPORTED_PLATFORMS=("win_amd64" "manylinux_2_28_x86_64" "macosx_10_9_x86_64")
+SUPPORTED_PLATFORMS=("win_amd64" "manylinux_2_28_x86_64" "macosx_10_12_x86_64" "macosx_11_0_arm64")
 GAME="metroidprime"
 EXTRAS_TO_COPY=("LICENSE.md" "README.md" "Metroid Prime.yaml")
 
@@ -41,7 +41,7 @@ function do_we_build_libs() {
   local platform="$1" py_version="$2"
 
   case "$py_version-$platform" in
-    3.11-macosx) echo 1 ;;
+    3.11-macosx_intel|3.11-macosx_arm) echo 1 ;;
 	3.12-win|3.12-linux) echo 1 ;;
   esac
 
@@ -56,6 +56,13 @@ function do_we_build_libs() {
 function get_deps() {
   local platform="$1" requirements_file="$2" to="$3" py_version="$4"
   local platform_short_name="${platform%%_*}"; platform_short_name="${platform_short_name#many}"
+  if [[ $platform_short_name == "macosx" ]]; then
+    if [[ $platform == *arm64 ]]; then
+      platform_short_name="${platform_short_name}_arm"
+	else
+	  platform_short_name="${platform_short_name}_intel"
+	fi
+  fi
   local build_libs=$(do_we_build_libs "${platform_short_name}" "${py_version}" 2>/dev/null)
   if [ "$build_libs" == 0 ]; then
     return
