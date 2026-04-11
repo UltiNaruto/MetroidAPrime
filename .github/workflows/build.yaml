@@ -48,8 +48,9 @@ jobs:
         run: TAG="${{ steps.tag.outputs.tag }}" PY_VERSION="${{ matrix.python-version}}" bash build/build.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: metroidprime_apworld-${{ steps.tag.outputs.tag }}-${{ matrix.python-version }}
-          path: build/target/metroidprime_apworld-${{ steps.tag.outputs.tag }}-${{ matrix.python-version }}.zip
+          name: metroidprime_apworld-${{ steps.tag.outputs.tag }}
+          path: build/target/metroidprime_apworld-${{ steps.tag.outputs.tag }}.zip
+          overwrite: true
       - uses: actions/upload-artifact@v4
         with:
           name: libs-${{ matrix.python-version }}
@@ -63,4 +64,4 @@ jobs:
           generate_release_notes: true
           files: |
             build/target/libs-*-${{ matrix.python-version }}.zip
-            build/target/metroidprime_apworld-${{ steps.tag.outputs.tag }}-${{ matrix.python-version }}.zip
+            build/target/metroidprime_apworld-${{ steps.tag.outputs.tag }}.zip

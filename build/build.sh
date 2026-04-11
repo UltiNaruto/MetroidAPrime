@@ -215,7 +215,7 @@ function main() {
       fi
     done
 
-    local bundle="${bundle_base}-${tag}-${py_version}"
+    local bundle="${bundle_base}-${tag}"
     local destdir="${target_path}/${bundle}"
 
     for platform in "${SUPPORTED_PLATFORMS[@]}"; do
