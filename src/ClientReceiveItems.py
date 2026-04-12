@@ -275,13 +275,13 @@ async def handle_receive_progressive_items(
                 curr[item.value] += current_items[item.value[12:]].current_capacity
                 curr[item.value] += current_items[PROGRESSIVE_ITEM_MAPPING[item][2].value].current_capacity
             if item.value.endswith(" Bomb"):
-                curr[item.value] += current_items[SuitUpgrade.Morph_Ball_Bomb.value].current_capacity
                 curr[item.value] += (current_items["UnknownItem2"].current_capacity >> 1) & 1
+                curr[item.value] += current_items[SuitUpgrade.Morph_Ball_Bomb.value].current_capacity
 
     for progressive_upgrade in counts:
         count = counts[progressive_upgrade] - curr[progressive_upgrade]
         if count > 0:
-            for i in range(curr[progressive_upgrade], count):
+            for i in range(curr[progressive_upgrade], counts[progressive_upgrade]):
                 mapping = PROGRESSIVE_ITEM_MAPPING[
                     ProgressiveUpgrade(progressive_upgrade)
                 ]
