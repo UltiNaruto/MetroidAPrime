@@ -48,6 +48,9 @@ async def handle_receive_items(
     new_index = max(len(ctx.items_received) - 1, 0)
     ctx.game_interface.set_last_received_index(new_index)
 
+    # Update inventory before attempting to handle other types of upgrades
+    current_items = ctx.game_interface.get_current_inventory()
+
     await handle_receive_missiles(ctx, current_items)
     await handle_receive_power_bombs(ctx, current_items)
     await handle_receive_energy_tanks(ctx, current_items)
@@ -120,7 +123,7 @@ async def handle_receive_missiles(
         new_capacity = 0
 
         missile_sender = None
-        has_missile_launcher = current_items[SuitUpgrade.Missile_Launcher.value].current_capacity > 0
+        has_missile_launcher = not ctx.slot_data["missile_launcher"] or current_items[SuitUpgrade.Missile_Launcher.value].current_capacity > 0
 
         for network_item in ctx.items_received:
             item_data = inventory_item_by_network_id(network_item.item, current_items)
@@ -146,7 +149,7 @@ async def handle_receive_missiles(
                 if diff > 5
                 else f"Missile capacity increased by {diff} ({ctx.player_names[missile_sender]})"
             )
-            if ctx.slot_data["missile_launcher"] and not has_missile_launcher:
+            if not has_missile_launcher:
                 message += " but Missile Launcher is required to use missiles"
             ctx.notification_manager.queue_notification(message)
 
@@ -164,7 +167,7 @@ async def handle_receive_power_bombs(
         first_pb_capacity = 4
 
         pb_sender = None
-        has_main_pb = current_items[SuitUpgrade.Main_Power_Bomb.value].current_capacity > 0
+        has_main_pb = not ctx.slot_data["main_power_bomb"] or current_items[SuitUpgrade.Main_Power_Bomb.value].current_capacity > 0
 
         for network_item in ctx.items_received:
             item_data = inventory_item_by_network_id(network_item.item, current_items)
@@ -199,7 +202,7 @@ async def handle_receive_power_bombs(
                 if diff > 5
                 else f"Power Bomb capacity increased by {diff} ({ctx.player_names[pb_sender]})"
             )
-            if ctx.slot_data["main_power_bomb"] and not has_main_pb:
+            if not has_main_pb:
                 message += " but Power Bomb (Main) is required to use power bombs"
             ctx.notification_manager.queue_notification(message)
 
