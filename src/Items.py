@@ -56,15 +56,15 @@ class SuitUpgrade(StrEnum):
     Phazon_Suit = "Phazon Suit"
     Energy_Tank = "Energy Tank"
     Wavebuster = "Wavebuster"
+    Unlimited_Missiles = "Unlimited Missiles"
+    Unlimited_Power_Bombs = "Unlimited Power Bombs"
     Missile_Launcher = "Missile Launcher"
     Main_Power_Bomb = "Power Bomb (Main)"
+    Spring_Ball = "Spring Ball"
     Power_Charge_Beam = "Charge Beam (Power)"
     Wave_Charge_Beam = "Charge Beam (Wave)"
     Ice_Charge_Beam = "Charge Beam (Ice)"
     Plasma_Charge_Beam = "Charge Beam (Plasma)"
-    Unlimited_Missiles = "Unlimited Missiles"
-    Unlimited_Power_Bombs = "Unlimited Power Bombs"
-    Spring_Ball = "Spring Ball"
     Nothing = "Nothing"
     #Floaty_Jump = "Floaty Jump"
     #Ice_Trap = "Ice Trap"
@@ -318,26 +318,25 @@ custom_suit_upgrade_table: Dict[str, ItemData] = {
         ItemClassification.progression,
         3,
     ),
+    ProgressiveUpgrade.Progressive_Bomb.value: ItemData(
+        ProgressiveUpgrade.Progressive_Bomb.value,
+        54,
+        ItemClassification.progression,
+        2,
+    ),
 
     # These aren't used in item generation but are referenced in the client
     SuitUpgrade.Power_Charge_Beam.value: ItemData(
-        SuitUpgrade.Power_Charge_Beam.value, 54, ItemClassification.progression, 1
+        SuitUpgrade.Power_Charge_Beam.value, 55, ItemClassification.progression, 1
     ),
     SuitUpgrade.Wave_Charge_Beam.value: ItemData(
-        SuitUpgrade.Wave_Charge_Beam.value, 55, ItemClassification.progression, 1
+        SuitUpgrade.Wave_Charge_Beam.value, 56, ItemClassification.progression, 1
     ),
     SuitUpgrade.Ice_Charge_Beam.value: ItemData(
-        SuitUpgrade.Ice_Charge_Beam.value, 56, ItemClassification.progression, 1
+        SuitUpgrade.Ice_Charge_Beam.value, 57, ItemClassification.progression, 1
     ),
     SuitUpgrade.Plasma_Charge_Beam.value: ItemData(
-        SuitUpgrade.Plasma_Charge_Beam.value, 57, ItemClassification.progression, 1
-    ),
-
-    ProgressiveUpgrade.Progressive_Bomb.value: ItemData(
-        ProgressiveUpgrade.Progressive_Bomb.value,
-        58,
-        ItemClassification.progression,
-        2,
+        SuitUpgrade.Plasma_Charge_Beam.value, 58, ItemClassification.progression, 1
     ),
 }
 

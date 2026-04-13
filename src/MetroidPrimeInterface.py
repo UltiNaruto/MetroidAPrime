@@ -85,7 +85,7 @@ GAMES: Dict[str, Any] = {
         "HUD_TRIGGER_ADDRESS": 0x804344B4,  # When this is 1 the game will display the message and then set it back to 0
     },
 }
-MAX_VANILLA_ITEM_ID = 46
+MAX_VANILLA_ITEM_ID = 40
 
 
 def calculate_item_offset(item_id: int) -> int:
@@ -236,10 +236,10 @@ class MetroidPrimeInterface:
             return
 
         # Custom items
-        if MAX_VANILLA_ITEM_ID - 6 < item_id <= MAX_VANILLA_ITEM_ID - 1:
+        if MAX_VANILLA_ITEM_ID < item_id < MAX_VANILLA_ITEM_ID + 6:
             # TODO: find a way to handle temp items like Ice Trap and Floaty Jump Item
-            inventory = self.get_current_inventory()
-            unknown_item_2 = inventory["UnknownItem2"]
+            unknown_item_2 = self.get_item(item_table["UnknownItem2"])
+            assert unknown_item_2 is not None
 
             self.dolphin_client.write_pointer(
                 self.__get_player_state_pointer(),
@@ -289,7 +289,17 @@ class MetroidPrimeInterface:
                 if item.id == item_data:
                     return self.get_item(item)
         if isinstance(item_data, ItemData):
-            if item_data.id > 40:
+            if MAX_VANILLA_ITEM_ID < item_data.id < MAX_VANILLA_ITEM_ID + 6:
+                return InventoryItemData(
+                    item_data,
+                    0,
+                    struct.unpack(">I", self.dolphin_client.read_pointer(
+                        self.__get_player_state_pointer(),
+                        calculate_item_offset(misc_item_table["UnknownItem2"].id),
+                        4,
+                    ))[0] & (1 << (item_data.id - 41))
+                )
+            if item_data.id > MAX_VANILLA_ITEM_ID + 6:
                 if item_data.id in custom_charge_id_to_beam:
                     return InventoryItemData(
                         item_data,
@@ -300,16 +310,7 @@ class MetroidPrimeInterface:
                         ),
                         1,
                     )
-                else:
-                    return InventoryItemData(
-                        item_data,
-                        0,
-                        struct.unpack(">I", self.dolphin_client.read_pointer(
-                            self.__get_player_state_pointer(),
-                            calculate_item_offset(misc_item_table["UnknownItem2"].id),
-                            4,
-                        ))[0] & (1 << (item_data.id - 41))
-                    )
+
 
             result = self.dolphin_client.read_pointer(
                 self.__get_player_state_pointer(),
@@ -322,14 +323,25 @@ class MetroidPrimeInterface:
         return None
 
     def get_current_inventory(self) -> Dict[str, InventoryItemData]:
+        unknown_item2 = self.get_item(item_table["UnknownItem2"])
+        assert unknown_item2 is not None
         inventory: Dict[str, InventoryItemData] = {}
+
         for item in item_table.values():
             i = self.get_item(item)
             if i is not None:
                 if item.id <= MAX_VANILLA_ITEM_ID:
                     inventory[item.name] = i
+                elif MAX_VANILLA_ITEM_ID < item.id < MAX_VANILLA_ITEM_ID + 6:
+                    has_obtained_item = unknown_item2.current_capacity >> (item.id - (MAX_VANILLA_ITEM_ID + 1)) & 1
+                    inventory[item.name] = InventoryItemData(
+                        item_data=item,
+                        current_amount=has_obtained_item,
+                        current_capacity=has_obtained_item,
+                    )
                 elif item.id in custom_charge_id_to_beam:
                     inventory[item.name] = i
+
         return inventory
 
     def get_current_cosmetic_suit(self) -> MetroidPrimeSuit:
