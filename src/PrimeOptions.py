@@ -130,7 +130,7 @@ class StaggeredSuitDamage(Choice):
 
 
 class RemoveHiveMecha(Toggle):
-    """If enabled, the trigger for the Hive Mecha boss will be removed from the game."""
+    """If enabled, the trigger for the Hive Mecha boss will be removed from the game. Can be forced on if you don't start with Power Beam and you start at Tallon Overworld - Landing Site or Chozo Ruins - Save Station 1."""
 
     display_name = "Remove Hive Mecha"
 
