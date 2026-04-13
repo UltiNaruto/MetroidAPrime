@@ -104,7 +104,7 @@ class SpringBall(Choice):
     option_disabled = 0
     option_when_bombs_acquired = 1
     option_its_own_item = 2
-    option_its_own_progressive_item = 2
+    option_its_own_progressive_item = 3
     alias_true = 1
     alias_false = 0
 
