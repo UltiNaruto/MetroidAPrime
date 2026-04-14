@@ -126,23 +126,33 @@ def make_artifact_hints(world: "MetroidPrimeWorld") -> Dict[str, str]:
 def make_credits(world: "MetroidPrimeWorld") -> str:
     def spoil_location(item: str):
         spoiler = f"{style(item, font='C29C51F1', main_color='#89a1ff')}\n"
-        locations = world.multiworld.find_item_locations(item, world.player, True)
-        if not locations:
-            if any([i for i in world.multiworld.precollected_items[world.player] if i.name == item]):
-                return spoiler + "<Started With>\n"
-            else:
-                return spoiler + "<Not Placed>\n"
+        spoiler_locs = []
+        started_with_count = sum([1 for i in world.multiworld.precollected_items[world.player] if i.name == item])
 
-        for location in locations:
-            if world.multiworld.players == 1:
-                spoiler += f"{location.name}\n"
+        if started_with_count > 0:
+            if started_with_count == 1:
+                spoiler_locs.append("<Started With>")
             else:
-                player_string = (
-                    f"{world.multiworld.player_name[location.player]}'s"
-                    if location.player != world.player
-                    else "Your"
-                )
-                spoiler += f"{style(player_string, main_color='#d4cc33')} {location.name}\n"
+                spoiler_locs.append(f"<Started With {started_with_count} of them>")
+
+        locations = world.multiworld.find_item_locations(item, world.player, True)
+        if locations:
+            for location in locations:
+                if world.multiworld.players == 1:
+                    spoiler_locs.append(f"{location.name}")
+                else:
+                    player_string = (
+                        f"{world.multiworld.player_name[location.player]}'s"
+                        if location.player != world.player
+                        else "Your"
+                    )
+                    spoiler_locs.append(f"{style(player_string, main_color='#d4cc33')} {location.name}")
+
+        if len(spoiler_locs) > 0:
+            spoiler += "\n".join(spoiler_locs)
+        else:
+            spoiler += "<Not Placed>\n"
+
         return spoiler
 
     excluded_items = {
