@@ -326,12 +326,12 @@ class MetroidPrimeWorld(World):
 
         import json
 
-        configjson = make_config(self)
-        configjsons = json.dumps(configjson, indent=4)
+        config_json_dict = make_config(self)
+        config_json = json.dumps(config_json_dict, indent=4)
 
         if os.environ.get("DEBUG") == "True":
             with open("test_config.json", "w") as f:
-                f.write(configjsons)
+                f.write(config_json)
 
         options_dict: Dict[str, Union[int, str]] = {
             "progressive_beam_upgrades": self.options.progressive_beam_upgrades.value,
@@ -342,7 +342,7 @@ class MetroidPrimeWorld(World):
 
         outfile_name = self.multiworld.get_out_file_name_base(self.player)
         apmp1 = MetroidPrimeContainer(
-            configjsons,
+            config_json,
             options_json,
             outfile_name,
             output_directory,
