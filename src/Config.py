@@ -210,11 +210,9 @@ def get_strg(world: "MetroidPrimeWorld") -> Dict[str, List[str]]:
     strg = {**OBJECTIVE_STRG}
     # Set objective text in temple security station
     objective_text = f"Current Mission: Retrieve {world.options.required_artifacts} Chozo Artifact{'s' if world.options.required_artifacts != 1 else ''}"
-    if world.options.final_bosses == 0:
-        objective_text += "\nDefeat Meta Ridley\nDefeat Metroid Prime"
-    elif world.options.final_bosses == 1:
+    if world.options.final_bosses in [0, 1]:
         objective_text += "\nDefeat Meta Ridley"
-    elif world.options.final_bosses == 2:
+    if world.options.final_bosses in [0, 2]:
         objective_text += "\nDefeat Metroid Prime"
 
     strg[DEFAULT_OBJECTIVE_STRG_KEY][2] = objective_text
