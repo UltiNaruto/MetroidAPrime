@@ -8,11 +8,11 @@ This has only been tested on Windows, but feel free to let us know if you get th
 The following are required in order to play _Metroid Prime_ in Archipelago:
 
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases)
-   For Archipelago 5.0/5.1, see the Note about Python versions in [APWorld Installation](#apworld-installation)
-- [Dolphin Emulator](https://dolphin-emu.org/download/). We recommend the latest Release version.
+- Latest Release of [Dolphin Emulator](https://dolphin-emu.org/download/) or [PrimeHack](https://github.com/shiiion/dolphin/releases)
 - A _Metroid Prime_ (GameCube version) ISO file
   - Any official release copy of the GameCube version will work. (All region versions are compatible, including all three versions of NTSC-USA)
   - The Wii and Switch version of the game are _not_ supported.
+  - This must be dumped from your own disc.
 
 ## APWorld Installation
 
@@ -20,22 +20,13 @@ The following are required in order to play _Metroid Prime_ in Archipelago:
 2. Unzip the downloaded Metroid Prime APWorld zip file and extract its files.
 3. In the Archipelago Launcher, select `Install APWorld`, and then select `metroidprime.apworld` file from the previous step.
 
->[!NOTE]
-> Here's the version you must download depending on your OS:
-> | Operating System                                |                                              |
-> |-------------------------------------------------|----------------------------------------------|
-> | Windows                                         | Download zip files ending with `3.12.zip`.   |
-> | Linux                                           | Download zip files ending with `3.12.zip`.   |
-> | MacOS                                           | Download zip files ending with `3.11.zip`.   |
->
-> Libs zip must be extracted in Archipelago/lib folder. This will change in 0.5.3 though.
-
 ## Setting Up Player Options YAML File
 
-All players playing _Metroid Prime_ must provide the room host with a YAML file containing the player options for their world.
-A sample YAML file for _Metroid Prime_ is supplied in the Metroid Prime APWorld download. Refer to the comments in that file for details about what each setting does.
+All players participating must provide the room host with a YAML file containing the player options for their world.
 
-Once complete, provide the person generating with your YAML file.
+After installing Metroid Prime AP, in the Archipelago Launcher, select `Generate Template Options`.
+When it is finished, `Metroid Prime.yaml` will appear inthe Templates folder.
+Edit the options in this file to your liking and then send a copy of it to the room host.
 
 ## Generating a Multiworld
 As usual, randomized Archipelago games with custom worlds must be generated locally - see [Archipelago Setup Guide: Generating a game - On your local installation](https://archipelago.gg/tutorial/Archipelago/setup/en#on-your-local-installation)
@@ -73,20 +64,10 @@ Once you do, follow these steps to connect to the room:
 ## Troubleshooting
 
 ### General Troubleshooting Tips
-- Use the latest Metroid Prime Archipelago release
-  - Metroid Prime Archipelago: [Releases · Electro1512_MetroidAPrime](https://github.com/UltiNaruto/MetroidAPrime/releases)
-
-- Use the latest Dolphin Emulator
-  - Dolphin Emulator Release (**Recommended**): [Dolphin Emulator - Download](https://dolphin-emu.org/download/)
-  - PrimeHack: [Releases · shiiion/dolphin](https://github.com/shiiion/dolphin/releases)
-    - While the dependencies that Metroid Prime AP uses does not target PrimeHack, many users report that PrimeHack can work.
-      However, any issues found while using PrimeHack should be reproduced with the official Dolphin Emulator before reporting.
+- Use the latest [Metroid Prime AP release](https://github.com/UltiNaruto/MetroidAPrime/releases)
+- Use the latest Release of [Dolphin Emulator](https://dolphin-emu.org/download/) or [PrimeHack](https://github.com/shiiion/dolphin/releases)
 
 ### Generating and Patching Troubleshooting
-
-- If you do not see the client in the Archipelago Launcher
-  - Ensure you have your `metroidprime.apworld` in the correct folder (The `custom_worlds` folder).
-  - Check if you have residual files from previous versions in the lib/worlds folder - see the [APWorld Installation section](#apworld-installation)
 
 - If you receive this error in a dialog box after opening the AP_XXXXX_PX.apmp1 file:
   > Count Mount File
@@ -95,39 +76,33 @@ Once you do, follow these steps to connect to the room:
   This is not an error related to the patcher - this is Windows File Explorer attempting to mount the GameCube ISO as a removable drive. It's likely that the patcher did sucessfully patch the game.
   See if the patched ISO exists (often named AP_XXXXX_PX.iso). If it does, you can load it manually in Dolphin.
 
-- Also any non-ISO format will throw an error telling you which format your disc is. Remember you need to dump your disc, not download it.
+- If you are unable to patch your game:
+  - Make sure the game format is ISO.<br>
+    .nkit.iso, .rvz, or other formats are *not* supported.<br>
+    If unsure, redump your game from your own disc.
 
 ### Connection Troubleshooting
-- I have the randomized game open in Dolphin, but the Metroid Prime client says it can't connect to it!
-  - Make Sure the ISO is Randomized
-    - On the Main Menu, "Archipelago Metroid Prime" text should appear. ([image example](https://i.imgur.com/W6172zf.png))
-  - Ensure Only One Instance of Dolphin is Running
-    - Check Task Manager to see if there's multiple emulator instances running.
-    - You can also just restart your computer to be sure.
+I have the randomized game open in Dolphin, but the Metroid Prime client says it can't connect to it!
+- Make Sure the ISO is Randomized:
+  - On the Main Menu, "Archipelago Metroid Prime" text should appear. ([image example](https://i.imgur.com/W6172zf.png))
 
-  - Disable Emulated Memory Size Override
-    - In Dolphin,
-      Config -> Advanced tab,
-      **Uncheck** Enable Emulated Memory Size Override
-  - Start the Metroid Prime Client and Dolphin in a Specific Order
+- Ensure Only One Instance of Dolphin is Running:
+  - Check Task Manager to see if there's multiple emulator instances running or restart your computer.
 
-    - For some users, connecting to the AP server before letting the Metroid Prime client causes connection issues.
-      Try starting the game in this order:
-      1.) Start the Metroid Prime client
-      2.) Start Dolphin and start the game (if it launches automatically, that's fine)
-      3.) Select or create a save file and enter the game
-      4.) Enter the AP server address into the Metroid Prime Client
+- Disable Emulated Memory Size Override:
+  - In Dolphin, navigate to Options -> Configuration -> Advanced tab, and **Uncheck** Enable Emulated Memory Size Override
 
-  - For Linux, use Dolphin FlatPak
-    - Install Dolphin Emulator from [Flathub](https://flathub.org/apps/org.DolphinEmu.dolphin-emu)
-    - Dolphin Memory Engine, as part of the Prime AP Client, can not access regular Dolphin's process but can access Flatpak's containerized Dolphin's process
+- Try Starting the Metroid Prime Client and Dolphin in this order:
+    1. Start the Metroid Prime client
+    2. Start Dolphin and start the game (if it launches automatically, that's fine)
+    3. Select or create a save file and enter the game
+    4. Enter the AP server address into the Metroid Prime Client
 
-### In-Game Troubleshooting
-- In Dolphin, when fighting Ridley my screen keeps changing width
-  - This is an issue with Dolphin's widescreen detection heuristic.
-  - In Dolphin, go to Graphics > General tab, and then set Aspect Ratio to `Force 4:3`
+- For Linux, use Dolphin FlatPak:
+  - Install Dolphin Emulator from the [official Flatpak repository](https://dolphin-emu.org/download/#flatpak) or from [Flathub](https://flathub.org/apps/org.DolphinEmu.dolphin-emu)
+  - Dolphin Memory Engine, as part of the Prime AP Client, can not access regular Dolphin's process but can access Flatpak's containerized Dolphin's process
 
 ## Feedback
 
-In the offical [Archipelago Discord](https://discord.com/invite/8Z65BR2) there is the `metroid-prime` [channel](https://discord.com/channels/731205301247803413/1425600401733980301).
-Feel free to ping `@Electro15` or `@hesto2` or `@UltiNaruto` with any bugs/thoughts/complaints/wishes/jokes you may have!
+In the offical [Archipelago Discord](https://discord.com/invite/8Z65BR2) there is the [#metroid-prime channel](https://discord.com/channels/731205301247803413/1425600401733980301).
+Feel free to ping `@UltiNaruto` with any issues or feedback.
