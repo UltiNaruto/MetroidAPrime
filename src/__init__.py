@@ -27,7 +27,7 @@ from .DoorRando import (
     remap_doors_to_power_beam_if_necessary,
 )
 
-from worlds.LauncherComponents import Component, SuffixIdentifier, Type, components, launch_subprocess  # type: ignore
+from worlds.LauncherComponents import Component, components, icon_paths, launch_subprocess, SuffixIdentifier, Type  # type: ignore
 import settings
 from worlds.AutoWorld import World, WebWorld
 from .data.Transports import (
@@ -78,8 +78,12 @@ components.append(
         func=run_client,
         component_type=Type.CLIENT,
         file_identifier=SuffixIdentifier(".apmp1"),
+        icon='Metroid Prime',
     )
 )
+
+
+icon_paths["Metroid Prime"] = "ap:worlds.metroidprime/assets/icon.png"
 
 
 class MetroidPrimeSettings(settings.Group):
