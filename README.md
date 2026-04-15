@@ -4,7 +4,7 @@ An Archipelago implementation of Metroid Prime multiworld randomizer using [rand
 
 ## Setup Guide
 
-To get started or for troubleshooting, see [the Setup Guide](./docs/setup_en.md).
+To get started or for troubleshooting, see [the Setup Guide](./src/docs/setup_en.md).
 
 ## Info
 ### What does randomization do to this game?
