@@ -1,6 +1,3 @@
-from .PrimeUtils import setup_libs
-setup_libs()
-
 import os
 import settings
 import typing

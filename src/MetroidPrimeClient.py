@@ -7,7 +7,6 @@ import subprocess
 import traceback
 from typing import Any, DefaultDict, Dict, List, Optional, Tuple, cast
 import zipfile
-import py_randomprime  # type: ignore
 
 from CommonClient import (
     ClientCommandProcessor,
@@ -420,6 +419,8 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
 
 
 async def patch_and_run_game(apmp1_file: str):
+    import py_randomprime # type: ignore
+
     metroidprime_options = get_settings()["metroidprime_options"]
     apmp1_file = os.path.abspath(apmp1_file)
     input_iso_path = metroidprime_options["rom_file"]
@@ -473,6 +474,9 @@ def launch():
     Utils.init_logging("MetroidPrime Client")
 
     async def main():
+        from .PrimeUtils import setup_libs
+        setup_libs()
+
         multiprocessing.freeze_support()
         logger.info("main")
         parser = get_base_parser()

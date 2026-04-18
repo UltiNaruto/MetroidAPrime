@@ -4,7 +4,6 @@ import struct
 from typing import Any, Dict, Optional, Union
 
 from .DolphinClient import GC_GAME_ID_ADDRESS, DolphinClient, DolphinException
-import py_randomprime  # type: ignore
 from .Enum import ConnectionState, MetroidPrimeLevel, MetroidPrimeSuit, SuitUpgrade
 from .Items import (
     custom_suit_upgrade_table,
@@ -17,13 +16,12 @@ from .Items import (
 )
 
 _SUPPORTED_VERSIONS = ["0-00", "0-01", "0-02", "jpn", "kor", "pal"]
-_SYMBOLS: Dict[str, Any] = {version: py_randomprime.symbols_for_version(version) for version in _SUPPORTED_VERSIONS}  # type: ignore
 GAMES: Dict[str, Any] = {
     "0-00": {
         "game_id": b"GM8E01",
         "game_rev": 0,
-        "game_state_pointer": _SYMBOLS["0-00"]["g_GameState"],
-        "cstate_manager_global": _SYMBOLS["0-00"]["g_StateManager"],
+        "game_state_pointer": 0x805A8C40,
+        "cstate_manager_global": 0x8045A1A8,
         "aMetroidPrimeA": 0x803D47CC,
         "aMetroidPrimeB": 0x803D47DB,
         "cplayer_vtable": 0x803D96E8,
@@ -33,8 +31,8 @@ GAMES: Dict[str, Any] = {
     "0-01": {
         "game_id": b"GM8E01",
         "game_rev": 1,
-        "game_state_pointer": _SYMBOLS["0-01"]["g_GameState"],
-        "cstate_manager_global": _SYMBOLS["0-01"]["g_StateManager"],
+        "game_state_pointer": 0x805A8E20,
+        "cstate_manager_global": 0x8045A388,
         "aMetroidPrimeA": 0x803D49AC,
         "aMetroidPrimeB": 0x803D49BB,
         "cplayer_vtable": 0x803D98C8,
@@ -44,8 +42,8 @@ GAMES: Dict[str, Any] = {
     "0-02": {
         "game_id": b"GM8E01",
         "game_rev": 2,
-        "game_state_pointer": _SYMBOLS["0-02"]["g_GameState"],
-        "cstate_manager_global": _SYMBOLS["0-02"]["g_StateManager"],
+        "game_state_pointer": 0x805A9CE0,
+        "cstate_manager_global": 0x8045B208,
         "aMetroidPrimeA": 0x803D588C,
         "aMetroidPrimeB": 0x803D589B,
         "cplayer_vtable": 0x803DA7A8,
@@ -55,8 +53,8 @@ GAMES: Dict[str, Any] = {
     "jpn": {
         "game_id": b"GM8J01",
         "game_rev": 0,
-        "game_state_pointer": _SYMBOLS["jpn"]["g_GameState"],
-        "cstate_manager_global": _SYMBOLS["jpn"]["g_StateManager"],
+        "game_state_pointer": 0x80591CE0,
+        "cstate_manager_global": 0x80443030,
         "aMetroidPrime": 0x803C0D24,
         "cplayer_vtable": 0x803C5B28,
         "HUD_MESSAGE_ADDRESS": 0x803D89C8,
@@ -65,8 +63,8 @@ GAMES: Dict[str, Any] = {
     "kor": {
         "game_id": b"GM8E01",
         "game_rev": 48,
-        "game_state_pointer": _SYMBOLS["kor"]["g_GameState"],
-        "cstate_manager_global": _SYMBOLS["kor"]["g_StateManager"],
+        "game_state_pointer": 0x805A8920,
+        "cstate_manager_global": 0x80459E88,
         "aMetroidPrimeA": 0x803D48DC,
         "aMetroidPrimeB": 0x803D48EB,
         "cplayer_vtable": 0x803D97E8,
@@ -76,8 +74,8 @@ GAMES: Dict[str, Any] = {
     "pal": {
         "game_id": b"GM8P01",
         "game_rev": 0,
-        "game_state_pointer": _SYMBOLS["pal"]["g_GameState"],
-        "cstate_manager_global": _SYMBOLS["pal"]["g_StateManager"],
+        "game_state_pointer": 0x8046AD44,
+        "cstate_manager_global": 0x803E2088,
         "aMetroidPrime": 0x803BF304,
         "cplayer_vtable": 0x803C4B88,
         "HUD_MESSAGE_ADDRESS": 0x803D7A28,
