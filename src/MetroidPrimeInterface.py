@@ -198,14 +198,14 @@ class MetroidPrimeInterface:
         if MAX_VANILLA_ITEM_ID < item_id < MAX_VANILLA_ITEM_ID + 6:
             # TODO: find a way to handle temp items like Ice Trap and Floaty Jump Item
             unknown_item_2 = self.get_item(item_table["UnknownItem2"])
-            assert unknown_item_2 is not None
 
-            self.dolphin_client.write_pointer(
-                self.__get_player_state_pointer(),
-                calculate_item_offset(unknown_item_2.id) + 4,
-                struct.pack(">I", unknown_item_2.current_capacity | (1 << (item_id - 41))),
-            )
-            return
+            if unknown_item_2 is not None:
+                self.dolphin_client.write_pointer(
+                    self.__get_player_state_pointer(),
+                    calculate_item_offset(unknown_item_2.id) + 4,
+                    struct.pack(">I", unknown_item_2.current_capacity | (1 << (item_id - 41))),
+                )
+                return
 
         if ignore_capacity:
             self.dolphin_client.write_pointer(
@@ -283,7 +283,9 @@ class MetroidPrimeInterface:
 
     def get_current_inventory(self) -> Dict[str, InventoryItemData]:
         unknown_item2 = self.get_item(item_table["UnknownItem2"])
-        assert unknown_item2 is not None
+        if unknown_item2 is None:
+            unknown_item2 = InventoryItemData(item_table["UnknownItem2"], 0, 0)
+
         inventory: Dict[str, InventoryItemData] = {}
 
         for item in item_table.values():
@@ -567,7 +569,9 @@ class MetroidPrimeInterface:
 
     def __is_player_table_ready(self) -> bool:
         """Check if the player table is ready to be read from memory, indicating the game is in a playable state"""
-        assert self.current_game
+        if self.current_game is None:
+            return False
+
         player_table_bytes = self.dolphin_client.read_pointer(
             GAMES[self.current_game]["cstate_manager_global"] + 0x84C, 0, 4
         )
@@ -580,7 +584,9 @@ class MetroidPrimeInterface:
             return False
 
     def __get_player_state_pointer(self):
-        assert self.current_game
+        if self.current_game is None:
+            return 0
+
         return int.from_bytes(
             self.dolphin_client.read_address(
                 GAMES[self.current_game]["cstate_manager_global"] + 0x8B8, 4
@@ -589,7 +595,9 @@ class MetroidPrimeInterface:
         )
 
     def __get_world_layer_state_pointer(self):
-        assert self.current_game
+        if self.current_game is None:
+            return 0
+
         return int.from_bytes(
             self.dolphin_client.read_address(
                 GAMES[self.current_game]["cstate_manager_global"] + 0x8C8, 4
@@ -669,7 +677,8 @@ class MetroidPrimeInterface:
         if self.relay_trackers is None:
             self.relay_trackers = {}
             # getting vector<g_GameState.x88_worldStates>
-            assert self.current_game
+            if self.current_game is None:
+                return
             world_state_array = struct.unpack(
                 ">I",
                 self.dolphin_client.read_pointer(
@@ -699,26 +708,28 @@ class MetroidPrimeInterface:
                     "count": 0,
                     "memory_relays": [],
                 }
-        for _, relay_tracker in self.relay_trackers.items():
-            # getting WorldState.x8_mailbox.x0_relays.size()
-            relay_tracker["count"] = struct.unpack(
-                ">I",
-                self.dolphin_client.read_address(
-                    relay_tracker["address"], struct.calcsize(">I")
-                ),
-            )[0]
-            # getting WorldState.x8_mailbox.x0_relays content
-            relay_tracker["memory_relays"] = list(struct.unpack(
-                ">" + ("I" * relay_tracker["count"]),
-                self.dolphin_client.read_address(
-                    relay_tracker["address"] + 4,
-                    relay_tracker["count"] * struct.calcsize(">I"),
-                ),
-            ))
-            # remove layer specific stuff from object id
-            relay_tracker["memory_relays"] = [
-                mr & 0x00FFFFFF for mr in relay_tracker["memory_relays"]
-            ]
+
+        if self.relay_trackers is not None:
+            for _, relay_tracker in self.relay_trackers.items():
+                # getting WorldState.x8_mailbox.x0_relays.size()
+                relay_tracker["count"] = struct.unpack(
+                    ">I",
+                    self.dolphin_client.read_address(
+                        relay_tracker["address"], struct.calcsize(">I")
+                    ),
+                )[0]
+                # getting WorldState.x8_mailbox.x0_relays content
+                relay_tracker["memory_relays"] = list(struct.unpack(
+                    ">" + ("I" * relay_tracker["count"]),
+                    self.dolphin_client.read_address(
+                        relay_tracker["address"] + 4,
+                        relay_tracker["count"] * struct.calcsize(">I"),
+                    ),
+                ))
+                # remove layer specific stuff from object id
+                relay_tracker["memory_relays"] = [
+                    mr & 0x00FFFFFF for mr in relay_tracker["memory_relays"]
+                ]
 
     def is_memory_relay_active(self, mlvl: str, idx: int) -> bool:
         if self.relay_trackers is None:
