@@ -1,10 +1,8 @@
-from ..Enum import StartRoomDifficulty
-from ..data.AreaNames import MetroidPrimeArea
-from ..data.RoomNames import RoomName
-from ..data.StartRoomData import StartRoomData
-from ..data.Transports import get_random_elevator_mapping
 from . import MetroidPrimeTestBase
-from ..data.Transports import default_elevator_mappings
+
+from ..Enum import MetroidPrimeArea, RoomName, StartRoomDifficulty
+from ..data.StartRoomData import StartRoomData
+from ..data.Transports import default_elevator_mappings, get_random_elevator_mapping
 
 from typing import TYPE_CHECKING
 

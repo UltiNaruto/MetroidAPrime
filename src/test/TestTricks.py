@@ -1,5 +1,4 @@
-from ..Items import SuitUpgrade
-from ..data.Tricks import TrickDifficulty
+from ..Enum import SuitUpgrade, TrickDifficulty
 from . import MetroidPrimeTestBase
 
 

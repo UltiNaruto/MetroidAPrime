@@ -1,11 +1,11 @@
 import os
-
 import yaml
-from ..data.AreaNames import MetroidPrimeArea
-from ..data.Transports import default_elevator_mappings
-from ..data.RoomNames import RoomName
-from Generate import main
+
+from ..Enum import MetroidPrimeArea, RoomName
 from ..data.StartRoomData import all_start_rooms
+from ..data.Transports import default_elevator_mappings
+
+from Generate import main
 
 fail = []
 

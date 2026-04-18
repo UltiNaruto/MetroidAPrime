@@ -2,15 +2,10 @@ import copy
 from dataclasses import dataclass, field
 from typing import Callable, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
-from ..Enum import StartRoomDifficulty
-
-from ..PrimeOptions import BlastShieldRandomization, DoorColorRandomization
-
 from ..DoorRando import BEAM_TO_LOCK_MAPPING
-
-from ..Items import get_item_for_options, ProgressiveUpgrade, SuitUpgrade
-from ..data.AreaNames import MetroidPrimeArea
-from ..data.RoomNames import RoomName
+from ..Enum import MetroidPrimeArea, ProgressiveUpgrade, RoomName, StartRoomDifficulty, SuitUpgrade
+from ..Items import get_item_for_options
+from ..PrimeOptions import BlastShieldRandomization, DoorColorRandomization
 
 if TYPE_CHECKING:
     from .. import MetroidPrimeWorld

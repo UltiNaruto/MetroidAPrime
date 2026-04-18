@@ -1,13 +1,11 @@
-from Fill import distribute_items_restrictive
-from ..PrimeOptions import DoorColorRandomization
-from ..Items import SuitUpgrade
-from ..DoorRando import DoorLockType
-
-from ..Config import make_config
-from ..data.AreaNames import MetroidPrimeArea
-from ..data.RoomNames import RoomName
-from . import MetroidPrimeTestBase, MetroidPrimeWithOverridesTestBase
 from typing import List, TYPE_CHECKING
+
+from Fill import distribute_items_restrictive
+
+from . import MetroidPrimeTestBase, MetroidPrimeWithOverridesTestBase
+from ..Config import make_config
+from ..Enum import DoorLockType, MetroidPrimeArea, RoomName, SuitUpgrade
+from ..PrimeOptions import DoorColorRandomization
 
 if TYPE_CHECKING:
     from .. import MetroidPrimeWorld

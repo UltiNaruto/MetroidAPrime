@@ -1,16 +1,12 @@
 import typing
 
-from ..Enum import StartRoomDifficulty
-
-from ..PrimeOptions import DoorColorRandomization
-
-from ..data.StartRoomData import get_available_start_rooms
-
-from ..data.RoomNames import RoomName
-from ..Config import make_config
 from Fill import distribute_items_restrictive
-from ..Items import SuitUpgrade
+
 from . import MetroidPrimeTestBase, MetroidPrimeWithOverridesTestBase
+from ..Config import make_config
+from ..Enum import RoomName, StartRoomDifficulty, SuitUpgrade
+from ..PrimeOptions import DoorColorRandomization
+from ..data.StartRoomData import get_available_start_rooms
 
 if typing.TYPE_CHECKING:
     from .. import MetroidPrimeWorld

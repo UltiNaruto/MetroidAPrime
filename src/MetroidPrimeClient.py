@@ -20,17 +20,16 @@ from CommonClient import (
 from NetUtils import ClientStatus, HintStatus
 from settings import get_settings
 import Utils
+
 from .Config import make_version_specific_changes
-from .PrimeUtils import get_apworld_version
-from .Items import suit_upgrade_table
 from .ClientReceiveItems import handle_receive_items
-from .NotificationManager import NotificationManager
 from .Container import construct_hook_patch
 from .DolphinClient import (
     DolphinException,
     assert_no_running_dolphin,
     get_num_dolphin_instances,
 )
+from .Items import suit_upgrade_table
 from .Locations import METROID_PRIME_LOCATION_BASE, PICKUP_LOCATIONS
 from .MetroidPrimeInterface import (
     HUD_MESSAGE_DURATION,
@@ -40,6 +39,8 @@ from .MetroidPrimeInterface import (
     MetroidPrimeLevel,
     MetroidPrimeSuit,
 )
+from .NotificationManager import NotificationManager
+from .PrimeUtils import get_apworld_version
 
 
 class MetroidPrimeCommandProcessor(ClientCommandProcessor):

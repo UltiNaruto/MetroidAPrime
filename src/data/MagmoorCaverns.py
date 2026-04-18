@@ -1,9 +1,7 @@
-from ..BlastShieldRando import BlastShieldType
-from ..DoorRando import DoorLockType
-from .Tricks import Tricks
-from .AreaNames import MetroidPrimeArea
-from .RoomData import AreaData, PickupData, RoomData
 from .DoorData import DoorData
+from .RoomData import AreaData, PickupData, RoomData
+from .Tricks import Tricks
+from ..Enum import BlastShieldType, DoorLockType, MetroidPrimeArea, RoomName
 from ..Logic import (
     can_ball_jump,
     can_bomb,
@@ -23,7 +21,6 @@ from ..Logic import (
     has_energy_tanks,
     can_warp_to_start,
 )
-from .RoomNames import RoomName
 
 
 class MagmoorCavernsAreaData(AreaData):

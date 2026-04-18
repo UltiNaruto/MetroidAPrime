@@ -1,44 +1,38 @@
 from .PrimeUtils import setup_libs
 setup_libs()
 
+import os
+import settings
 import typing
 from collections import defaultdict
-from .ItemPool import generate_item_pool
-import os
-from Options import NumericOption
-from typing import Any, Dict, List, Optional, TextIO, Union, cast
 from logging import info
-from .data.RoomNames import RoomName
-from .data.PhazonMines import PhazonMinesAreaData
-from .data.PhendranaDrifts import PhendranaDriftsAreaData
-from .data.MagmoorCaverns import MagmoorCavernsAreaData
-from .data.ChozoRuins import ChozoRuinsAreaData
-from .data.TallonOverworld import TallonOverworldAreaData
+from typing import Any, Dict, List, Optional, TextIO, Union, cast
+
+from BaseClasses import MultiWorld, Tutorial, ItemClassification
+from Options import NumericOption
+from worlds.LauncherComponents import Component, components, icon_paths, launch_subprocess, SuffixIdentifier, Type  # type: ignore
+from worlds.AutoWorld import World, WebWorld
+
 from .BlastShieldRando import (
     WorldBlastShieldMapping,
     apply_blast_shield_mapping,
     get_world_blast_shield_mapping,
 )
-from .data.RoomData import AreaData
-from .data.AreaNames import MetroidPrimeArea
+from .Config import make_config
+from .Container import MetroidPrimeContainer
 from .DoorRando import (
     WorldDoorColorMapping,
     get_world_door_mapping,
     remap_doors_to_power_beam_if_necessary,
 )
-
-from worlds.LauncherComponents import Component, components, icon_paths, launch_subprocess, SuffixIdentifier, Type  # type: ignore
-import settings
-from worlds.AutoWorld import World, WebWorld
-from .data.Transports import (
-    ELEVATOR_USEFUL_NAMES,
-    default_elevator_mappings,
-    get_random_elevator_mapping,
-)
-from .Config import make_config
-from .Regions import create_regions
-from .Locations import every_location
+from .Enum import MetroidPrimeArea, RoomName, SuitUpgrade
 from .ItemPool import generate_item_pool, generate_base_start_inventory
+from .Items import (
+    MetroidPrimeItem,
+    artifact_table,
+    item_table,
+)
+from .Locations import every_location
 from .PrimeOptions import (
     ArtifactHints,
     BlastShieldRandomization,
@@ -46,20 +40,25 @@ from .PrimeOptions import (
     MetroidPrimeOptions,
     prime_option_groups,
 )
-from .Items import (
-    MetroidPrimeItem,
-    SuitUpgrade,
-    artifact_table,
-    item_table,
-)
+from .Regions import create_regions
+
+from .data.ChozoRuins import ChozoRuinsAreaData
+from .data.MagmoorCaverns import MagmoorCavernsAreaData
+from .data.RoomData import AreaData
+from .data.PhazonMines import PhazonMinesAreaData
+from .data.PhendranaDrifts import PhendranaDriftsAreaData
 from .data.StartRoomData import (
     StartRoomData,
     init_starting_beam,
     init_starting_loadout,
     init_starting_room_data,
 )
-from .Container import MetroidPrimeContainer
-from BaseClasses import MultiWorld, Tutorial, ItemClassification
+from .data.TallonOverworld import TallonOverworldAreaData
+from .data.Transports import (
+    ELEVATOR_USEFUL_NAMES,
+    default_elevator_mappings,
+    get_random_elevator_mapping,
+)
 
 
 class MultiworldWithPassthrough(MultiWorld):

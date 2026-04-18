@@ -1,13 +1,13 @@
-from ..BlastShieldRando import WorldBlastShieldMapping
-from ..Enum import StartRoomDifficulty
-from ..PrimeOptions import DoorColorRandomization
-from ..Items import SuitUpgrade
-from ..data.RoomNames import RoomName
 from typing import Any, TYPE_CHECKING, Dict
+
 from . import MetroidPrimeUniversalTrackerTestBase
+from ..BlastShieldRando import WorldBlastShieldMapping
+from ..Enum import RoomName, StartRoomDifficulty, SuitUpgrade
+from ..PrimeOptions import DoorColorRandomization
 
 if TYPE_CHECKING:
     from .. import MetroidPrimeWorld
+
 slot_data: Dict[str, Any] = {
     "door_color_randomization": DoorColorRandomization.option_regional,
     "starting_room": StartRoomDifficulty.Safe.value,

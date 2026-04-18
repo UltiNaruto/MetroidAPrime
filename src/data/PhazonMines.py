@@ -1,15 +1,7 @@
-from ..Items import SuitUpgrade
-from ..DoorRando import DoorLockType
-from ..LogicCombat import (
-    can_combat_beam_pirates,
-    can_combat_mines,
-    can_combat_omega_pirate,
-)
-from .Tricks import Tricks
-from .RoomNames import RoomName
-from .AreaNames import MetroidPrimeArea
-from .RoomData import AreaData, PickupData, RoomData
 from .DoorData import DoorData
+from .RoomData import AreaData, PickupData, RoomData
+from .Tricks import Tricks
+from ..Enum import DoorLockType, MetroidPrimeArea, RoomName, SuitUpgrade
 from ..Logic import (
     can_backwards_lower_mines,
     can_ball_jump,
@@ -28,6 +20,11 @@ from ..Logic import (
     can_thermal,
     can_wave_beam,
     can_xray,
+)
+from ..LogicCombat import (
+    can_combat_beam_pirates,
+    can_combat_mines,
+    can_combat_omega_pirate,
 )
 
 

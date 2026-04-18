@@ -2,10 +2,9 @@ from typing import TYPE_CHECKING, Dict, List
 
 from NetUtils import NetworkItem
 
+from .Enum import ProgressiveUpgrade, SuitUpgrade
 from .Items import (
     PROGRESSIVE_ITEM_MAPPING,
-    ProgressiveUpgrade,
-    SuitUpgrade,
     custom_suit_upgrade_table,
 )
 from .MetroidPrimeInterface import ITEMS_USED_FOR_LOCATION_TRACKING, InventoryItemData

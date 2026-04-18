@@ -1,6 +1,7 @@
-from enum import StrEnum
 from typing import Dict, List, TYPE_CHECKING, Optional, Union
 from BaseClasses import Item, ItemClassification
+
+from .Enum import ProgressiveUpgrade, SuitUpgrade
 
 if TYPE_CHECKING:
     from . import MetroidPrimeWorld
@@ -27,61 +28,6 @@ class ItemData:
 
 class MetroidPrimeItem(Item):
     game: str = "Metroid Prime"
-
-
-class SuitUpgrade(StrEnum):
-    Power_Beam = "Power Beam"
-    Ice_Beam = "Ice Beam"
-    Wave_Beam = "Wave Beam"
-    Plasma_Beam = "Plasma Beam"
-    Missile_Expansion = "Missile Expansion"
-    Scan_Visor = "Scan Visor"
-    Morph_Ball_Bomb = "Morph Ball Bomb"
-    Power_Bomb_Expansion = "Power Bomb Expansion"
-    Flamethrower = "Flamethrower"
-    Thermal_Visor = "Thermal Visor"
-    Charge_Beam = "Charge Beam"
-    Super_Missile = "Super Missile"
-    Grapple_Beam = "Grapple Beam"
-    X_Ray_Visor = "X-Ray Visor"
-    Ice_Spreader = "Ice Spreader"
-    Space_Jump_Boots = "Space Jump Boots"
-    Morph_Ball = "Morph Ball"
-    Combat_Visor = "Combat Visor"
-    Boost_Ball = "Boost Ball"
-    Spider_Ball = "Spider Ball"
-    Power_Suit = "Power Suit"
-    Gravity_Suit = "Gravity Suit"
-    Varia_Suit = "Varia Suit"
-    Phazon_Suit = "Phazon Suit"
-    Energy_Tank = "Energy Tank"
-    Wavebuster = "Wavebuster"
-    Unlimited_Missiles = "Unlimited Missiles"
-    Unlimited_Power_Bombs = "Unlimited Power Bombs"
-    Missile_Launcher = "Missile Launcher"
-    Main_Power_Bomb = "Power Bomb (Main)"
-    Spring_Ball = "Spring Ball"
-    Power_Charge_Beam = "Charge Beam (Power)"
-    Wave_Charge_Beam = "Charge Beam (Wave)"
-    Ice_Charge_Beam = "Charge Beam (Ice)"
-    Plasma_Charge_Beam = "Charge Beam (Plasma)"
-    Nothing = "Nothing"
-    #Floaty_Jump = "Floaty Jump"
-    #Ice_Trap = "Ice Trap"
-
-    def __str__(self):
-        return self.value
-
-
-class ProgressiveUpgrade(StrEnum):
-    Progressive_Power_Beam = "Progressive Power Beam"
-    Progressive_Ice_Beam = "Progressive Ice Beam"
-    Progressive_Wave_Beam = "Progressive Wave Beam"
-    Progressive_Plasma_Beam = "Progressive Plasma Beam"
-    Progressive_Bomb = "Progressive Bomb"
-
-    def __str__(self):
-        return self.value
 
 
 PROGRESSIVE_ITEM_MAPPING: Dict[ProgressiveUpgrade, List[SuitUpgrade]] = {

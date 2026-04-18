@@ -1,4 +1,5 @@
-from ..Items import PROGRESSIVE_ITEM_MAPPING, ProgressiveUpgrade, SuitUpgrade
+from ..Enum import ProgressiveUpgrade, SuitUpgrade
+from ..Items import PROGRESSIVE_ITEM_MAPPING
 from . import MetroidPrimeTestBase
 
 

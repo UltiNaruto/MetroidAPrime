@@ -1,11 +1,10 @@
+from typing import TYPE_CHECKING
+
 from BaseClasses import CollectionState
-from ..BlastShieldRando import BlastShieldType
-from ..DoorRando import DoorLockType
-from ..LogicCombat import can_combat_flaahgra, can_combat_ghosts
-from ..Items import SuitUpgrade
-from ..data.AreaNames import MetroidPrimeArea
-from .RoomData import AreaData, PickupData, RoomData
 from .DoorData import DoorData
+from .RoomData import AreaData, PickupData, RoomData
+from .Tricks import Tricks
+from ..Enum import BlastShieldType, DoorLockType, MetroidPrimeArea, RoomName, SuitUpgrade
 from ..Logic import (
     can_ball_jump,
     can_bomb,
@@ -27,9 +26,7 @@ from ..Logic import (
     has_energy_tanks,
     has_power_bomb_count,
 )
-from ..data.Tricks import Tricks
-from .RoomNames import RoomName
-from typing import TYPE_CHECKING
+from ..LogicCombat import can_combat_flaahgra, can_combat_ghosts
 
 if TYPE_CHECKING:
     from .. import MetroidPrimeWorld

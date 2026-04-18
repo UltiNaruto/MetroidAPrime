@@ -1,7 +1,5 @@
-from ..data.RoomNames import RoomName
-from ..Items import SuitUpgrade
-from ..data.Tricks import TrickDifficulty
 from . import MetroidPrimeTestBase
+from ..Enum import RoomName, SuitUpgrade, TrickDifficulty
 
 
 class TestScanVisorShuffled(MetroidPrimeTestBase):

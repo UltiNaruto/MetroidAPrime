@@ -3,7 +3,6 @@ import struct
 from typing import TYPE_CHECKING, List, Optional
 import zipfile
 from worlds.Files import APPlayerContainer
-import py_randomprime  # type: ignore
 
 
 from .MetroidPrimeInterface import GAMES, HUD_MESSAGE_DURATION
@@ -105,6 +104,8 @@ def slwi(
 
 
 def construct_hook_patch(game_version: str, progressive_beams: bool) -> List[int]:
+    import py_randomprime  # type: ignore
+
     from ppc_asm.assembler.ppc import (
         addi,
         bl,

@@ -1,12 +1,12 @@
 from typing import List
+
 from Fill import distribute_items_restrictive
-from ..Enum import StartRoomDifficulty
-from ..PrimeOptions import BlastShieldRandomization
-from ..Items import SuitUpgrade
-from ..data.RoomNames import RoomName
-from ..data.StartRoomData import all_start_rooms
+
 from . import MetroidPrimeTestBase, MetroidPrimeWithOverridesTestBase
 from .. import MetroidPrimeWorld
+from ..Enum import RoomName, StartRoomDifficulty, SuitUpgrade
+from ..PrimeOptions import BlastShieldRandomization
+from ..data.StartRoomData import all_start_rooms
 
 
 class TestStartingRoomsGenerate(MetroidPrimeWithOverridesTestBase):

@@ -7,7 +7,7 @@ import sys
 from importlib.metadata import version, PackageNotFoundError
 from typing import List
 
-from .Items import SuitUpgrade
+from .Enum import SuitUpgrade
 
 
 LIBS: dict[str, dict[str, dict[str, str]|str]] = {

@@ -1,26 +1,25 @@
 import math
+from typing import Any, Dict, TYPE_CHECKING, List, Tuple
+
 from Fill import distribute_items_restrictive
-from ..PrimeOptions import BlastShieldRandomization, DoorColorRandomization
-from ..data.DoorData import get_door_data_by_room_names
-from ..data.BlastShieldRegions import get_valid_blast_shield_regions_by_area
-from ..data.RoomData import AreaData
-from ..data.AreaNames import MetroidPrimeArea
+
+from . import MetroidPrimeTestBase, MetroidPrimeWithOverridesTestBase
 from ..BlastShieldRando import (
     MAX_BEAM_COMBO_DOORS_PER_AREA,
     AreaBlastShieldMapping,
-    BlastShieldType,
     WorldBlastShieldMapping,
 )
-from ..DoorRando import DoorLockType, WorldDoorColorMapping
 from ..Config import make_config
-from ..data.RoomNames import RoomName
-from ..Items import ProgressiveUpgrade, SuitUpgrade
-from . import MetroidPrimeTestBase, MetroidPrimeWithOverridesTestBase
-from typing import Any, Dict, TYPE_CHECKING, List, Tuple
+from ..DoorRando import WorldDoorColorMapping
+from ..Enum import BlastShieldType, DoorLockType, MetroidPrimeArea, ProgressiveUpgrade, RoomName, SuitUpgrade
+from ..PrimeOptions import BlastShieldRandomization, DoorColorRandomization
+from ..data.DoorData import get_door_data_by_room_names
+from ..data.BlastShieldRegions import get_valid_blast_shield_regions_by_area
+from ..data.ChozoRuins import ChozoRuinsAreaData
+from ..data.MagmoorCaverns import MagmoorCavernsAreaData
 from ..data.PhazonMines import PhazonMinesAreaData
 from ..data.PhendranaDrifts import PhendranaDriftsAreaData
-from ..data.MagmoorCaverns import MagmoorCavernsAreaData
-from ..data.ChozoRuins import ChozoRuinsAreaData
+from ..data.RoomData import AreaData
 from ..data.TallonOverworld import TallonOverworldAreaData
 
 if TYPE_CHECKING:

@@ -4,8 +4,8 @@ import struct
 from typing import Any, Dict, Optional, Union
 
 from .DolphinClient import GC_GAME_ID_ADDRESS, DolphinClient, DolphinException
-from enum import Enum
 import py_randomprime  # type: ignore
+from .Enum import ConnectionState, MetroidPrimeLevel, MetroidPrimeSuit, SuitUpgrade
 from .Items import (
     custom_suit_upgrade_table,
     get_artifact_layer_from_item_index,
@@ -14,7 +14,6 @@ from .Items import (
     misc_item_table,
     progressive_beam_to_beam,
     suit_upgrade_table,
-    SuitUpgrade,
 )
 
 _SUPPORTED_VERSIONS = ["0-00", "0-01", "0-02", "jpn", "kor", "pal"]
@@ -99,44 +98,6 @@ ARTIFACT_TEMPLE_ROOM_INDEX = 16
 HUD_MESSAGE_DURATION = 7.0
 HUD_MAX_MESSAGE_SIZE = 194
 WORLD_STATE_SIZE = 0x18
-
-
-class ConnectionState(Enum):
-    DISCONNECTED = 0
-    IN_GAME = 1
-    IN_MENU = 2
-    MULTIPLE_DOLPHIN_INSTANCES = 3
-
-
-class MetroidPrimeSuit(Enum):
-    Power = 0
-    Gravity = 1
-    Varia = 2
-    Phazon = 3
-    FusionPower = 4
-    FusionGravity = 5
-    FusionVaria = 6
-    FusionPhazon = 7
-
-    @staticmethod
-    def get_by_key(key: str):
-        for suit in MetroidPrimeSuit:
-            if suit.name == key:
-                return suit
-        return None
-
-
-class MetroidPrimeLevel(Enum):
-    """Game worlds with their corresponding IDs in memory"""
-
-    Impact_Crater = 3241871825
-    Phendrana_Drifts = 2831049361
-    Frigate_Orpheon = 361692695
-    Magmoor_Caverns = 1056449404
-    Phazon_Mines = 2980859237
-    Tallon_Overworld = 972217896
-    Chozo_Ruins = 2214002543
-    End_of_Game = 332894565
 
 
 def world_by_id(mlvl: int) -> Optional[MetroidPrimeLevel]:

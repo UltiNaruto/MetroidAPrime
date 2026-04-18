@@ -1,15 +1,14 @@
 from typing import cast, List, TYPE_CHECKING
 from BaseClasses import ItemClassification
 
-from .PrimeOptions import BlastShieldAvailableTypes, BlastShieldRandomization, SpringBall
+from .Enum import ProgressiveUpgrade, SuitUpgrade
 from .Items import (
     PROGRESSIVE_ITEM_MAPPING,
     MetroidPrimeItem,
-    ProgressiveUpgrade,
-    SuitUpgrade,
     get_item_for_options,
     artifact_table,
 )
+from .PrimeOptions import BlastShieldAvailableTypes, BlastShieldRandomization, SpringBall
 
 if TYPE_CHECKING:
     from . import MetroidPrimeWorld

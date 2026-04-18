@@ -1,8 +1,8 @@
 import math
 
 from BaseClasses import CollectionState
-from .data.RoomNames import RoomName
-from .Items import ProgressiveUpgrade, SuitUpgrade, get_progressive_upgrade_for_item
+from .Enum import ProgressiveUpgrade, RoomName, SuitUpgrade
+from .Items import get_progressive_upgrade_for_item
 from .PrimeUtils import count_ammo
 
 from typing import TYPE_CHECKING, Optional

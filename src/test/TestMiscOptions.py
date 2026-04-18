@@ -1,7 +1,6 @@
-from ..Items import SuitUpgrade
-from ..data.RoomNames import RoomName
-from .. import MetroidPrimeWorld
 from . import MetroidPrimeTestBase
+from .. import MetroidPrimeWorld
+from ..Enum import RoomName, SuitUpgrade
 
 
 class TestNonVariaHeatDamageFalse(MetroidPrimeTestBase):

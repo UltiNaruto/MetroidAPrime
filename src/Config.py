@@ -1,17 +1,14 @@
 import os
 from typing import TYPE_CHECKING, Dict, Any, List
 
-from .PrimeUtils import count_ammo, get_apworld_version
+from .Enum import HudColor, MetroidPrimeArea, ProgressiveUpgrade, SuitUpgrade
 from .Items import (
     artifact_table,
     PROGRESSIVE_BEAM_ITEM_EXCLUSION_LIST,
     PROGRESSIVE_BOMB_ITEM_EXCLUSION_LIST,
-    ProgressiveUpgrade,
-    SuitUpgrade,
 )
-
-from .PrimeOptions import ArtifactHints, HudColor, MetroidPrimeOptions, SpringBall
-from .data.RoomData import MetroidPrimeArea
+from .PrimeOptions import ArtifactHints, MetroidPrimeOptions, SpringBall
+from .PrimeUtils import count_ammo, get_apworld_version
 from .data.Transports import get_transport_data
 
 MAX_32_BIT_INT = 0x7FFFFFFF
