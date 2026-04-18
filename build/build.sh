@@ -236,6 +236,7 @@ function main() {
 
     mk_apworld "${project}" "${destdir}"
     cp_data "${project}" "${destdir}"
+    cp "${destdir}/${GAME}.apworld" "${target_path}/${GAME}.apworld"
     bundle "${destdir}" "${target_path}/${bundle}.zip"
     echo "! Bundle finalized as ${target_path}/${bundle}.zip"
     rm --force --recursive "${destdir}"
