@@ -20,7 +20,7 @@ async def handle_receive_items(
     # current_index = ctx.game_interface.get_last_received_index()
     for index, network_item in enumerate(ctx.items_received):
         # skip starting items since they are now handled locally
-        if index < ctx.slot_data["first_non_starting_item_index"]:
+        if index < ctx.slot_data.get("first_non_starting_item_index", 0):
             continue
 
         item_data = inventory_item_by_network_id(network_item.item, current_items)
