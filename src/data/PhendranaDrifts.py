@@ -125,10 +125,7 @@ class PhendranaDriftsAreaData(AreaData):
                     0: DoorData(RoomName.Temple_Entryway),
                     1: DoorData(
                         RoomName.Chapel_Tunnel,
-                        rule_func=lambda world, state: (
-                            can_bomb(world, state) or
-                            (can_power_bomb(world, state, 2) or can_ball_jump(world, state))
-                        )
+                        rule_func=lambda world, state: can_bomb(world, state)
                         and can_space_jump(world, state)
                         and can_missile(world, state),
                         tricks=[Tricks.ice_temple_to_chapel_no_sj],
