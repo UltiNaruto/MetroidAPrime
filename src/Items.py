@@ -114,14 +114,30 @@ def __get_power_bomb_item(world: "MetroidPrimeWorld") -> SuitUpgrade:
 def get_item_for_options(
     world: "MetroidPrimeWorld", item: SuitUpgrade
 ) -> Union[SuitUpgrade, ProgressiveUpgrade]:
+    spring_ball_option = world.options.spring_ball.current_option_name.lower()
+    is_progressive_beam_item = world.options.progressive_beam_upgrades and item in [
+        *PROGRESSIVE_BEAM_ITEM_EXCLUSION_LIST,
+        SuitUpgrade.Power_Charge_Beam,
+        SuitUpgrade.Wave_Charge_Beam,
+        SuitUpgrade.Ice_Charge_Beam,
+        SuitUpgrade.Plasma_Charge_Beam,
+    ]
+    is_progressive_bomb_item = (
+        spring_ball_option == "its own progressive item" and
+        item in PROGRESSIVE_BOMB_ITEM_EXCLUSION_LIST
+    )
+
     if item == SuitUpgrade.Missile_Launcher:
         return __get_missile_item(world)
+
     if item == SuitUpgrade.Main_Power_Bomb:
         return __get_power_bomb_item(world)
-    if world.options.progressive_beam_upgrades or world.options.spring_ball.current_option_name.lower() == "its own progressive item":
+
+    if is_progressive_beam_item or is_progressive_bomb_item:
         progressive_upgrade = get_progressive_upgrade_for_item(item)
         if progressive_upgrade is not None:
             return progressive_upgrade
+
     return item
 
 
