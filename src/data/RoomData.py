@@ -179,6 +179,23 @@ class RoomData:
         return None
 
 
+def sub_region_access_rule_func(
+        state: CollectionState,
+        world: "MetroidPrimeWorld",
+        origin_door_data: DoorData,
+        target_door_data: DoorData,
+):
+    meets_origin_door_requirements = (
+        origin_door_data.sub_region_access_override(world, state)
+        and _can_open_door(world, state, origin_door_data)
+        if origin_door_data.sub_region_access_override is not None
+        else _can_access_door(world, state, origin_door_data)
+    )  # Use override if any, otherwise use default access rule
+    return meets_origin_door_requirements and _can_open_door(
+        world, state, target_door_data
+    )
+
+
 class AreaData:
     def __init__(self, area_name: str):
         self.rooms: Dict[RoomName, RoomData] = {}
@@ -263,22 +280,6 @@ class AreaData:
 
                     if shield_applied:
                         door_data.lock = DoorLockType.Blue
-
-                def sub_region_access_rule_func(
-                    state: CollectionState,
-                    world: "MetroidPrimeWorld",
-                    origin_door_data: DoorData,
-                    target_door_data: DoorData,
-                ):
-                    meets_origin_door_requirements = (
-                        origin_door_data.sub_region_access_override(world, state)
-                        and _can_open_door(world, state, origin_door_data)
-                        if origin_door_data.sub_region_access_override is not None
-                        else _can_access_door(world, state, origin_door_data)
-                    )  # Use override if any, otherwise use default access rule
-                    return meets_origin_door_requirements and _can_open_door(
-                        world, state, target_door_data
-                    )
 
                 def get_connection_name(
                     door_data: DoorData,
