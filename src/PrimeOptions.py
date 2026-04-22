@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import List
 from Options import (
     DeathLink,
@@ -13,7 +12,7 @@ from Options import (
 )
 from dataclasses import dataclass
 
-from .Enum import CombatLogicDifficulty, HudColor, StartRoomDifficulty
+from .Enum import CombatLogicDifficulty, StartRoomDifficulty
 from .data.Tricks import TrickInfo, Tricks
 
 
