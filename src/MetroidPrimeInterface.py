@@ -444,12 +444,11 @@ class MetroidPrimeInterface:
                     break
 
             # This is most likely a game swap, don't notify about the game swap
-            if re.match(r'[A-Z|0-9]{6}', game_id.decode()) is None:
-                self.current_game = None
-                self.game_id_error = None
-                self.game_rev_error = 0
-                self.is_vanilla_iso_error = False
-                self.dolphin_client.disconnect()
+            try:
+                if re.match(r'[A-Z|0-9]{6}', game_id.decode()) is None:
+                    raise RuntimeError
+            except (UnicodeDecodeError, RuntimeError):
+                self.disconnect_from_game()
                 return
 
             # Check if we play a randomized iso
@@ -470,16 +469,22 @@ class MetroidPrimeInterface:
                 if game_rev:
                     self.game_rev_error = game_rev
                 self.is_vanilla_iso_error = is_vanilla_iso
-                self.dolphin_client.disconnect()
+                self.disconnect_from_game(notify=False)
 
             if self.current_game and not is_vanilla_iso:
                 self.logger.info(f"Metroid Prime Disc Version: {self.current_game}")
         except DolphinException:
             pass
 
-    def disconnect_from_game(self):
+    def disconnect_from_game(self, reset=False, notify=True) -> None:
+        if reset:
+            self.current_game = None
+            self.game_id_error = None
+            self.game_rev_error = 0
+            self.is_vanilla_iso_error = False
         self.dolphin_client.disconnect()
-        self.logger.info("Disconnected from Dolphin Emulator")
+        if notify:
+            self.logger.info("Disconnected from Dolphin Emulator")
 
     def get_connection_state(self):
         try:
