@@ -52,19 +52,20 @@ def generate_item_pool(world: "MetroidPrimeWorld") -> List[MetroidPrimeItem]:
     ]
 
     # Add missiles
-    progressive_missiles = 8
+    progressive_missiles = 7 if world.options.missile_launcher else 8
     for _ in range(progressive_missiles):
         items.append(
             world.create_item(
                 SuitUpgrade.Missile_Expansion.value, ItemClassification.progression
             )
         )
-    items.append(
-        world.create_item(
-            get_item_for_options(world, SuitUpgrade.Missile_Launcher).value,
-            ItemClassification.progression,
+    if world.options.missile_launcher:
+        items.append(
+            world.create_item(
+                SuitUpgrade.Missile_Launcher.value,
+                ItemClassification.progression,
+            )
         )
-    )
 
     # Add power bombs
     max_power_bombs = 5
