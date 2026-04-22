@@ -293,12 +293,6 @@ class MetroidPrimeWorld(World):
         item_pool = generate_item_pool(self)
         self.multiworld.itempool += item_pool
 
-    def pre_fill(self) -> None:
-        for location_name, item_name in self.prefilled_item_map.items():
-            location = self.get_location(location_name)
-            item = self.create_item(item_name, ItemClassification.progression)
-            location.place_locked_item(item)
-
     def set_rules(self) -> None:
         self.multiworld.completion_condition[self.player] = lambda state: (
             state.can_reach("Mission Complete", "Region", self.player)

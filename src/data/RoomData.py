@@ -4,6 +4,7 @@ import typing
 
 from BaseClasses import (
     CollectionState,
+    ItemClassification,
     LocationProgressType,
     Region,
 )
@@ -13,6 +14,7 @@ from .DoorData import DoorData
 from .OffworldModels import get_offworld_model
 from ..BlastShieldRando import DoorShieldFromBlastShieldType
 from ..Enum import BlastShieldType, DoorLockType, MetroidPrimeArea, ProgressiveUpgrade, RoomName, SuitUpgrade
+from ..Items import get_item_for_options
 from ..Locations import MetroidPrimeLocation, every_location
 from ..Logic import (
     can_beam_combo,
@@ -231,6 +233,11 @@ class AreaData:
                 location.access_rule = (
                     lambda state, w=world, p=pickup: _can_reach_pickup(w, state, p)
                 )
+
+                if location.name in world.prefilled_item_map.keys():
+                    item_name = world.prefilled_item_map[location.name]
+                    item = world.create_item(item_name, ItemClassification.progression)
+                    location.place_locked_item(item)
 
         # Once each region is created, connect the doors and assign their locks
         color_mapping: Dict[str, str] = (
