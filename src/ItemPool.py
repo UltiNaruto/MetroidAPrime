@@ -68,19 +68,31 @@ def generate_item_pool(world: "MetroidPrimeWorld") -> List[MetroidPrimeItem]:
         )
 
     # Add power bombs
-    max_power_bombs = 5
-    for _ in range(0, max_power_bombs - 1):  # Main PB option will add one more
+    progressive_power_bombs = not world.options.main_power_bomb
+    remaining_pb = 4 if world.options.main_power_bomb else 8
+    pb_expansion_decrement = 1 if world.options.main_power_bomb else 4
+    while remaining_pb > 0:
         items.append(
             world.create_item(
-                SuitUpgrade.Power_Bomb_Expansion.value, ItemClassification.useful
+                SuitUpgrade.Power_Bomb_Expansion.value,
+                ItemClassification.progression
+                if progressive_power_bombs
+                else ItemClassification.useful
             )
         )
-    items.append(
-        world.create_item(
-            get_item_for_options(world, SuitUpgrade.Main_Power_Bomb).value,
-            ItemClassification.progression,
+        remaining_pb -= pb_expansion_decrement
+        if pb_expansion_decrement == 4:
+            pb_expansion_decrement = 1
+        # Make sure we only considers the first PB Expansion as progressive
+        # if required mains is not on
+        progressive_power_bombs = False
+    if world.options.main_power_bomb:
+        items.append(
+            world.create_item(
+                SuitUpgrade.Main_Power_Bomb.value,
+                ItemClassification.progression,
+            )
         )
-    )
 
     # Add energy tanks
     max_tanks = 14
