@@ -25,6 +25,7 @@ class ConnectionState(Enum):
     IN_GAME = 1
     IN_MENU = 2
     MULTIPLE_DOLPHIN_INSTANCES = 3
+    VANILLA_ROM_DETECTED = 4
 
 
 class DoorLockType(StrEnum):

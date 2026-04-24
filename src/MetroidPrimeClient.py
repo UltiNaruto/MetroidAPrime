@@ -108,6 +108,7 @@ status_messages = {
     ConnectionState.IN_MENU: "Connected to game, waiting for game to start",
     ConnectionState.DISCONNECTED: "Unable to connect to the Dolphin instance, attempting to reconnect...",
     ConnectionState.MULTIPLE_DOLPHIN_INSTANCES: "Warning: Multiple Dolphin instances detected, client may not function correctly.",
+    ConnectionState.VANILLA_ROM_DETECTED: "Warning: Connected to a non-randomized Metroid Prime game"
 }
 
 
@@ -328,7 +329,10 @@ async def _handle_game_not_ready(ctx: MetroidPrimeContext):
     ctx.game_interface.reset_relay_tracker_cache()
     if ctx.connection_state == ConnectionState.DISCONNECTED:
         ctx.game_interface.connect_to_game()
-    elif ctx.connection_state == ConnectionState.IN_MENU:
+    elif ctx.connection_state in [
+        ConnectionState.IN_MENU,
+        ConnectionState.VANILLA_ROM_DETECTED,
+    ]:
         await asyncio.sleep(3)
 
 

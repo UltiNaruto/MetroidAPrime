@@ -170,16 +170,20 @@ class MetroidPrimeInterface:
     dolphin_client: DolphinClient
     connection_status: str
     logger: Logger
-    _previous_message_size: int = 0
-    game_id_error: Optional[str] = None
+    _previous_message_size: int
+    game_id_error: Optional[str]
     game_rev_error: int
-    is_vanilla_iso_error: bool = False
     current_game: Optional[str]
     relay_trackers: Optional[Dict[str, dict[str, Union[str, int, list[int]]]]]
 
     def __init__(self, logger: Logger) -> None:
-        self.logger = logger
+        self._previous_message_size = 0
+        self.current_game = None
         self.dolphin_client = DolphinClient(logger)
+        self.game_id_error = None
+        self.game_rev_error = 0
+        self.logger = logger
+        self.relay_trackers = None
 
     def give_item_to_player(
         self,
@@ -405,7 +409,6 @@ class MetroidPrimeInterface:
         if self.current_game:
             if self.current_game in ["pal", "jpn"]:
                 if self.dolphin_client.read_address(GAMES[self.current_game]["aMetroidPrime"], 12) == b"MetroidPrime":
-                    self.current_game = None
                     return True
             else:
                 _addresses = [
@@ -417,14 +420,14 @@ class MetroidPrimeInterface:
                         b"MetroidPrime A",
                         b"MetroidPrime B",
                     ]:
-                        self.current_game = None
                         return True
         return False
 
     def connect_to_game(self):
         """Initializes the connection to dolphin and verifies it is connected to Metroid Prime"""
         try:
-            self.dolphin_client.connect()
+            if not self.dolphin_client.is_connected():
+                self.dolphin_client.connect()
             game_id = self.dolphin_client.read_address(GC_GAME_ID_ADDRESS, 6)
             try:
                 game_rev: Optional[int] = self.dolphin_client.read_address(
@@ -448,49 +451,43 @@ class MetroidPrimeInterface:
                 if re.match(r'[A-Z|0-9]{6}', game_id.decode()) is None:
                     raise RuntimeError
             except (UnicodeDecodeError, RuntimeError):
-                self.disconnect_from_game()
+                self.disconnect_from_game(notify=False)
                 return
-
-            # Check if we play a randomized iso
-            is_vanilla_iso = self.is_vanilla_game()
 
             if (
                 self.current_game is None
                 and self.game_id_error != game_id
                 and game_id != b"\x00\x00\x00\x00\x00\x00"
             ):
-                if is_vanilla_iso and self.is_vanilla_iso_error != is_vanilla_iso:
-                    self.logger.info("This game is not randomized!")
-                else:
-                    self.logger.info(
-                        f"Connected to the wrong game ({game_id}, rev {game_rev}), please connect to Metroid Prime GC (Game ID starts with a GM8)"
-                    )
+                self.logger.info(
+                    f"Connected to the wrong game ({game_id}, rev {game_rev}), please connect to Metroid Prime GC (Game ID starts with a GM8)"
+                )
                 self.game_id_error = game_id
                 if game_rev:
                     self.game_rev_error = game_rev
-                self.is_vanilla_iso_error = is_vanilla_iso
-                self.disconnect_from_game(notify=False)
+                self.disconnect_from_game(reset=False, notify=False)
 
-            if self.current_game and not is_vanilla_iso:
+            if self.current_game and not self.is_vanilla_game():
                 self.logger.info(f"Metroid Prime Disc Version: {self.current_game}")
         except DolphinException:
             pass
 
-    def disconnect_from_game(self, reset=False, notify=True) -> None:
+    def disconnect_from_game(self, reset=True, notify=True) -> None:
         if reset:
             self.current_game = None
             self.game_id_error = None
             self.game_rev_error = 0
-            self.is_vanilla_iso_error = False
         self.dolphin_client.disconnect()
         if notify:
             self.logger.info("Disconnected from Dolphin Emulator")
 
     def get_connection_state(self):
         try:
-            connected = self.dolphin_client.is_connected() and not self.is_vanilla_game()
+            connected = self.dolphin_client.is_connected()
             if not connected or self.current_game is None:
                 return ConnectionState.DISCONNECTED
+            elif self.is_vanilla_game():
+                return ConnectionState.VANILLA_ROM_DETECTED
             elif self.is_in_playable_state():
                 return ConnectionState.IN_GAME
             else:
