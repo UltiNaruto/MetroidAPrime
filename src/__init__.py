@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, TextIO, Union, cast
 
 from BaseClasses import MultiWorld, Tutorial, ItemClassification
 from Options import NumericOption
-from worlds.LauncherComponents import Component, components, icon_paths, launch_subprocess, SuffixIdentifier, Type  # type: ignore
+from worlds.LauncherComponents import Component, components, icon_paths, launch, SuffixIdentifier, Type  # type: ignore
 from worlds.AutoWorld import World, WebWorld
 
 from .BlastShieldRando import (
@@ -62,10 +62,10 @@ class MultiworldWithPassthrough(MultiWorld):
     re_gen_passthrough: Dict[str, Dict[str, Any]] = {}
 
 
-def run_client(*_args: Any):
-    from .MetroidPrimeClient import launch
+def run_client(*_args: str):
+    from .MetroidPrimeClient import main
 
-    launch_subprocess(launch, name="MetroidPrimeClient")
+    launch(main, name="MetroidPrimeClient", args=_args)
 
 
 components.append(

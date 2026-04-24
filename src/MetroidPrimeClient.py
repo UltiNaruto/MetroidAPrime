@@ -149,7 +149,7 @@ class MetroidPrimeContext(CommonContext):
     apmp1_file: Optional[str] = None
 
     def __init__(
-        self, server_address: str, password: str, apmp1_file: Optional[str] = None
+        self, server_address: Optional[str], password: Optional[str], apmp1_file: Optional[str] = None
     ):
         super().__init__(server_address, password)
         self.game_interface = MetroidPrimeInterface(logger)
@@ -474,25 +474,20 @@ async def patch_and_run_game(apmp1_file: str):
     Utils.async_start(run_game(output_path))
 
 
-def launch():
+def main(*args: str):
     Utils.init_logging("MetroidPrime Client")
 
-    async def main():
+    async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str]) -> None:
         from .PrimeUtils import setup_libs
         setup_libs()
 
         multiprocessing.freeze_support()
         logger.info("main")
-        parser = get_base_parser()
-        parser.add_argument(
-            "apmp1_file", default="", type=str, nargs="?", help="Path to an apmp1 file"
-        )
-        args = parser.parse_args()
 
-        ctx = MetroidPrimeContext(args.connect, args.password, args.apmp1_file)
+        ctx = MetroidPrimeContext(connect, password, apmp1_file)
 
-        if args.apmp1_file:
-            slot = get_options_from_apmp1(args.apmp1_file)["player_name"]
+        if apmp1_file:
+            slot = get_options_from_apmp1(apmp1_file)["player_name"]
             if slot:
                 ctx.auth = slot
 
@@ -508,6 +503,10 @@ def launch():
         )
 
         await ctx.exit_event.wait()
+        # Reusing https://github.com/ArchipelagoMW/Archipelago/blob/0.6.7/worlds/tww/TWWClient.py#L718-L719
+        # Wake the sync task, if it is currently sleeping, so it can start shutting down when it sees that the
+        # exit_event is set.
+        ctx.watcher_event.set()
         ctx.server_address = None
 
         await ctx.shutdown()
@@ -516,13 +515,14 @@ def launch():
             await asyncio.sleep(3)
             await ctx.dolphin_sync_task
 
+    parser = get_base_parser()
+    parser.add_argument(
+        "apmp1_file", default="", type=str, nargs="?", help="Path to an apmp1 file"
+    )
+    parser_args = parser.parse_args(args)
+
     import colorama
 
     colorama.init()
-
-    asyncio.run(main())
+    asyncio.run(_main(parser_args.connect, parser_args.password, parser_args.apmp1_file))
     colorama.deinit()
-
-
-if __name__ == "__main__":
-    launch()
