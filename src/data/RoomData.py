@@ -14,7 +14,6 @@ from .DoorData import DoorData
 from .OffworldModels import get_offworld_model
 from ..BlastShieldRando import DoorShieldFromBlastShieldType
 from ..Enum import BlastShieldType, DoorLockType, MetroidPrimeArea, ProgressiveUpgrade, RoomName, SuitUpgrade
-from ..Items import get_item_for_options
 from ..Locations import MetroidPrimeLocation, every_location
 from ..Logic import (
     can_beam_combo,
