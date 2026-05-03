@@ -184,14 +184,20 @@ class MetroidPrimeContext(CommonContext):
     apmp1_file: Optional[str] = None
 
     def __init__(
-        self, server_address: Optional[str], password: Optional[str], apmp1_file: Optional[str] = None
+        self,
+        server_address: Optional[str],
+        password: Optional[str],
+        apmp1_file: Optional[str] = None,
+        mp1_iso: Optional[str] = None,
     ):
         super().__init__(server_address, password)
+
         self.game_interface = MetroidPrimeInterface(logger)
         self.notification_manager = NotificationManager(
             HUD_MESSAGE_DURATION, self.game_interface.send_hud_message
         )
         self.apmp1_file = apmp1_file
+        self.mp1_iso = mp1_iso
 
     def on_deathlink(self, data: Utils.Dict[str, Utils.Any]) -> None:
         super().on_deathlink(data)
@@ -531,7 +537,7 @@ async def dolphin_sync_task(ctx: MetroidPrimeContext):
         pass
 
     if ctx.apmp1_file:
-        Utils.async_start(patch_and_run_game(ctx.apmp1_file))
+        Utils.async_start(patch_and_run_game(ctx.apmp1_file, ctx.mp1_iso))
 
     logger.info("Starting Dolphin Connector, attempting to connect to emulator...")
 
@@ -745,12 +751,12 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
     return config_json
 
 
-async def patch_and_run_game(apmp1_file: str):
+async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
     import py_randomprime # type: ignore
 
     metroidprime_options = get_settings()["metroidprime_options"]
     apmp1_file = os.path.abspath(apmp1_file)
-    input_iso_path = metroidprime_options["rom_file"]
+    input_iso_path = metroidprime_options["rom_file"] if mp1_iso is None or mp1_iso == "" else mp1_iso
     base_name = os.path.splitext(apmp1_file)[0]
     output_path = f"{base_name}.iso"
 
@@ -800,14 +806,14 @@ async def patch_and_run_game(apmp1_file: str):
 def main(*args: str):
     Utils.init_logging("MetroidPrime Client")
 
-    async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str]) -> None:
+    async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str], mp1_iso: Optional[str]) -> None:
         from .PrimeUtils import setup_libs
         setup_libs()
 
         multiprocessing.freeze_support()
         logger.info("main")
 
-        ctx = MetroidPrimeContext(connect, password, apmp1_file)
+        ctx = MetroidPrimeContext(connect, password, apmp1_file, mp1_iso)
 
         if apmp1_file:
             slot = get_options_from_apmp1(apmp1_file)["player_name"]
@@ -848,10 +854,13 @@ def main(*args: str):
     parser.add_argument(
         "apmp1_file", default="", type=str, nargs="?", help="Path to an apmp1 file"
     )
+    parser.add_argument(
+        "mp1_iso", default="", type=str, nargs="?", help="Path to Metroid Prime iso"
+    )
     parser_args = parser.parse_args(args)
 
     import colorama
 
     colorama.init()
-    asyncio.run(_main(parser_args.connect, parser_args.password, parser_args.apmp1_file))
+    asyncio.run(_main(parser_args.connect, parser_args.password, parser_args.apmp1_file, parser_args.mp1_iso))
     colorama.deinit()
