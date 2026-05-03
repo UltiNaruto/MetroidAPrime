@@ -113,29 +113,25 @@ async def handle_disable_gravity_suit(
 async def handle_receive_missiles(
     ctx: "MetroidPrimeContext", current_items: Dict[str, InventoryItemData]
 ):
-    # Slot data is required for missiles + Power Bombs so we can check if launcher / main pb are enabled
+    # Handle Missile Expansions
     if ctx.slot_data and "Missile Expansion" in current_items:
-        # Handle Missile Expansions
-        amount_per_expansion = 5
         missile_item = current_items["Missile Expansion"]
         current_capacity = missile_item.current_capacity
         current_amount = missile_item.current_amount
-        new_capacity = 0
+        new_capacity = count_ammo(
+            [
+                inventory_item_by_network_id(i.item, current_items).name
+                for i in ctx.items_received
+            ],
+            SuitUpgrade.Missile_Launcher.value,
+            SuitUpgrade.Missile_Expansion.value,
+            ctx.slot_data.get("missile_launcher", 0) > 0,
+        )
 
-        missile_sender = None
-        has_missile_launcher = not ctx.slot_data["missile_launcher"] or current_items[SuitUpgrade.Missile_Launcher.value].current_capacity > 0
-
-        for network_item in ctx.items_received:
-            item_data = inventory_item_by_network_id(network_item.item, current_items)
-            if item_data is None:
-                continue
-
-            if (
-                    item_data.name == SuitUpgrade.Missile_Launcher.value or
-                    item_data.name == SuitUpgrade.Missile_Expansion.value
-            ):
-                missile_sender = network_item.player
-                new_capacity += amount_per_expansion
+        has_missile_launcher = (
+            ctx.slot_data.get("missile_launcher", 0) == 0 or
+            current_items[SuitUpgrade.Missile_Launcher.value].current_capacity > 0
+        )
 
         diff = new_capacity - current_capacity
         new_amount = min(current_amount + diff, new_capacity)
@@ -143,12 +139,8 @@ async def handle_receive_missiles(
         ctx.game_interface.give_item_to_player(
             missile_item.id, new_amount, new_capacity
         )
-        if missile_sender != ctx.slot and diff > 0 and missile_sender is not None:
-            message = (
-                f"Missile capacity increased by {diff}"
-                if diff > 5
-                else f"Missile capacity increased by {diff} ({ctx.player_names[missile_sender]})"
-            )
+        if diff > 0:
+            message = f"Missile capacity increased by {diff}"
             if not has_missile_launcher:
                 message += " but Missile Launcher is required to use missiles"
             ctx.notification_manager.queue_notification(message)
