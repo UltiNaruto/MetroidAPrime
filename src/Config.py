@@ -167,14 +167,12 @@ def make_credits(world: "MetroidPrimeWorld") -> str:
         SuitUpgrade.Ice_Charge_Beam,
         SuitUpgrade.Plasma_Charge_Beam,
     }
-    if world.starting_beam is None:
-        excluded_items.add(SuitUpgrade.Power_Beam)
-    else:
-        excluded_items.add(SuitUpgrade(world.starting_beam))
     if options.progressive_beam_upgrades.value:
         excluded_items.update(PROGRESSIVE_BEAM_ITEM_EXCLUSION_LIST)
     if options.spring_ball.current_option_name.lower() == "its own progressive item":
         excluded_items.update(PROGRESSIVE_BOMB_ITEM_EXCLUSION_LIST)
+    elif options.spring_ball.current_option_name.lower() != "its own item":
+        excluded_items.add(SuitUpgrade.Spring_Ball)
     if not options.shuffle_scan_visor.value:
         excluded_items.add(SuitUpgrade.Scan_Visor)
     if not options.missile_launcher.value:
@@ -187,8 +185,10 @@ def make_credits(world: "MetroidPrimeWorld") -> str:
         excluded_items.add(SuitUpgrade.Unlimited_Power_Bombs)
 
     spoilers = [f"{style('Major Item Locations', font='C29C51F1', main_color='#89D6FF')}\n"]
-    if options.progressive_beam_upgrades.value:
-        for upgrade in ProgressiveUpgrade:
+    for upgrade in ProgressiveUpgrade:
+        if options.progressive_beam_upgrades.value and upgrade.endswith(' Beam'):
+            spoilers.append(spoil_location(upgrade.value))
+        if options.spring_ball.current_option_name.lower() == "its own progressive item" and upgrade.endswith(' Bomb'):
             spoilers.append(spoil_location(upgrade.value))
     for upgrade in SuitUpgrade:
         if upgrade not in excluded_items:
