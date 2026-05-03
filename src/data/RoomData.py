@@ -155,7 +155,8 @@ class RoomData:
                 if f"{door_id}" not in door_data:
                     door_data[f"{door_id}"] = {}
                 door_data[f"{door_id}"]["shieldType"] = DoorShieldFromBlastShieldType[door.blast_shield]
-                door_data[f"{door_id}"]["blastShieldType"] = door.blast_shield.value
+                if door.blast_shield != BlastShieldType.Disabled:
+                    door_data[f"{door_id}"]["blastShieldType"] = door.blast_shield.value
 
         return door_data
 
