@@ -458,7 +458,7 @@ def init_starting_loadout(world: "MetroidPrimeWorld"):
             if item.value in option_collected_items:
                 world.starting_room_data.local_early_items.remove(item)
 
-    # Clear non starting beam upgrades out of loadout
+    # Clear non-starting beam upgrades out of loadout
     if world.disable_starting_room_bk_prevention:
         world.starting_room_data.selected_loadout.loadout = []
 
@@ -466,6 +466,13 @@ def init_starting_loadout(world: "MetroidPrimeWorld"):
     updated_loadout: List[Union[ProgressiveUpgrade, SuitUpgrade]] = []
     for item in world.starting_room_data.selected_loadout.loadout:
         updated_loadout.append(get_item_for_options(world, cast(SuitUpgrade, item)))
+    world.starting_room_data.selected_loadout.loadout = updated_loadout
+
+    # if non-local item was forced on an item then remove it from starting items
+    updated_loadout = []
+    for item in world.starting_room_data.selected_loadout.loadout:
+        if item not in world.options.non_local_items.value:
+            updated_loadout.append(item)
     world.starting_room_data.selected_loadout.loadout = updated_loadout
 
     # If we are preventing bk then set a few items for prefill if available
