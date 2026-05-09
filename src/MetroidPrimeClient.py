@@ -229,10 +229,7 @@ class MetroidPrimeContext(CommonContext):
                 self.ui.update_power_bomb_expansions(0)
         elif cmd == "ReceivedItems":
             if self.ui:
-                items = [
-                    *[self.item_names.lookup_in_game(i.item, self.game) for i in self.items_received],
-                    #*[self.item_names.lookup_in_game(i.item, self.game) for i in args['items']],
-                ]
+                items = [self.item_names.lookup_in_game(i.item, self.game) for i in self.items_received]
                 missile_ammo = count_ammo(
                     [i for i in items if i.startswith('Missile')],
                     SuitUpgrade.Missile_Launcher.value,
