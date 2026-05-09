@@ -248,8 +248,8 @@ class MetroidPrimeContext(CommonContext):
                 self.ui.update_upgrades(self.slot_data, items)
                 self.ui.update_artifacts(artifact_count)
                 self.ui.update_energy_tanks(etank_count)
-                self.ui.update_missile_expansions(missile_ammo)
-                self.ui.update_power_bomb_expansions(pb_ammo)
+                self.ui.update_missile_expansions(missile_ammo, any([i for i in items if i == SuitUpgrade.Unlimited_Missiles.value]))
+                self.ui.update_power_bomb_expansions(pb_ammo, any([i for i in items if i == SuitUpgrade.Unlimited_Power_Bombs.value]))
 
     # noinspection PyUnresolvedReferences
     def make_gui(self) -> "type[GameManager]":
@@ -507,13 +507,23 @@ class MetroidPrimeContext(CommonContext):
                 if self.etank_text.text != f'{current}':
                     self.etank_text.text = f'{current}'
 
-            def update_missile_expansions(self, current: int) -> None:
-                if self.missile_expansion_text.text != f'{current}':
-                    self.missile_expansion_text.text = f'{current}'
+            def update_missile_expansions(self, current: int, is_unlimited: bool=False) -> None:
+                if is_unlimited:
+                    text = '∞'
+                else:
+                    text = f'{current}'
 
-            def update_power_bomb_expansions(self, current: int) -> None:
-                if self.power_bomb_expansion_text.text != f'{current}':
-                    self.power_bomb_expansion_text.text = f'{current}'
+                if self.missile_expansion_text.text != text:
+                    self.missile_expansion_text.text = text
+
+            def update_power_bomb_expansions(self, current: int, is_unlimited: bool=False) -> None:
+                if is_unlimited:
+                    text = '∞'
+                else:
+                    text = f'{current}'
+
+                if self.power_bomb_expansion_text.text != text:
+                    self.power_bomb_expansion_text.text = text
 
         return MetroidPrimeManager
 
