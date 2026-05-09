@@ -286,6 +286,63 @@ class MetroidPrimeContext(CommonContext):
                     padding=dp(5),
                 )
 
+                artifacts_layout = MDGridLayout(
+                    rows=2,
+                    spacing=dp(3),
+                    size_hint_x=None,
+                    width=dp(40),
+                    row_default_height=dp(32),
+                    row_force_default=True,
+                )
+                artifacts_layout.add_widget(get_image('artifacts.png', 32, 32, True))
+                self.artifacts_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
+                self.artifacts_text.bind(size=_update_text_size)
+                artifacts_layout.add_widget(self.artifacts_text)
+                layout.add_widget(artifacts_layout)
+
+                missile_expansion_layout = MDGridLayout(
+                    rows=2,
+                    spacing=dp(3),
+                    size_hint_x=None,
+                    width=dp(40),
+                    row_default_height=dp(32),
+                    row_force_default=True,
+                )
+                missile_expansion_layout.add_widget(get_image('missileexpansion.png', 32, 32, False))
+                self.missile_expansion_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
+                self.missile_expansion_text.bind(size=_update_text_size)
+                missile_expansion_layout.add_widget(self.missile_expansion_text)
+                layout.add_widget(missile_expansion_layout)
+
+                # Power Bomb Expansion
+                power_bomb_expansion_layout = MDGridLayout(
+                    rows=2,
+                    spacing=dp(3),
+                    size_hint_x=None,
+                    width=dp(40),
+                    row_default_height=dp(32),
+                    row_force_default=True,
+                )
+                power_bomb_expansion_layout.add_widget(get_image('powerbombexpansion.png', 32, 32, False))
+                self.power_bomb_expansion_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
+                self.power_bomb_expansion_text.bind(size=_update_text_size)
+                power_bomb_expansion_layout.add_widget(self.power_bomb_expansion_text)
+                layout.add_widget(power_bomb_expansion_layout)
+
+                etank_layout = MDGridLayout(
+                    rows=2,
+                    spacing=dp(3),
+                    size_hint_x=None,
+                    width=dp(40),
+                    row_default_height=dp(32),
+                    row_force_default=True,
+                )
+                etank_layout.add_widget(get_image('energytank.png', 32, 32, False))
+                self.etank_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
+                self.etank_text.bind(size=_update_text_size)
+                etank_layout.add_widget(self.etank_text)
+                layout.add_widget(etank_layout)
+
                 self.upgrade_icon_w, self.upgrade_icon_h = 24, 24 # noqa
                 self.upgrades_grid = MDGridLayout( # noqa
                     rows=2,
@@ -340,63 +397,6 @@ class MetroidPrimeContext(CommonContext):
                     halign='right',
                     size_hint_x=1,
                 ))
-
-                missile_expansion_layout = MDGridLayout(
-                    rows=2,
-                    spacing=dp(3),
-                    size_hint_x=None,
-                    width=dp(40),
-                    row_default_height=dp(32),
-                    row_force_default=True,
-                )
-                missile_expansion_layout.add_widget(get_image('missileexpansion.png', 32, 32, False))
-                self.missile_expansion_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
-                self.missile_expansion_text.bind(size=_update_text_size)
-                missile_expansion_layout.add_widget(self.missile_expansion_text)
-                layout.add_widget(missile_expansion_layout)
-
-                # Power Bomb Expansion
-                power_bomb_expansion_layout = MDGridLayout(
-                    rows=2,
-                    spacing=dp(3),
-                    size_hint_x=None,
-                    width=dp(40),
-                    row_default_height=dp(32),
-                    row_force_default=True,
-                )
-                power_bomb_expansion_layout.add_widget(get_image('powerbombexpansion.png', 32, 32, False))
-                self.power_bomb_expansion_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
-                self.power_bomb_expansion_text.bind(size=_update_text_size)
-                power_bomb_expansion_layout.add_widget(self.power_bomb_expansion_text)
-                layout.add_widget(power_bomb_expansion_layout)
-
-                etank_layout = MDGridLayout(
-                    rows=2,
-                    spacing=dp(3),
-                    size_hint_x=None,
-                    width=dp(40),
-                    row_default_height=dp(32),
-                    row_force_default=True,
-                )
-                etank_layout.add_widget(get_image('energytank.png', 32, 32, False))
-                self.etank_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
-                self.etank_text.bind(size=_update_text_size)
-                etank_layout.add_widget(self.etank_text)
-                layout.add_widget(etank_layout)
-
-                artifacts_layout = MDGridLayout(
-                    rows=2,
-                    spacing=dp(3),
-                    size_hint_x=None,
-                    width=dp(40),
-                    row_default_height=dp(32),
-                    row_force_default=True,
-                )
-                artifacts_layout.add_widget(get_image('artifacts.png', 32, 32, False))
-                self.artifacts_text: MDLabel = MDLabel(text='0', halign='center', valign='middle', role='large')  # noqa
-                self.artifacts_text.bind(size=_update_text_size)
-                artifacts_layout.add_widget(self.artifacts_text)
-                layout.add_widget(artifacts_layout)
 
                 self.grid.add_widget(layout)
                 return container
