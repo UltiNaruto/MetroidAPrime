@@ -490,6 +490,9 @@ class MetroidPrimeContext(CommonContext):
                     try:
                         idx = self.artifacts_text.text.index('/') + 1
                         goal = int(self.artifacts_text.text[idx:])
+                        # Cap current to goal if artifacts are required
+                        if goal > 0:
+                            current = min(current, goal)
                     except ValueError:
                         goal = 0
 
