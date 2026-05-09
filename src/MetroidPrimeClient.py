@@ -242,7 +242,7 @@ class MetroidPrimeContext(CommonContext):
                     SuitUpgrade.Power_Bomb_Expansion.value,
                     self.slot_data.get('main_power_bomb', 0) == 1,
                 )
-                etank_count = sum([1 for i in items if i == suit_upgrade_table[SuitUpgrade.Energy_Tank].code])
+                etank_count = sum([1 for i in items if i == SuitUpgrade.Energy_Tank.value])
                 artifact_count = sum([1 for i in items if i.startswith('Artifact ')])
 
                 self.ui.update_upgrades(self.slot_data, items)
