@@ -115,6 +115,10 @@ async def handle_receive_missiles(
 ):
     # Handle Missile Expansions
     if ctx.slot_data and "Missile Expansion" in current_items:
+        has_local_player_picked_up_item = (
+            inventory_item_by_network_id(ctx.items_received[len(ctx.items_received) - 1].item, current_items).name.startswith("Missile ") and
+            ctx.items_received[len(ctx.items_received) - 1].player == ctx.slot
+        )
         missile_item = current_items["Missile Expansion"]
         current_capacity = missile_item.current_capacity
         current_amount = missile_item.current_amount
@@ -139,7 +143,7 @@ async def handle_receive_missiles(
         ctx.game_interface.give_item_to_player(
             missile_item.id, new_amount, new_capacity
         )
-        if diff > 0:
+        if not has_local_player_picked_up_item and diff > 0:
             message = f"Missile capacity increased by {diff}"
             if not has_missile_launcher:
                 message += " but Missile Launcher is required to use missiles"
@@ -151,6 +155,10 @@ async def handle_receive_power_bombs(
 ):
     # Handle Power Bomb Expansions
     if ctx.slot_data and SuitUpgrade.Power_Bomb_Expansion.value in current_items:
+        has_local_player_picked_up_item = (
+            inventory_item_by_network_id(ctx.items_received[len(ctx.items_received) - 1].item, current_items).name.startswith("Power Bomb ") and
+            ctx.items_received[len(ctx.items_received) - 1].player == ctx.slot
+        )
         pb_item = current_items[SuitUpgrade.Power_Bomb_Expansion.value]
         current_capacity = pb_item.current_capacity
         current_amount = pb_item.current_amount
@@ -173,7 +181,7 @@ async def handle_receive_power_bombs(
         new_amount = min(current_amount + diff, new_capacity)
 
         ctx.game_interface.give_item_to_player(pb_item.id, new_amount, new_capacity)
-        if diff > 0:
+        if not has_local_player_picked_up_item and diff > 0:
             message = f"Power Bomb capacity increased by {diff}"
             if not has_main_pb:
                 message += " but Power Bomb (Main) is required to use power bombs"
