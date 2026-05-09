@@ -340,6 +340,12 @@ class MetroidPrimeContext(CommonContext):
                 etank_layout.add_widget(self.etank_text)
                 layout.add_widget(etank_layout)
 
+                layout.add_widget(MDLabel(
+                    text='',
+                    size_hint_x=None,
+                    width=dp(1),
+                ))
+
                 self.upgrade_icon_w, self.upgrade_icon_h = 24, 24 # noqa
                 self.upgrades_grid = MDGridLayout( # noqa
                     rows=2,
@@ -388,12 +394,6 @@ class MetroidPrimeContext(CommonContext):
 
                 self.update_upgrades({}, [])
                 layout.add_widget(self.upgrades_grid)
-
-                layout.add_widget(MDLabel(
-                    text='',
-                    halign='right',
-                    size_hint_x=1,
-                ))
 
                 self.grid.add_widget(layout)
                 return container
