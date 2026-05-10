@@ -2,7 +2,7 @@ import time
 from random import Random
 
 from settings import Bool, Group, UserFilePath
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from .Config import PAUSE_MENU_STRG_KEY
 from .Enum import HudColor as EHudColor
@@ -46,6 +46,39 @@ def get_strg(settings: "MetroidPrimeSettings", strg: Dict[str, List[float]]) -> 
             ] = f"{item} (Color: {pause_menu_overrides[item]})"
 
     return strg
+
+
+class RomFile(UserFilePath):
+    """File name of the Metroid Prime ISO"""
+
+    description = "Metroid Prime GC ISO file"
+    copy_to = "Metroid_Prime.iso"
+
+
+class EmulatorSettings(Group):
+    """Settings related to the emulator."""
+    class EmulatorExecutable(UserFilePath):
+        """Path to Dolphin or PrimeHack."""
+
+        is_exe = True
+        description = "Dolphin/PrimeHack Emulator Executable"
+
+    class EmulatorArguments(list):
+        """Arguments to use with Dolphin or PrimeHack."""
+        pass
+
+    class EmulatorAutoStart(Bool):
+        """Should the Emulator be started automatically?"""
+        pass
+
+    executable_path: EmulatorExecutable = EmulatorExecutable(EmulatorExecutable.copy_to)
+    arguments: EmulatorArguments = []
+    auto_start: EmulatorAutoStart = True
+
+    def __init__(self):
+        should_save = any([attr not in self for attr in self])
+        if should_save:
+            self.update({attr: self[attr] for attr in self.__dict__.keys()})
 
 
 class HUDSettings(Group):
@@ -147,6 +180,7 @@ class HUDSettings(Group):
                 raise RuntimeError(f'Unknown color {v} supplied for hud_color!')
         return v
 
+
 class SuitSettings(Group):
     """Settings related to Suit."""
 
@@ -173,6 +207,7 @@ class SuitSettings(Group):
         should_save = any([attr not in self for attr in self])
         if should_save:
             self.update({attr: self[attr] for attr in self.__dict__.keys()})
+
 
 class DefaultGameOptionsSettings(Group):
     """Settings related to default options."""
@@ -311,24 +346,10 @@ class DefaultGameOptionsSettings(Group):
             'swapBeamControls': self['controller_settings']['swap_beam_controls'],
         }
 
-class RomFile(UserFilePath):
-    """File name of the Metroid Prime ISO"""
-
-    description = "Metroid Prime GC ISO file"
-    copy_to = "Metroid_Prime.iso"
-
-
-class RomStart(str):
-    """
-    Set this to false to never autostart a rom (such as after patching),
-    Set it to true to have the operating system default program open the iso
-    Alternatively, set it to a path to a program to open the .iso file with (like Dolplhin)
-    """
-
 
 class MetroidPrimeSettings(Group):
     rom_file: RomFile = RomFile(RomFile.copy_to)
-    rom_start: Union[RomStart, bool] = False
+    emulator_settings: EmulatorSettings = EmulatorSettings()
     hud_settings: HUDSettings = HUDSettings()
     suit_settings: SuitSettings = SuitSettings()
     default_game_settings: DefaultGameOptionsSettings = DefaultGameOptionsSettings()

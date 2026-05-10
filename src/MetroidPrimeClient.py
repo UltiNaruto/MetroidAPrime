@@ -681,17 +681,13 @@ async def _handle_game_not_ready(ctx: MetroidPrimeContext):
 
 async def run_game(romfile: str):
     metroidprime_options = get_settings()["metroidprime_options"]
-    auto_start: bool = metroidprime_options.get(
-        "rom_start", True
-    )
+    auto_start: bool = metroidprime_options['emulator_settings']['auto_start']
+    emulator_path: str = metroidprime_options['emulator_settings']['executable_path']
+    emulator_arguments: list = metroidprime_options['emulator_settings']['arguments']
 
     if auto_start is True and assert_no_running_dolphin():
-        import webbrowser
-
-        webbrowser.open(romfile)
-    elif os.path.isfile(auto_start) and assert_no_running_dolphin():
         subprocess.Popen(
-            [str(auto_start), romfile],
+            [str(emulator_path), romfile, *emulator_arguments],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
