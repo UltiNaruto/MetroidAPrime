@@ -1,11 +1,14 @@
 import asyncio
 import json
+import math
 import multiprocessing
 import os
 import struct
 import subprocess
+import time
 import traceback
 import zipfile
+from random import Random
 
 from typing import Any, cast, DefaultDict, Dict, List, Optional, Tuple, TYPE_CHECKING
 
@@ -40,6 +43,7 @@ from .MetroidPrimeInterface import (
     MetroidPrimeSuit,
 )
 from .NotificationManager import NotificationManager
+from .PrimeSettings import get_strg, get_tweaks
 from .PrimeUtils import get_apworld_version, count_ammo
 
 tracker_loaded = False
@@ -764,29 +768,53 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
 async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
     import py_randomprime # type: ignore
 
-    metroidprime_options = get_settings()["metroidprime_options"]
+    metroidprime_options = get_settings()['metroidprime_options']
     apmp1_file = os.path.abspath(apmp1_file)
-    input_iso_path = metroidprime_options["rom_file"] if mp1_iso is None or mp1_iso == "" else mp1_iso
+    input_iso_path = metroidprime_options['rom_file'] if mp1_iso is None or mp1_iso == '' else mp1_iso
     base_name = os.path.splitext(apmp1_file)[0]
-    output_path = f"{base_name}.iso"
+    output_path = f'{base_name}.iso'
 
     if not os.path.exists(output_path):
         if not zipfile.is_zipfile(apmp1_file):
-            raise Exception(f"Invalid APMP1 file: {apmp1_file}")
+            raise Exception(f'Invalid APMP1 file: {apmp1_file}')
 
         config_json = get_randomprime_config_from_apmp1(apmp1_file)
         options_json = get_options_from_apmp1(apmp1_file)
 
         build_progressive_beam_patch = False
         if options_json:
-            build_progressive_beam_patch = options_json["progressive_beam_upgrades"]
+            build_progressive_beam_patch = options_json['progressive_beam_upgrades']
 
         try:
             game_version = get_version_from_iso(input_iso_path)
 
-            config_json["gameConfig"]["updateHintStateReplacement"] = (
+            config_json['gameConfig']['updateHintStateReplacement'] = (
                 construct_hook_patch(game_version, build_progressive_beam_patch)
             )
+            # HUD settings
+            config_json['tweaks'] = get_tweaks(metroidprime_options)
+            # Suit Settings
+            config_json['strg'] = get_strg(metroidprime_options, config_json['strg'])
+            if metroidprime_options['suit_settings']['randomize_suit_colors']:
+                r = Random(time.time())
+                config_json['preferences']['suitColors'] = {
+                    'gravityDeg': r.randint(1, 35) * 10,
+                    'phazonDeg': r.randint(1, 35) * 10,
+                    'powerDeg': r.randint(1, 35) * 10,
+                    'variaDeg': r.randint(1, 35) * 10,
+                }
+            else:
+                config_json["preferences"]["suitColors"] = {
+                    'gravityDeg': metroidprime_options['suit_settings']['gravity_suit_color'],
+                    'phazonDeg': metroidprime_options['suit_settings']['phazon_suit_color'],
+                    'powerDeg': metroidprime_options['suit_settings']['power_suit_color'],
+                    'variaDeg': metroidprime_options['suit_settings']['varia_suit_color'],
+                }
+            config_json['preferences']['forceFusion'] = metroidprime_options['suit_settings']['fusion_suit']
+
+            disc_version: str = str(py_randomprime.rust.get_iso_mp1_version(os.fspath(input_iso_path)))  # type: ignore
+            # Version specific changes to the config
+            config_json = make_version_specific_changes(config_json, disc_version)
 
             notifier = py_randomprime.ProgressNotifier(  # type: ignore
                 lambda progress, message: print("Generating ISO: ", progress, message)  # type: ignore
@@ -794,8 +822,6 @@ async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
             logger.info("--------------")
             logger.info(f"Input ISO Path: {input_iso_path}")
             logger.info(f"Output ISO Path: {output_path}")
-            disc_version: str = str(py_randomprime.rust.get_iso_mp1_version(os.fspath(input_iso_path)))  # type: ignore
-            config_json = make_version_specific_changes(config_json, disc_version)
             logger.info(f"Disc Version: {disc_version}")
             logger.info("Patching ISO...")
             py_randomprime.patch_iso(input_iso_path, output_path, config_json, notifier)  # type: ignore

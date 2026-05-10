@@ -1,14 +1,15 @@
 from typing import List
 from Options import (
+    Choice,
     DeathLink,
     DefaultOnToggle,
-    OptionSet,
-    Toggle,
-    Range,
-    StartInventoryPool,
-    Choice,
-    PerGameCommonOptions,
     OptionGroup,
+    OptionSet,
+    PerGameCommonOptions,
+    Range,
+    Removed,
+    StartInventoryPool,
+    Toggle,
 )
 from dataclasses import dataclass
 
@@ -115,12 +116,6 @@ class RemoveHiveMecha(Toggle):
     """If enabled, the trigger for the Hive Mecha boss will be removed from the game. Can be forced on if you don't start with Power Beam and you start at Tallon Overworld - Landing Site or Chozo Ruins - Save Station 1."""
 
     display_name = "Remove Hive Mecha"
-
-
-class FusionSuit(Toggle):
-    """If enabled, will replace all the suits in game with the Fusion Suit variants (cosmetic only). Suit color randomization will have no effect if this is enabled."""
-
-    display_name = "Fusion Suit"
 
 
 class TrickDifficulty(Choice):
@@ -324,96 +319,117 @@ class ProgressiveBeamUpgrades(Toggle):
     display_name = "Progressive Beam Upgrades"
 
 
-# COSMETIC OPTIONS
+# COSMETIC OPTIONS (Moved to host.yaml)
 
 
-class RandomizeSuitColors(Toggle):
-    """Randomize the colors of the suits. Is overridden if any of the color overrides are greater than 0. Note: This is not compatible with the Fusion Suit and will have no effect."""
+class FusionSuit(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
+
+    display_name = "Fusion Suit"
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_red option was moved to host.yaml.")
+        super().__init__(value)
+
+
+class RandomizeSuitColors(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "Randomize Suit Colors"
 
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_red option was moved to host.yaml.")
+        super().__init__(value)
 
-class PowerSuitColorOverride(Range):
-    """Override the color of the Power Suit using an index from the game's color wheel."""
+
+class PowerSuitColorOverride(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "Power Suit Color Override"
-    range_start = 0
-    range_end = 359
-    default = 0
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_red option was moved to host.yaml.")
+        super().__init__(value)
 
 
-class VariaSuitColorOverride(Range):
-    """Override the color of the Varia Suit using an index from the game's color wheel."""
+class VariaSuitColorOverride(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "Varia Suit Color Override"
-    range_start = 0
-    range_end = 359
-    default = 0
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_red option was moved to host.yaml.")
+        super().__init__(value)
 
 
-class GravitySuitColorOverride(Range):
-    """Override the color of the Gravity Suit using an index from the game's color wheel."""
+class GravitySuitColorOverride(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "Gravity Suit Color Override"
-    range_start = 0
-    range_end = 359
-    default = 0
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_red option was moved to host.yaml.")
+        super().__init__(value)
 
 
-class PhazonSuitColorOverride(Range):
-    """Override the color of the Phazon Suit using an index from the game's color wheel."""
+class PhazonSuitColorOverride(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "Phazon Suit Color Override"
-    range_start = 0
-    range_end = 359
-    default = 0
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_red option was moved to host.yaml.")
+        super().__init__(value)
 
 
-class HudColorOption(Choice):
-    """Determines the color of the HUD in the game. Will be overridden if any of the color overrides are greater than 0. Note: Certain colors will change the colors of the beam icons."""
+class HudColorOption(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "HUD Color"
-    default = 0
-    option_default = 0
-    option_red = 1
-    option_green = 2
-    option_blue = 3
-    option_violet = 4
-    option_yellow = 5
-    option_cyan = 6
-    option_white = 7
-    option_orange = 8
-    option_pink = 9
-    option_lime = 10
-    option_teal = 11
-    option_purple = 12
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color option was moved to host.yaml.")
+        super().__init__(value)
 
 
-class HudColorOverrideRed(Range):
-    """0 to 255, sets the Red channel of the HUD color."""
+class HudColorOverrideRed(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "HUD Color Red"
-    range_start = 0
-    range_end = 255
-    default = 0
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_red option was moved to host.yaml.")
+        super().__init__(value)
 
 
-class HudColorOverrideGreen(Range):
-    """0 to 255, sets the Green channel of the HUD color."""
+class HudColorOverrideGreen(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "HUD Color Green"
-    range_start = 0
-    range_end = 255
-    default = 0
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_green option was moved to host.yaml.")
+        super().__init__(value)
 
 
-class HudColorOverrideBlue(Range):
-    """0 to 255, sets the Blue channel of the HUD color."""
+class HudColorOverrideBlue(Removed):
+    """DEPRECATED OPTION. Use host.yaml instead."""
 
     display_name = "HUD Color Blue"
-    range_start = 0
-    range_end = 255
-    default = 0
+
+    def __init__(self, value: str):
+        if value:
+            raise Exception("hud_color_blue option was moved to host.yaml.")
+        super().__init__(value)
 
 
 class DisplayNonLocalItems(Choice):
@@ -544,16 +560,6 @@ prime_option_groups = [
     OptionGroup(
         "Cosmetic",
         [
-            FusionSuit,
-            HudColorOption,
-            HudColorOverrideRed,
-            HudColorOverrideGreen,
-            HudColorOverrideBlue,
-            RandomizeSuitColors,
-            PowerSuitColorOverride,
-            VariaSuitColorOverride,
-            GravitySuitColorOverride,
-            PhazonSuitColorOverride,
             DisplayNonLocalItems,
             EnergyTankCapacity,
         ],

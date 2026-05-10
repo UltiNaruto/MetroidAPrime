@@ -1,0 +1,201 @@
+import time
+from random import Random
+
+from settings import Bool, Group, UserFilePath
+from typing import Any, Dict, List, Optional, Union
+
+from .Config import PAUSE_MENU_STRG_KEY
+from .Enum import HudColor as EHudColor
+
+
+def color_settings_to_value(settings: "MetroidPrimeSettings") -> List[float]:
+    if settings['hud_settings']['color'].lower() == 'random':
+        return [c for c in EHudColor.random(Random(time.time())).value]
+    else:
+        return [
+            settings['hud_settings']['color_red'],
+            settings['hud_settings']['color_green'],
+            settings['hud_settings']['color_blue'],
+        ]
+
+
+def get_tweaks(settings: "MetroidPrimeSettings") -> Dict[str, List[float]]:
+    color = color_settings_to_value(settings)
+    if color != EHudColor.DEFAULT.value:
+        return {"hudColor": [c / 255 for c in color]}
+    else:
+        return {}
+
+
+def get_strg(settings: "MetroidPrimeSettings", strg: Dict[str, List[float]]) -> Dict[str, List[float]]:
+    # Show suit colors in pause menu
+    pause_menu_overrides = {
+        "Power Suit": settings['suit_settings']['power_suit_color'],
+        "Varia Suit": settings['suit_settings']['varia_suit_color'],
+        "Gravity Suit": settings['suit_settings']['gravity_suit_color'],
+        "Phazon Suit": settings['suit_settings']['phazon_suit_color'],
+    }
+
+    # Update the name to include the color index if it is set
+    for item in strg[PAUSE_MENU_STRG_KEY]:
+        if item in pause_menu_overrides and pause_menu_overrides[item] != 0:
+            index = strg[PAUSE_MENU_STRG_KEY].index(item)
+            strg[PAUSE_MENU_STRG_KEY][
+                index
+            ] = f"{item} (Color: {pause_menu_overrides[item]})"
+
+    return strg
+
+
+class HUDSettings(Group):
+    """Settings related to HUD."""
+    class HudColor(str):
+        """
+        Default: [102, 174, 225]
+        Red:     [255, 0, 0]
+        Green:   [0, 255, 0]
+        Blue:    [0, 0, 255]
+        Violet:  [255, 0, 255]
+        Yellow:  [255, 255, 0]
+        Cyan:    [0, 255, 255]
+        White:   [255, 255, 255]
+        Orange:  [255, 128, 0]
+        Pink:    [255, 128, 255]
+        Lime:    [128, 255, 0]
+        Teal:    [128, 255, 255]
+        Purple:  [128, 0, 255]
+        Random:  [random R, random G, random B]
+        Custom:  [chosen R, chosen G, chosen B]
+
+        Custom uses color_red, color_green and color_blue.
+        """
+
+    class HudColorChannel(int):
+        """
+        Value must be between 0 and 255
+        """
+
+    color: HudColor = 'default'
+    color_red: HudColorChannel = HudColorChannel(EHudColor.DEFAULT.value[0])
+    color_green: HudColorChannel = HudColorChannel(EHudColor.DEFAULT.value[1])
+    color_blue: HudColorChannel = HudColorChannel(EHudColor.DEFAULT.value[2])
+
+    def __init__(self):
+        should_save = any([attr not in self for attr in self])
+        if should_save:
+            self.update({attr: self[attr] for attr in self.__dict__.keys()})
+
+    def __getitem__(self, key: str) -> Any:
+        hud_color = super().__getitem__('color')
+
+        match key:
+            case 'color_red':
+                return HUDSettings.get_hud_color(hud_color, 0, super().__getitem__(key))
+            case 'color_green':
+                return HUDSettings.get_hud_color(hud_color, 1, super().__getitem__(key))
+            case 'color_blue':
+                return HUDSettings.get_hud_color(hud_color, 2, super().__getitem__(key))
+
+        return super().__getitem__(key)
+
+    @staticmethod
+    def get_hud_color(color_name: str, index: int, v: int) -> Optional[int]:
+        match index:
+            case 0:
+                channel_name = 'red'
+            case 1:
+                channel_name = 'green'
+            case 2:
+                channel_name = 'blue'
+            case _:
+                return None
+
+        match color_name.lower():
+            case 'default':
+                return EHudColor.DEFAULT.value[index]
+            case 'red':
+                return EHudColor.RED.value[index]
+            case 'green':
+                return EHudColor.GREEN.value[index]
+            case 'blue':
+                return EHudColor.BLUE.value[index]
+            case 'violet':
+                return EHudColor.VIOLET.value[index]
+            case 'yellow':
+                return EHudColor.YELLOW.value[index]
+            case 'cyan':
+                return EHudColor.CYAN.value[index]
+            case 'white':
+                return EHudColor.WHITE.value[index]
+            case 'orange':
+                return EHudColor.ORANGE.value[index]
+            case 'pink':
+                return EHudColor.PINK.value[index]
+            case 'lime':
+                return EHudColor.LIME.value[index]
+            case 'teal':
+                return EHudColor.TEAL.value[index]
+            case 'purple':
+                return EHudColor.PURPLE.value[index]
+            case 'random':
+                return 0
+            case 'custom':
+                if v < 0 or v > 255:
+                    raise RuntimeError(f'Invalid value {v * 255.0} supplied for color_{channel_name}!')
+            case _:
+                raise RuntimeError(f'Unknown color {v} supplied for hud_color!')
+        return v
+
+class SuitSettings(Group):
+    """Settings related to Suit."""
+
+    class FusionSuit(Bool):
+        """If enabled, will replace all the suits in game with the Fusion Suit variants (cosmetic only). Suit color randomization will have no effect if this is enabled."""
+        pass
+
+    class RandomizeSuitColors(Bool):
+        """Randomize the colors of the suits. Is overridden if any of the color overrides are greater than 0. Note: This is not compatible with the Fusion Suit and will have no effect."""
+        pass
+
+    class SuitColorRotation(int):
+        """Override the color of the suit using an index from the game's color wheel. Allowed values are between 0 and 359."""
+        pass
+
+    fusion_suit: FusionSuit = False
+    randomize_suit_colors: RandomizeSuitColors = False
+    power_suit_color: SuitColorRotation = 0
+    varia_suit_color: SuitColorRotation = 0
+    gravity_suit_color: SuitColorRotation = 0
+    phazon_suit_color: SuitColorRotation = 0
+
+    def __init__(self):
+        should_save = any([attr not in self for attr in self])
+        if should_save:
+            self.update({attr: self[attr] for attr in self.__dict__.keys()})
+
+
+class RomFile(UserFilePath):
+    """File name of the Metroid Prime ISO"""
+
+    description = "Metroid Prime GC ISO file"
+    copy_to = "Metroid_Prime.iso"
+
+
+class RomStart(str):
+    """
+    Set this to false to never autostart a rom (such as after patching),
+    Set it to true to have the operating system default program open the iso
+    Alternatively, set it to a path to a program to open the .iso file with (like Dolplhin)
+    """
+
+
+class MetroidPrimeSettings(Group):
+    rom_file: RomFile = RomFile(RomFile.copy_to)
+    rom_start: Union[RomStart, bool] = False
+    hud_settings: HUDSettings = HUDSettings()
+    suit_settings: SuitSettings = SuitSettings()
+
+    def __init__(self):
+        should_save = any([attr not in self for attr in self])
+        if should_save:
+            self.update({attr: self[attr] for attr in self.__dict__.keys()})

@@ -1,4 +1,5 @@
 from enum import Enum, StrEnum
+from random import Random
 
 
 class BlastShieldType(Enum):
@@ -43,19 +44,25 @@ class DoorLockType(StrEnum):
 
 
 class HudColor(Enum):
-    DEFAULT = [102 / 255, 174 / 255, 225 / 255]
-    RED = [1.0, 0.0, 0.0]
-    GREEN = [0.0, 1.0, 0.0]
-    BLUE = [0.0, 0.0, 1.0]
-    VIOLET = [1.0, 0.0, 1.0]
-    YELLOW = [1.0, 1.0, 0.0]
-    CYAN = [0.0, 1.0, 1.0]
-    WHITE = [1.0, 1.0, 1.0]
-    ORANGE = [1.0, 0.5, 0.0]
-    PINK = [1.0, 0.5, 1.0]
-    LIME = [0.5, 1.0, 0.0]
-    TEAL = [0.5, 1.0, 1.0]
-    PURPLE = [0.5, 0.0, 1.0]
+    DEFAULT = [102, 174, 225]
+    RED = [255, 0, 0]
+    GREEN = [0, 255, 0]
+    BLUE = [0, 0, 255]
+    VIOLET = [255, 0, 255]
+    YELLOW = [255, 255, 0]
+    CYAN = [0, 255, 255]
+    WHITE = [255, 255, 255]
+    ORANGE = [255, 128, 0]
+    PINK = [255, 128, 255]
+    LIME = [128, 255, 0]
+    TEAL = [128, 255, 255]
+    PURPLE = [128, 0, 255]
+
+    @staticmethod
+    def random(r: Random) -> 'HudColor':
+        values = [c for c in HudColor]
+        r.shuffle(values)
+        return r.choice(values)
 
 
 class MetroidPrimeArea(StrEnum):
