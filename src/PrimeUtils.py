@@ -134,3 +134,8 @@ def count_ammo(items: List[str], main: str, expansion: str, requires_main: bool)
         result += expansion_count * ammo_per_expansion
 
     return result
+
+def is_between_or_throw(v: int, minimum: int, maximum: int) -> int:
+    if v < minimum or v > maximum:
+        raise RuntimeError(f'{v} is not between {minimum} and {maximum}!')
+    return v

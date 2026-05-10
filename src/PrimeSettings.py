@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from .Config import PAUSE_MENU_STRG_KEY
 from .Enum import HudColor as EHudColor
+from .PrimeUtils import is_between_or_throw
 
 
 def color_settings_to_value(settings: "MetroidPrimeSettings") -> List[float]:
@@ -173,6 +174,142 @@ class SuitSettings(Group):
         if should_save:
             self.update({attr: self[attr] for attr in self.__dict__.keys()})
 
+class DefaultGameOptionsSettings(Group):
+    """Settings related to default options."""
+    class VisorSettings(Group):
+        """Visor Settings section of default game options."""
+        class Opacity(int):
+            """Allowed values are between 0 and 100."""
+            pass
+        class HudLag(Bool):
+            pass
+
+        visor_opacity: Opacity = 100
+        helmet_opacity: Opacity = 100
+        hud_lag: HudLag = True
+
+        def __init__(self):
+            should_save = any([attr not in self for attr in self])
+            if should_save:
+                self.update({attr: self[attr] for attr in self.__dict__.keys()})
+
+    class DisplaySettings(Group):
+        """Visor Settings section of default game options."""
+        class Brightness(int):
+            """Allowed values are :
+            - 0   %
+            - 12  %
+            - 25  %
+            - 38  %
+            - 50  %
+            - 62  %
+            - 75  %
+            - 88  %
+            - 100 %"""
+            pass
+        class Offset(int):
+            """Allowed values are between -30 and 30."""
+            pass
+        class Stretch(int):
+            """Allowed values are between -10 and 10."""
+            pass
+
+        screen_brightness: Brightness = 50
+        screen_offset_x: Offset = 0
+        screen_offset_y: Offset = 0
+        screen_stretch: Stretch = 0
+
+        def __init__(self):
+            should_save = any([attr not in self for attr in self])
+            if should_save:
+                self.update({attr: self[attr] for attr in self.__dict__.keys()})
+
+    class SoundSettings(Group):
+        """Visor Settings section of default game options."""
+        class Volume(int):
+            """Allowed values are between 0 and 100."""
+            pass
+        class SoundMode(str):
+            """Allowed values are mono, stereo and dolby."""
+            pass
+
+        sfx_volume: Volume = 100
+        music_volume: Volume = 100
+        sound_mode: SoundMode = "stereo"
+
+        def __init__(self):
+            should_save = any([attr not in self for attr in self])
+            if should_save:
+                self.update({attr: self[attr] for attr in self.__dict__.keys()})
+
+    class ControllerSettings(Group):
+        """Visor Settings section of default game options."""
+        class ReverseYAxis(Bool):
+            """True means you look up by aiming up. False means you look up by aiming down."""
+            pass
+        class Rumble(Bool):
+            """Enables rumble mode."""
+            pass
+        class SwapBeamControls(Bool):
+            """When true, beams are on the left. Else they are on the right."""
+            pass
+
+        reverse_y_axis: ReverseYAxis = False
+        rumble: Rumble = True
+        swap_beam_controls: SwapBeamControls = False
+
+    visor_settings: VisorSettings = VisorSettings()
+    display_settings: DisplaySettings = DisplaySettings()
+    sound_settings: SoundSettings = SoundSettings()
+    controller_settings: ControllerSettings = ControllerSettings()
+
+    def __init__(self):
+        should_save = any([attr not in self for attr in self])
+        if should_save:
+            self.update({attr: self[attr] for attr in self.__dict__.keys()})
+
+    def to_config(self) -> dict[str, Any]:
+        def to_final_brightness(val: int):
+            values = [0, 12, 25, 38, 50, 62, 75, 88, 100]
+
+            val = is_between_or_throw(val, 0, 100)
+            if val not in values:
+                raise RuntimeError(f'Invalid value {val} for screen_brightness!')
+            return values.index(val)
+
+        def to_final_volume(val: int) -> int:
+            return int(127 * ((is_between_or_throw(val, 0, 100) - 50) / 50))
+
+        def to_final_opacity(val: int) -> int:
+            return (255 * is_between_or_throw(val, 0, 100)) // 100
+
+        sound_mode_index = 1
+
+        match self['sound_settings'].sound_mode.lower():
+            case 'mono':
+                sound_mode_index = 0
+            case 'stereo':
+                sound_mode_index = 1
+            case 'dolby':
+                sound_mode_index = 2
+            case v:
+                raise RuntimeError(f'Unknown value {v} supplied for sound_mode!')
+
+        return {
+            'screenBrightness': to_final_brightness(self['display_settings']['screen_brightness']),
+            'screenOffsetX': is_between_or_throw(self['display_settings']['screen_offset_x'], -30, 30),
+            'screenOffsetY': is_between_or_throw(self['display_settings']['screen_offset_y'], -30, 30),
+            'screenStretch': is_between_or_throw(self['display_settings']['screen_stretch'], -10, 10),
+            'soundMode': sound_mode_index,
+            'sfxVolume': to_final_volume(self['sound_settings']['sfx_volume']),
+            'musicVolume': to_final_volume(self['sound_settings']['music_volume']),
+            'visorOpacity': to_final_opacity(self['visor_settings']['visor_opacity']),
+            'helmetOpacity': to_final_opacity(self['visor_settings']['helmet_opacity']),
+            'hudLag': self['visor_settings']['hud_lag'],
+            'reverseYAxis': self['controller_settings']['reverse_y_axis'],
+            'rumble': self['controller_settings']['rumble'],
+            'swapBeamControls': self['controller_settings']['swap_beam_controls'],
+        }
 
 class RomFile(UserFilePath):
     """File name of the Metroid Prime ISO"""
@@ -194,6 +331,7 @@ class MetroidPrimeSettings(Group):
     rom_start: Union[RomStart, bool] = False
     hud_settings: HUDSettings = HUDSettings()
     suit_settings: SuitSettings = SuitSettings()
+    default_game_settings: DefaultGameOptionsSettings = DefaultGameOptionsSettings()
 
     def __init__(self):
         should_save = any([attr not in self for attr in self])

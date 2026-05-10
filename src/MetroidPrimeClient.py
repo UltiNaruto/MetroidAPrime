@@ -811,6 +811,7 @@ async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
                     'variaDeg': metroidprime_options['suit_settings']['varia_suit_color'],
                 }
             config_json['preferences']['forceFusion'] = metroidprime_options['suit_settings']['fusion_suit']
+            config_json['preferences']['defaultGameOptions'] = metroidprime_options['default_game_settings'].to_config()
 
             disc_version: str = str(py_randomprime.rust.get_iso_mp1_version(os.fspath(input_iso_path)))  # type: ignore
             # Version specific changes to the config
