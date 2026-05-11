@@ -499,6 +499,41 @@ class MetroidPrimeInterface:
         """Check if the player is in the actual game rather than the main menu"""
         return self.get_current_level() is not None and self.__is_player_table_ready()
 
+    def get_ingame_timer(self) -> int:
+        """Gets the current ingame time"""
+        if self.current_game is None:
+            return 0
+
+        try:
+            igt_f: float = struct.unpack(
+                '>d',
+                self.dolphin_client.read_pointer(GAMES[self.current_game]["game_state_pointer"], 0xA0, 8),
+            )[0] * 1000
+
+            return int(igt_f)
+        except (Exception,):
+            return 0
+
+    def is_in_cutscene(self) -> bool:
+        """Check if the player is in a cutscene"""
+        if self.current_game is None:
+            return False
+
+        camera_manager: int = struct.unpack(
+            '>I',
+            self.dolphin_client.read_address(GAMES[self.current_game]["cstate_manager_global"]+0x870, 4),
+        )[0]
+        # only happens when game is loading (aka region loading screen)
+        if camera_manager == 0:
+            return True
+
+        camera_count: int = struct.unpack(
+            '>I',
+            self.dolphin_client.read_address(camera_manager + 8, 4),
+        )[0]
+
+        return camera_count > 0
+
     def send_hud_message(self, message: str) -> bool:
         message = f"&just=center;{message}"
         if not self.current_game:

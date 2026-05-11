@@ -17,6 +17,17 @@ if TYPE_CHECKING:
 async def handle_receive_items(
     ctx: "MetroidPrimeContext", current_items: Dict[str, InventoryItemData]
 ):
+    # Do not handle items while :
+    # - not knowing the current game
+    # - IGT is still at 0
+    # - in a cutscene
+    if (
+        ctx.game_interface.current_game is None or
+        ctx.game_interface.get_ingame_timer() == 0 or
+        ctx.game_interface.is_in_cutscene()
+    ):
+        return
+
     # Will be used when consumables are implemented
     # current_index = ctx.game_interface.get_last_received_index()
     for index, network_item in enumerate(ctx.items_received):
