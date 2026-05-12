@@ -81,7 +81,10 @@ class ShuffleUnlimitedPowerBombs(Toggle):
 
 
 class SpringBall(Choice):
-    """Enables the spring ball when you receive Morph Ball Bombs or Spring Ball. This will allow you to jump while in morph ball form by pressing up on the c stick, reducing the complexity of double bomb jumps. Progressive means you get Spring Ball then Bombs."""
+    """Enables the spring ball when you receive Morph Ball Bombs or Spring Ball.
+    This will allow you to jump while in morph ball form by pressing up on the c stick,
+    reducing the complexity of double bomb jumps.
+    Progressive means you get Spring Ball then Bombs."""
 
     display_name = "Add Spring Ball"
     option_disabled = 0
@@ -113,7 +116,8 @@ class StaggeredSuitDamage(Choice):
 
 
 class RemoveHiveMecha(Toggle):
-    """If enabled, the trigger for the Hive Mecha boss will be removed from the game. Can be forced on if you don't start with Power Beam and you start at Tallon Overworld - Landing Site or Chozo Ruins - Save Station 1."""
+    """If enabled, the trigger for the Hive Mecha boss will be removed from the game.
+    Can be forced on if you don't start with Power Beam and you start at Tallon Overworld - Landing Site or Chozo Ruins - Save Station 1."""
 
     display_name = "Remove Hive Mecha"
 
@@ -198,7 +202,8 @@ class RemoveThermalRequirements(Choice):
 
 class StartingRoom(Choice):
     """Determines the starting room of the game. This will change your starting loadout depending on the room.
-    Normal: Start at the Talon Overworld Landing Site. Most randomization options, when enabled, will move the starting room to Save Station 1 in Chozo Ruins due to the restrictive nature of the landing site starting room.
+    Normal: Start at the Talon Overworld Landing Site. Most randomization options, when enabled, will move the
+    starting room to Save Station 1 in Chozo Ruins due to the restrictive nature of the landing site starting room.
     Safe: Start in rooms that will not require a significant combat challenge to progress from.
     Buckle Up: Start in rooms that will pose a significant challenge to players with no energy tanks or suit upgrades. Fun for the aspiring masochist (less fun for their friends waiting in BK).
     """
@@ -267,7 +272,9 @@ class BlastShieldAvailableTypes(Choice):
 
 
 class BlastShieldFrequency(Choice):
-    """If using 'Mix It Up' for blast shield randomization, how many blast shields should be added per region? These are added using a percentage of total possible placements so exact numbers will vary by region. Higher numbers will have more difficulty genning in solo worlds with less tricks.
+    """If using 'Mix It Up' for blast shield randomization, how many blast shields should be added per region?
+    These are added using a percentage of total possible placements so exact numbers will vary by region.
+    Higher numbers will have more difficulty genning in solo worlds with less tricks.
     Low: 10%
     Medium: 30%
     High: 50%
@@ -281,7 +288,8 @@ class BlastShieldFrequency(Choice):
 
 
 class LockedDoorCount(Range):
-    """If greater than 0, locked doors will be placed in the game (maximum of 1 per level). These will only be placed in spots that will not prevent progression but may force alternate paths."""
+    """If greater than 0, locked doors will be placed in the game (maximum of 1 per level).
+    These will only be placed in spots that will not prevent progression but may force alternate paths."""
 
     display_name = "Number of Locked Doors to Include"
     range_start = 0
@@ -290,7 +298,8 @@ class LockedDoorCount(Range):
 
 
 class IncludePowerBeamDoors(Toggle):
-    """If enabled, Power Beam doors will be an available door color for randomization. If the starting beam is also randomized, it will remove the new starting beam's color from the pool of available door colors."""
+    """If enabled, Power Beam doors will be an available door color for randomization.
+    If the starting beam is also randomized, it will remove the new starting beam's color from the pool of available door colors."""
 
     display_name = "Include Power Beam Doors"
 
@@ -433,7 +442,10 @@ class HudColorOverrideBlue(Removed):
 
 
 class DisplayNonLocalItems(Choice):
-    """How are displayed non-local items. None means only local items have matching models. Match Game means that only Metroid Prime game have matching models. Match Series means that any supported Metroid games will use Metroid Prime models that matches the item from the other world."""
+    """How are displayed non-local items.
+    None: means only local items have matching models.
+    Match Game: means that only Metroid Prime game have matching models.
+    Match Series: means that any supported Metroid games will use Metroid Prime models that matches the item from the other world."""
 
     display_name = "Display Non-Local Items"
     option_none = 0
