@@ -36,7 +36,7 @@ def _can_reach_top_of_ruined_courtyard(
     world: "MetroidPrimeWorld", state: CollectionState
 ):
     return (
-        (can_boost(world, state) and can_bomb(world, state) and can_scan(world, state))
+        (can_boost(world, state) and can_bomb(world, state))
         or can_spider(world, state)
     ) and can_space_jump(world, state)
 
