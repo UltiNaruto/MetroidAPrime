@@ -546,9 +546,7 @@ class PhazonMinesAreaData(AreaData):
                             world, state, SuitUpgrade.Power_Beam
                         )
                         and can_spider(world, state)
-                        and can_grapple(world, state)
                         and can_bomb(world, state)
-                        and can_power_bomb(world, state)
                         and can_space_jump(world, state),
                         tricks=[Tricks.ore_processing_climb_no_grapple_spider],
                     ),
