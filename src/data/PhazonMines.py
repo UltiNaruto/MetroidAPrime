@@ -320,8 +320,7 @@ class PhazonMinesAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Phazon Mines: Main Quarry",
-                        rule_func=lambda world, state: can_morph_ball(world, state)
-                        and can_spider(world, state)
+                        rule_func=lambda world, state: can_spider(world, state)
                         and (can_bomb(world, state) or can_ball_jump(world, state))
                         and can_thermal(world, state)
                         and can_wave_beam(world, state)
