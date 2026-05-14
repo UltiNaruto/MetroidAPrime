@@ -198,6 +198,9 @@ class PhazonMinesAreaData(AreaData):
                         and can_scan(world, state)
                         and can_combat_beam_pirates(
                             world, state, SuitUpgrade.Power_Beam
+                        )
+                        and can_combat_beam_pirates(
+                            world, state, SuitUpgrade.Wave_Beam
                         ),
                         tricks=[Tricks.elite_research_spinner_no_boost],
                     ),
@@ -221,6 +224,9 @@ class PhazonMinesAreaData(AreaData):
                         and can_scan(world, state)
                         and can_combat_beam_pirates(
                             world, state, SuitUpgrade.Power_Beam
+                        )
+                        and can_combat_beam_pirates(
+                            world, state, SuitUpgrade.Wave_Beam
                         ),
                         tricks=[Tricks.elite_research_spinner_no_boost],
                     ),
