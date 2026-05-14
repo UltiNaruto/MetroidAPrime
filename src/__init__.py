@@ -4,7 +4,6 @@ from logging import info
 from typing import Any, cast, ClassVar, Dict, List, Optional, Set, TextIO, Union
 
 from BaseClasses import MultiWorld, Tutorial, ItemClassification
-from Options import NumericOption
 from worlds.LauncherComponents import Component, components, icon_paths, launch, SuffixIdentifier, Type  # type: ignore
 from worlds.AutoWorld import World, WebWorld
 
