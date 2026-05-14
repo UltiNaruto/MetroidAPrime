@@ -683,8 +683,7 @@ class Tricks:
         "Ore Processing Climb to Storage No Grapple Spider",
         "You can stand on various collision in the room, such as on the rotating column, to climb to the top of Ore Processing.",
         TrickDifficulty.Easy,
-        lambda world, state: can_bomb(world, state)
-        and can_power_bomb(world, state)
+        lambda world, state: can_power_bomb(world, state)
         and can_space_jump(world, state)
         and can_combat_beam_pirates(world, state, SuitUpgrade.Power_Beam),
     )
@@ -692,8 +691,7 @@ class Tricks:
         "Ore Processing Climb No Grapple Spider",
         "You can stand on various collision in the room, such as on the rotating column, to climb to the top of Ore Processing.",
         TrickDifficulty.Easy,
-        lambda world, state: can_bomb(world, state)
-        and can_power_bomb(world, state)
+        lambda world, state: can_power_bomb(world, state)
         and can_space_jump(world, state)
         and can_combat_beam_pirates(world, state, SuitUpgrade.Power_Beam),
     )
