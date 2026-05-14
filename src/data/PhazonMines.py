@@ -447,18 +447,18 @@ class PhazonMinesAreaData(AreaData):
                     0: DoorData(
                         RoomName.Security_Access_A,
                         defaultLock=DoorLockType.Ice,
-                        rule_func=can_wave_beam,
+                        rule_func=lambda world, state: can_combat_beam_pirates(world, state, SuitUpgrade.Wave_Beam),
                     ),
                     1: DoorData(
                         RoomName.Security_Access_B,
                         defaultLock=DoorLockType.Wave,
-                        rule_func=can_wave_beam,
+                        rule_func=lambda world, state: can_combat_beam_pirates(world, state, SuitUpgrade.Wave_Beam),
                     ),
                     2: DoorData(
                         RoomName.Storage_Depot_A,
                         defaultLock=DoorLockType.Plasma,
                         rule_func=lambda world, state: can_power_bomb(world, state)
-                        and can_plasma_beam(world, state)
+                        and can_combat_beam_pirates(world, state, SuitUpgrade.Wave_Beam)
                         and can_scan(world, state),
                     ),
                 }
