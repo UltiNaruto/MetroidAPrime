@@ -52,7 +52,7 @@ def can_climb_sun_tower(world: "MetroidPrimeWorld", state: CollectionState) -> b
         can_scan(world, state)
         and can_spider(world, state)
         and can_super_missile(world, state)
-        and (can_bomb(world, state) or can_ball_jump(world, state))
+        and can_bomb(world, state)
     )
 
 
