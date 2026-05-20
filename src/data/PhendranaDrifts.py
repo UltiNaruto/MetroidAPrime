@@ -734,7 +734,7 @@ class PhendranaDriftsAreaData(AreaData):
                         and can_wave_beam(world, state)
                         and can_thermal(world, state)
                         and can_super_missile(world, state),
-                        tricks=[Tricks.phendrana_courtyard_no_boost_spider],
+                        tricks=[Tricks.phendrana_courtyard_quarantine_access_no_boost_spider],
                     ),
                 },
                 pickups=[

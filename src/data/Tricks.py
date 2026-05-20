@@ -569,6 +569,16 @@ class Tricks:
         and can_morph_ball(world, state),
     )
 
+    phendrana_courtyard_quarantine_access_no_boost_spider = TrickInfo(
+        "Phendrana Courtyard Quarantine Access No Boost Spider",
+        "There is standable collision near the lower door that can be used to climb to the top of the room. You still need to open the door to Quarantine Access normally by removing the conduit blast shield and powering the conduit.",
+        TrickDifficulty.Easy,
+        lambda world, state: can_space_jump(world, state)
+        and can_wave_beam(world, state)
+        and can_thermal(world, state)
+        and can_super_missile(world, state)
+    )
+
     research_lab_aether_item_dbj = TrickInfo(
         "Research Lab Aether Upper Item with DBJ",
         "Reach the morph track with a Double Bomb Jump",
