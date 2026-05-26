@@ -658,10 +658,7 @@ class ChozoRuinsAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Chozo Ruins: Ruined Nursery",
-                        rule_func=lambda world, state: can_bomb(world, state) or (
-                            can_power_bomb(world, state, 3) and
-                            can_ball_jump(world, state)
-                        ),
+                        rule_func=can_bomb,
                         tricks=[Tricks.ruined_nursery_no_bombs],
                     ),
                 ],
