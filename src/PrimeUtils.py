@@ -32,8 +32,9 @@ LIBS: dict[str, dict[str, dict[str, str]|str]] = {
 
 def setup_libs():
     """Downloads the libraries if they are not present."""
-    import shutil
+    import glob
     import requests
+    import shutil
     import zipfile
     import Utils
 
@@ -70,8 +71,9 @@ def setup_libs():
             # delete if it already exists
             if os.path.isdir(full_lib_path):
                 shutil.rmtree(full_lib_path)
-            if os.path.isdir(f"{full_lib_path}-*.dist-info"):
-                shutil.rmtree(f"{full_lib_path}-*.dist-info")
+            for f in glob.glob(f'{full_lib_path}-*.dist-info'):
+                if os.path.isdir(f):
+                    shutil.rmtree(f)
 
             if not Utils.is_frozen():
                 import subprocess
