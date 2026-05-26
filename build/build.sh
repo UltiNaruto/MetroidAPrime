@@ -42,7 +42,7 @@ function do_we_build_libs() {
 
   case "$py_version-$platform" in
     3.11-macosx_intel|3.11-macosx_arm) echo 1 ;;
-	3.12-win|3.12-linux) echo 1 ;;
+    3.12-win|3.12-linux) echo 1 ;;
   esac
 
   echo 0
@@ -59,9 +59,9 @@ function get_deps() {
   if [[ $platform_short_name == "macosx" ]]; then
     if [[ $platform == *arm64 ]]; then
       platform_short_name="${platform_short_name}_arm"
-	else
-	  platform_short_name="${platform_short_name}_intel"
-	fi
+    else
+      platform_short_name="${platform_short_name}_intel"
+    fi
   fi
   local build_libs=$(do_we_build_libs "${platform_short_name}" "${py_version}" 2>/dev/null)
   if [ "$build_libs" == 0 ]; then
@@ -211,6 +211,7 @@ function main() {
     local py_version="${PY_VERSION}"
     local project="$(realpath ${CWD}/..)"
     local local_install=false
+    local build_zip=false
 
     # Loop through all the arguments
     for arg in "$@"; do
@@ -219,6 +220,9 @@ function main() {
       fi
       if [[ $arg == --py_version=* ]]; then
         py_version=${arg#*=}
+      fi
+      if [[ $arg == --zip ]]; then
+        build_zip=true
       fi
     done
 
@@ -235,9 +239,13 @@ function main() {
     rm --force --recursive "${target_path}/lib"
 
     mk_apworld "${project}" "${destdir}"
-    cp_data "${project}" "${destdir}"
+    if $build_zip ; then
+      cp_data "${project}" "${destdir}"
+    fi
     cp "${destdir}/${GAME}.apworld" "${target_path}/${GAME}.apworld"
-    bundle "${destdir}" "${target_path}/${bundle}.zip"
+    if $build_zip ; then
+      bundle "${destdir}" "${target_path}/${bundle}.zip"
+    fi
     echo "! Bundle finalized as ${target_path}/${bundle}.zip"
     rm --force --recursive "${destdir}"
     ;;
