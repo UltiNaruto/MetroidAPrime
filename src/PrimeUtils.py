@@ -13,12 +13,12 @@ from .Enum import SuitUpgrade
 LIBS: dict[str, dict[str, dict[str, str]|str]] = {
     'py_randomprime': {
         'links': {
-            'windows': 'https://files.pythonhosted.org/packages/fa/89/b6dd90d0bd497df20553d1e0a905ff46362eaca5fc8efd880df46c2680a0/py_randomprime-1.30.4-cp39-abi3-win_amd64.whl',
-            'linux': 'https://files.pythonhosted.org/packages/e5/c1/5cffd929774844a0ef4f045b643b69c8ff76f3b7d764d17d161fd9655a51/py_randomprime-1.30.4-cp39-abi3-manylinux_2_28_x86_64.whl',
-            'darwin-arm': 'https://files.pythonhosted.org/packages/7e/fd/5eefa606627e01bc2d9af12514aaca09fbcb4484603167ed179cc82b0e43/py_randomprime-1.30.4-cp39-abi3-macosx_11_0_arm64.whl',
-            'darwin-intel': 'https://files.pythonhosted.org/packages/86/35/405fb4faec0e4c823c8eac7371d684ea0526c4ec86f776ecfd2aa9c02ea0/py_randomprime-1.30.4-cp39-abi3-macosx_10_12_x86_64.whl',
+            'windows': 'https://files.pythonhosted.org/packages/10/02/db0f939d37c95a91aed5cb7c28e7b2f4bc71b63a49be2a1ea4d23e3a713b/py_randomprime-1.31.1-cp310-abi3-win_amd64.whl',
+            'linux': 'https://files.pythonhosted.org/packages/3b/a8/84953c96781ff7e1b6d03d560b708d128d1fcca5260965df2f7fa92df428/py_randomprime-1.31.1-cp310-abi3-manylinux_2_28_x86_64.whl',
+            'darwin-arm': 'https://files.pythonhosted.org/packages/6f/db/c5ae06636f6b8ddfadbe99fb40e0fc144a9f86638b8e2c47220d8bd9db17/py_randomprime-1.31.1-cp310-abi3-macosx_11_0_arm64.whl',
+            'darwin-intel': 'https://files.pythonhosted.org/packages/0a/21/e2e294b2728174a2d6f1a9c271963ab5eb6f43fd9f6270ad7e2094ece3de/py_randomprime-1.31.1-cp310-abi3-macosx_10_12_x86_64.whl',
         },
-        'version': '1.30.4',
+        'version': '1.31.1',
     },
     'ppc_asm': {
         'links': {
