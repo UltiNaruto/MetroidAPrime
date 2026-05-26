@@ -20,7 +20,7 @@ CWD="$(dirname $(realpath $0))"
 REQS=("zip" "rsync" "pip")
 SUPPORTED_PLATFORMS=("win_amd64" "manylinux_2_28_x86_64" "macosx_10_12_x86_64" "macosx_11_0_arm64")
 GAME="metroidprime"
-EXTRAS_TO_COPY=("LICENSE.md" "README.md" "Metroid Prime.yaml")
+EXTRAS_TO_COPY=("LICENSE.md" "README.md")
 
 ##
 # Make sure all the required utilities are installed.
