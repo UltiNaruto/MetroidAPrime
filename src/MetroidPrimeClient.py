@@ -1,6 +1,5 @@
 import asyncio
 import json
-import math
 import multiprocessing
 import os
 import struct
@@ -44,7 +43,7 @@ from .MetroidPrimeInterface import (
 )
 from .NotificationManager import NotificationManager
 from .PrimeSettings import get_strg, get_tweaks
-from .PrimeUtils import get_apworld_version, count_ammo
+from .PrimeUtils import count_ammo, get_apworld_version, get_output_path
 
 tracker_loaded = False
 try:
@@ -64,6 +63,23 @@ class MetroidPrimeCommandProcessor(ClientCommandProcessor):
 
     def __init__(self, ctx: "MetroidPrimeContext"):
         super().__init__(ctx)
+
+    def _cmd_export_iso(self, *_args: List[Any]):
+        if not self.ctx.apmp1_file:
+            logger.error("That client wasn't started from a apmp1 file!")
+            return
+
+        output_path = get_output_path(self.ctx.apmp1_file)
+
+        if self.ctx.game_interface.connection_status != ConnectionState.DISCONNECTED:
+            logger.error("Cannot regen the iso if the game is already running!")
+            return
+
+        if os.path.isfile(output_path):
+            logger.info("Genned iso file detected! Deleting..")
+            os.remove(output_path)
+
+        Utils.async_start(patch_and_run_game(self.ctx.apmp1_file, self.ctx.mp1_iso))
 
     def _cmd_test_hud(self, *args: List[Any]):
         """Send a message to the game interface."""

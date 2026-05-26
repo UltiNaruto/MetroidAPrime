@@ -96,6 +96,12 @@ def setup_libs():
                     z.extractall(lib_path)
 
 
+def get_output_path(apmp1_file: str) -> str:
+    """Returns the output folder for the given apmp1_file."""
+    base_name = os.path.splitext(apmp1_file)[0]
+    return f'{base_name}.iso'
+
+
 def get_apworld_version():
     # Get version from ./version.txt
     # detect if on windows since pathing is handled differently from linux
