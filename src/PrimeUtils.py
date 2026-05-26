@@ -22,10 +22,10 @@ LIBS: dict[str, dict[str, dict[str, str]|str]] = {
     },
     'ppc_asm': {
         'links': {
-            ope_sys: 'https://files.pythonhosted.org/packages/9d/35/d136daa215d40662a254597d109b9f601096d6178197295417e958e3d0c3/ppc_asm-1.6.1-py3-none-any.whl'
+            ope_sys: 'https://files.pythonhosted.org/packages/3e/4c/c2eed780f32fc5b77c5b6c33bdf1792dc362e838f2bb3491dd486a329ecc/ppc_asm-1.9.0-py3-none-any.whl'
             for ope_sys in ['windows', 'linux', 'darwin-arm', 'darwin-intel']
         },
-        'version': '1.6.1',
+        'version': '1.9.0',
     }
 }
 
