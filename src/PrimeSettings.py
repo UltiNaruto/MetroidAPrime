@@ -1,10 +1,12 @@
+from collections.abc import Sequence
 import time
 from random import Random
 
 from settings import Bool, Group, UserFilePath
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Self
 
 from .Config import PAUSE_MENU_STRG_KEY
+from .Container import get_version_from_iso
 from .Enum import HudColor as EHudColor
 from .PrimeUtils import is_between_or_throw
 
@@ -53,6 +55,15 @@ class RomFile(UserFilePath):
 
     description = "Metroid Prime GC ISO file"
     copy_to = "Metroid_Prime.iso"
+
+    def browse(self, filetypes: Sequence[tuple[str, Sequence[str]]] | None = None, **kwargs) -> Self | None:
+        if filetypes is None:
+            filetypes = [("GameCube disc image", [".iso"])]
+        return super().browse(filetypes, **kwargs)
+
+    @classmethod
+    def validate(cls, path: str):
+        get_version_from_iso(path)
 
 
 class EmulatorSettings(Group):
