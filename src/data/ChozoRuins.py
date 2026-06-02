@@ -77,11 +77,8 @@ def can_flaahgra(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
 
 
 def can_sunchamber_ghosts(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
-    return (
-        can_flaahgra(world, state)
-        and can_combat_ghosts(world, state)
-        and can_climb_sun_tower(world, state)
-    )
+    return can_combat_ghosts(world, state) and can_climb_sun_tower(world, state)
+
 
 
 def can_climb_tower_of_light(
