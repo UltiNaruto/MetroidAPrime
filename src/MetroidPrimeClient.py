@@ -638,7 +638,7 @@ async def handle_artifact_hints(ctx: MetroidPrimeContext, scans: Dict[int, bool]
 
     scanned_hints: DefaultDict[int, List[int]] = DefaultDict(list)
     for artifact_name, asset_id in artifact_hint_scans.items():
-        if scans.get(asset_id):
+        if scans.get(asset_id) and artifact_name in artifact_locations:
             location, player = artifact_locations[artifact_name]
             scanned_hints[player].append(location)
     await ctx.send_msgs([
