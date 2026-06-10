@@ -63,6 +63,7 @@ class MultiworldWithPassthrough(MultiWorld):
 def run_client(*_args: str):
     from .MetroidPrimeClient import main
 
+    os.environ["DME_DOLPHIN_PROCESS_NAME"] = "PrimeHack"
     launch(main, name="MetroidPrimeClient", args=_args)
 
 
