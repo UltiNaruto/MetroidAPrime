@@ -49,7 +49,8 @@ def can_exit_ruined_shrine(world: "MetroidPrimeWorld", state: CollectionState) -
 
 def can_climb_sun_tower(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
     return (
-        can_scan(world, state)
+        state.can_reach_region(RoomName.Sun_Tower.value, world.player)
+        and can_scan(world, state)
         and can_spider(world, state)
         and can_super_missile(world, state)
         and can_bomb(world, state)
@@ -75,19 +76,9 @@ def can_flaahgra(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
     )
 
 
-def can_pass_flaagrah_vines(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
-    if (
-        not world.get_location(
-            "Chozo Ruins: Sunchamber - Ghosts"
-        ) in state.locations_checked
-    ):
-        return (
-            not world.get_location(
-                    "Chozo Ruins: Sunchamber - Flaahgra"
-            ) in state.locations_checked
-        )
-    else:
-        return True
+def can_sunchamber_ghosts(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
+    return can_combat_ghosts(world, state) and can_climb_sun_tower(world, state)
+
 
 
 def can_climb_tower_of_light(
@@ -755,10 +746,7 @@ class ChozoRuinsAreaData(AreaData):
             ),
             RoomName.Sunchamber_Access: RoomData(
                 doors={
-                    0: DoorData(
-						RoomName.Sunchamber,
-                        rule_func=can_pass_flaagrah_vines 
-					), # is locked if Flaagrah is dead until after you beat the ghosts
+                    0: DoorData(RoomName.Sunchamber),
                     1: DoorData(RoomName.Sunchamber_Lobby),
                 },
             ),
@@ -766,31 +754,40 @@ class ChozoRuinsAreaData(AreaData):
                 doors={
                     0: DoorData(RoomName.Sunchamber_Access),
                     1: DoorData(
-                        RoomName.Arboretum, rule_func=lambda world, state: False
+                        RoomName.Arboretum,
+                        rule_func=lambda world, state: False,
                     ),
                 }
             ),
             RoomName.Sunchamber: RoomData(
+                # Because door 1 locks post-Flaahgra until ghosts, door 0 is not a valid route forward
+                # Consider the case where the door behind Hive Mecha is inaccessible, no vault via plaza, and the
+                # area through the elevator is blocked on the other side.
+                # The only way to Sun Tower is through Sunchamber. But when the player fights Flaahgra and drops down
+                # the vault ledge, that access route is now gone so that area needs some other access route.
+                # Hence, none of that area can be in logic until there is some way there besides through Sunchamber.
+                #
+                # Because killing the ghosts opens door 1, Sunchamber can provide access in the Arboretum direction
+                # by coming from Sun Tower, killing Flaahgra, then dropping back down Sun Tower and climbing it again.
                 doors={
                     0: DoorData(
                         RoomName.Sun_Tower_Access,
-                        rule_func=can_flaahgra,
+                        rule_func=lambda world, state: False,
                         exclude_from_rando=True,
                     ),
                     1: DoorData(
-                        RoomName.Sunchamber_Access, 
-                        rule_func=can_pass_flaagrah_vines
-                    ) # gets locked until after you beat the ghosts
+                        RoomName.Sunchamber_Access,
+                        rule_func=can_sunchamber_ghosts,
+                    )
                 },
                 pickups=[
                     PickupData(
-                        "Chozo Ruins: Sunchamber - Flaahgra", rule_func=can_flaahgra
+                        "Chozo Ruins: Sunchamber - Flaahgra",
+                        rule_func=can_flaahgra,
                     ),
                     PickupData(
                         "Chozo Ruins: Sunchamber - Ghosts",
-                        rule_func=lambda world, state: can_flaahgra(world, state)
-                        and can_combat_ghosts(world, state)
-                        and can_climb_sun_tower(world, state),
+                        rule_func=can_sunchamber_ghosts,
                     ),
                 ],
             ),
