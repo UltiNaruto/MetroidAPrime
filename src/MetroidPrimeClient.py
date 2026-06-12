@@ -79,7 +79,7 @@ class MetroidPrimeCommandProcessor(ClientCommandProcessor):
             logger.info("Genned iso file detected! Deleting..")
             os.remove(output_path)
 
-        Utils.async_start(patch_and_run_game(self.ctx.apmp1_file, self.ctx.mp1_iso))
+        Utils.async_start(patch_and_run_game(self.ctx.apmp1_file, self.ctx.mp1_iso, self.ctx.dolphin_path, self.ctx.dolphin_autostart))
 
     def _cmd_test_hud(self, *args: List[Any]):
         """Send a message to the game interface."""
@@ -209,6 +209,8 @@ class MetroidPrimeContext(CommonContext):
         password: Optional[str],
         apmp1_file: Optional[str] = None,
         mp1_iso: Optional[str] = None,
+        dolphin_path: Optional[str] = None,
+        dolphin_autostart: Optional[bool] = None,
     ):
         super().__init__(server_address, password)
 
@@ -218,6 +220,8 @@ class MetroidPrimeContext(CommonContext):
         )
         self.apmp1_file = apmp1_file
         self.mp1_iso = mp1_iso
+        self.dolphin_path = dolphin_path
+        self.dolphin_autostart = dolphin_autostart
 
     def on_deathlink(self, data: Utils.Dict[str, Utils.Any]) -> None:
         super().on_deathlink(data)
@@ -567,7 +571,7 @@ async def dolphin_sync_task(ctx: MetroidPrimeContext):
         pass
 
     if ctx.apmp1_file:
-        Utils.async_start(patch_and_run_game(ctx.apmp1_file, ctx.mp1_iso))
+        Utils.async_start(patch_and_run_game(ctx.apmp1_file, ctx.mp1_iso, ctx.dolphin_path, ctx.dolphin_autostart))
 
     logger.info("Starting Dolphin Connector, attempting to connect to emulator...")
 
@@ -695,10 +699,10 @@ async def _handle_game_not_ready(ctx: MetroidPrimeContext):
         await asyncio.sleep(3)
 
 
-async def run_game(romfile: str):
+async def run_game(romfile: str, dolphin_path: Optional[str] = None, dolphin_autostart: Optional[bool] = None):
     metroidprime_options = get_settings()["metroidprime_options"]
-    auto_start: bool = metroidprime_options['emulator_settings']['auto_start']
-    emulator_path: str = metroidprime_options['emulator_settings']['executable_path']
+    auto_start: bool = dolphin_autostart if dolphin_autostart is not None else metroidprime_options['emulator_settings']['auto_start']
+    emulator_path: str = dolphin_path or metroidprime_options['emulator_settings']['executable_path']
     emulator_arguments: list = metroidprime_options['emulator_settings']['arguments']
 
     if auto_start is True and assert_no_running_dolphin():
@@ -777,7 +781,7 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
     return config_json
 
 
-async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
+async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None, dolphin_path: Optional[str] = None, dolphin_autostart: Optional[bool] = None):
     import py_randomprime # type: ignore
 
     metroidprime_options = get_settings()['metroidprime_options']
@@ -849,20 +853,20 @@ async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
             raise RuntimeError(f"Failed to patch ISO: {e}")
         logger.info("--------------")
 
-    Utils.async_start(run_game(output_path))
+    Utils.async_start(run_game(output_path, dolphin_path, dolphin_autostart))
 
 
 def main(*args: str):
     Utils.init_logging("MetroidPrime Client")
 
-    async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str], mp1_iso: Optional[str]) -> None:
+    async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str], mp1_iso: Optional[str], dolphin_path: Optional[str], dolphin_autostart: Optional[bool]) -> None:
         from .PrimeUtils import setup_libs
         setup_libs()
 
         multiprocessing.freeze_support()
         logger.info("main")
 
-        ctx = MetroidPrimeContext(connect, password, apmp1_file, mp1_iso)
+        ctx = MetroidPrimeContext(connect, password, apmp1_file, mp1_iso, dolphin_path, dolphin_autostart)
 
         if apmp1_file:
             slot = get_options_from_apmp1(apmp1_file)["player_name"]
@@ -906,10 +910,20 @@ def main(*args: str):
     parser.add_argument(
         "mp1_iso", default="", type=str, nargs="?", help="Path to Metroid Prime iso"
     )
+    parser.add_argument(
+        "--dolphin_path", default="", type=str, nargs="?", help="Path to Dolphin emulator"
+    )
+    def parse_bool(value):
+        if not value:
+            return None
+        return True if value.lower() in ('yes', 'on', 'true', 't', 'y', '1') else False
+    parser.add_argument(
+        "--dolphin_autostart", default="", type=parse_bool, nargs="?", help="Autostart Dolphin emulator"
+    )
     parser_args = parser.parse_args(args)
-
+    
     import colorama
 
     colorama.init()
-    asyncio.run(_main(parser_args.connect, parser_args.password, parser_args.apmp1_file, parser_args.mp1_iso))
+    asyncio.run(_main(parser_args.connect, parser_args.password, parser_args.apmp1_file, parser_args.mp1_iso, parser_args.dolphin_path, parser_args.dolphin_autostart))
     colorama.deinit()
