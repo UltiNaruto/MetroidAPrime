@@ -320,3 +320,51 @@ def construct_progressive_beam_patch(
         b("early_return_beam"),
     ]
     return instructions
+
+
+_GC_GAME_VERSIONS: dict[tuple[str, int], str] = {
+    ("E", 0): "0-00",
+    ("E", 1): "0-01",
+    ("E", 2): "0-02",
+    ("E", 48): "kor",
+    ("P", 0): "pal",
+    ("J", 0): "jpn",
+}
+
+def get_version_from_iso(path: str) -> str:
+    with open(path, "rb") as f:
+        # detecting any non-ISO format
+        f.seek(0x200, 0)
+        if f.read(4) == b"NKIT":
+            raise ValueError("NKit format is not supported! Please dump your ISO from your disc.")
+
+        f.seek(0, 0)
+        file_format = f.read(3)
+        if file_format in [b"RVZ", b"WIA"]:
+            raise ValueError(f"{file_format} format is not supported! Please dump your ISO from your disc.")
+
+        f.seek(0, 0)
+        gcz_magic = struct.unpack('<I', f.read(4))[0]
+        if gcz_magic == 0xB10BC001:
+            raise ValueError("GCZ format is not supported! Please dump your ISO from your disc.")
+
+        f.seek(0, 0)
+        if f.read(3) == b"CISO":
+            raise ValueError("CISO format is not supported! Please dump your ISO from your disc.")
+
+        f.seek(0, 0)
+        try:
+            game_id = f.read(6).decode("utf-8")
+        except UnicodeDecodeError as e:
+            raise ValueError("Unrecognized file format") from e
+
+        # detecting game infos
+        f.read(1)
+        game_rev = f.read(1)[0]
+        if game_id[:3] != "GM8":
+            raise ValueError("This is not Metroid Prime GC")
+
+        result = _GC_GAME_VERSIONS.get((game_id[3], game_rev), None)
+        if result is None:
+            raise ValueError(f"Unknown version of Metroid Prime GC (game_id : {game_id} | game_rev : {game_rev})")
+        return result
