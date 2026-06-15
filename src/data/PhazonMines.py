@@ -574,7 +574,7 @@ class PhazonMinesAreaData(AreaData):
                         "Phazon Mines: Phazon Mining Tunnel",
                         rule_func=lambda world, state: can_phazon(world, state)
                         and can_boost(world, state) # Required for the disappearing platforms
-                        and (can_bomb(world, state) or can_ball_jump(world, state)),
+                        and can_bomb(world, state), # Required to destroy the blocks in the corrupted tunnel
                         tricks=[],
                     ),
                 ],
