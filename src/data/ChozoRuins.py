@@ -58,6 +58,7 @@ def can_climb_sun_tower(world: "MetroidPrimeWorld", state: CollectionState) -> b
 
 
 def can_flaahgra(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
+    # Reverse Sunchamber doesn't affect this because bombs are required to climb Sun Tower
     pb_req = 4 if world.starting_room_data.name == RoomName.Sunchamber_Lobby.value else 5
 
     bomb_req = can_bomb(world, state) or (
@@ -77,7 +78,7 @@ def can_flaahgra(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
 
 
 def can_sunchamber_ghosts(world: "MetroidPrimeWorld", state: CollectionState) -> bool:
-    return can_combat_ghosts(world, state) and can_climb_sun_tower(world, state)
+    return can_flaahgra(world, state) and can_climb_sun_tower(world, state) and can_combat_ghosts(world, state)
 
 
 
