@@ -244,6 +244,18 @@ class MetroidPrimeWorld(World):
             )
 
     def create_regions(self) -> None:
+        precollected_item_names = [
+            item.name for item in self.multiworld.precollected_items[self.player]
+        ]
+        new_map: Dict[str, str] = {}
+
+        for location, item in self.prefilled_item_map.items():
+            if item not in precollected_item_names:
+                # Prefilled items affect what goes into the item pool. If we already have collected something, we won't need to prefill it
+                new_map[location] = item
+
+        self.prefilled_item_map = new_map
+
         boss_selection = int(self.options.final_bosses)
         create_regions(self, boss_selection)
 
@@ -262,18 +274,6 @@ class MetroidPrimeWorld(World):
         )
 
     def create_items(self) -> None:
-        precollected_item_names = [
-            item.name for item in self.multiworld.precollected_items[self.player]
-        ]
-        new_map: Dict[str, str] = {}
-
-        for location, item in self.prefilled_item_map.items():
-            if item not in precollected_item_names:
-                # Prefilled items affect what goes into the item pool. If we already have collected something, we won't need to prefill it
-                new_map[location] = item
-
-        self.prefilled_item_map = new_map
-
         item_pool = generate_item_pool(self)
         self.multiworld.itempool += item_pool
 
