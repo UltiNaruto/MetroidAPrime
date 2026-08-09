@@ -35,8 +35,8 @@ Multiworld items appear as one of the following:
 
 ### What versions of the Metroid Prime are supported?
 
-Only the GameCube versions of the game are supported.  
-The Wii and Switch version of the game are _not_ supported.  
+Only the GameCube versions of the game are supported.
+The Wii and Switch version of the game are _not_ supported.
 
 ### When the player receives an item, what happens?
 
@@ -51,7 +51,7 @@ To warp to the starting location,
 3. While choosing No, simultaenously hold down the L and R buttons.
 
 ### What happens to my own collected items at Game Over or if the game is reset without saving?
-As long as the game is connected to the Client and the Client is connected to the server, items you collected before the Game Over or reset will be kept and returned to you when you re-enter the game, even if you did not save.  
+As long as the game is connected to the Client and the Client is connected to the server, items you collected before the Game Over or reset will be kept and returned to you when you re-enter the game, even if you did not save.
 (The item dot indicators on the map will still show the item location as not collected, even if the Client gives the items back to you.)
 
 ### What Metroid Prime mods/tools does this work with?
@@ -62,6 +62,7 @@ It is recommended to use a vanilla ISO with the latest release of [Dolphin](http
   - [PrimeHack](https://forums.dolphin-emu.org/Thread-fork-primehack-fps-controls-and-more-for-metroid-prime)
   - [Widescreen HUD Mod](<https://wiki.dolphin-emu.org/index.php?title=Metroid_Prime_(GC)#16:9_HUD_Mod>) (Revision 0 "0-00" only)
   - [MPItemTracker](https://github.com/UltiNaruto/MPItemTracker)
+  - [Nintendont-Multiworld](https://github.com/randovania/Nintendont)
 - Not compatible
   - Practice Mod (The AP client is unable to connect to the game with this mod present.)
 
