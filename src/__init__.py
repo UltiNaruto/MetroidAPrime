@@ -65,7 +65,7 @@ def run_client(*_args: str):
     from settings import get_settings
 
     executable_path = get_settings()["metroidprime_options"]["emulator_settings"].__dict__.get("executable_path")
-    if executable_path:
+    if executable_path and not os.environ["DME_DOLPHIN_PROCESS_NAME"]:
         os.environ["DME_DOLPHIN_PROCESS_NAME"] = os.path.basename(str(executable_path))
     launch(main, name="MetroidPrimeClient", args=_args)
 
