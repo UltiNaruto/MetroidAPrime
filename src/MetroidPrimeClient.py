@@ -2,7 +2,6 @@ import asyncio
 import json
 import multiprocessing
 import os
-import struct
 import subprocess
 import time
 import traceback
@@ -24,7 +23,7 @@ import Utils
 from . import SuitUpgrade
 from .Config import make_version_specific_changes
 from .ClientReceiveItems import handle_receive_items
-from .Container import construct_hook_patch
+from .Container import construct_hook_patch, get_version_from_iso
 from .DolphinClient import (
     DolphinException,
     assert_no_running_dolphin,
@@ -710,57 +709,6 @@ async def run_game(romfile: str):
         )
 
 
-_GC_GAME_VERSIONS: dict[tuple[str, int], str] = {
-    ("E", 0): "0-00",
-    ("E", 1): "0-01",
-    ("E", 2): "0-02",
-    ("E", 48): "kor",
-    ("P", 0): "pal",
-    ("J", 0): "jpn",
-}
-
-def get_version_from_iso(path: str) -> str:
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Couldn't get version for iso {path}!")
-
-    with open(path, "rb") as f:
-        # detecting any non-ISO format
-        f.seek(0x200, 0)
-        if f.read(4).decode("utf-8") == "NKIT":
-            raise Exception("NKit format is not supported! Please dump your ISO from your disc.")
-
-        f.seek(0, 0)
-        file_format = f.read(3).decode("utf-8")
-        if file_format in ["RVZ", "WIA"]:
-            raise Exception(f"{file_format} format is not supported! Please dump your ISO from your disc.")
-
-        f.seek(0, 0)
-        gcz_magic = struct.unpack('<H', f.read(2))[0]
-        if gcz_magic == 0xB10B:
-            raise Exception("GCZ format is not supported! Please dump your ISO from your disc.")
-
-        f.seek(0, 0)
-        if f.read(3).decode("utf-8") == "CISO":
-            raise Exception("CISO format is not supported! Please dump your ISO from your disc.")
-
-        # detecting game infos
-        f.seek(0, 0)
-        game_id = f.read(6).decode("utf-8")
-        f.read(1)
-        game_rev = f.read(1)[0]
-        if game_id[:3] != "GM8":
-            raise Exception("This is not Metroid Prime GC")
-
-        result = _GC_GAME_VERSIONS.get((game_id[3], game_rev), None)
-
-        if result is None:
-            raise Exception(
-                f"Unknown version of Metroid Prime GC (game_id : {game_id} | game_rev : {game_rev})"
-            )
-
-        return result
-
-
 def get_options_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
     with zipfile.ZipFile(apmp1_file) as zip_file:
         with zip_file.open("options.json") as file:
@@ -780,16 +728,21 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
 async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
     import py_randomprime # type: ignore
 
-    metroidprime_options = get_settings()['metroidprime_options']
-    apmp1_file = os.path.abspath(apmp1_file)
-    input_iso_path = metroidprime_options['rom_file'] if mp1_iso is None or mp1_iso == '' else mp1_iso
     base_name = os.path.splitext(apmp1_file)[0]
     output_path = f'{base_name}.iso'
 
-    if not os.path.exists(output_path):
+    if os.path.exists(output_path):
+        Utils.async_start(run_game(output_path))
+        return
+
+    try:
         if not zipfile.is_zipfile(apmp1_file):
             raise Exception(f'Invalid APMP1 file: {apmp1_file}')
 
+        metroidprime_options = get_settings()['metroidprime_options']
+        input_iso_path = mp1_iso or metroidprime_options['rom_file']
+
+        apmp1_file = os.path.abspath(apmp1_file)
         config_json = get_randomprime_config_from_apmp1(apmp1_file)
         options_json = get_options_from_apmp1(apmp1_file)
 
@@ -799,55 +752,57 @@ async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None):
 
         try:
             game_version = get_version_from_iso(input_iso_path)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Couldn't get version for iso {input_iso_path}!") from None
 
-            config_json['gameConfig']['updateHintStateReplacement'] = (
-                construct_hook_patch(game_version, build_progressive_beam_patch)
-            )
-            # HUD settings
-            config_json['tweaks'] = get_tweaks(metroidprime_options)
-            # Suit Settings
-            config_json['strg'] = get_strg(metroidprime_options, config_json['strg'])
-            if metroidprime_options['suit_settings']['randomize_suit_colors']:
-                r = Random(time.time())
-                config_json['preferences']['suitColors'] = {
-                    'gravityDeg': r.randint(1, 35) * 10,
-                    'phazonDeg': r.randint(1, 35) * 10,
-                    'powerDeg': r.randint(1, 35) * 10,
-                    'variaDeg': r.randint(1, 35) * 10,
-                }
-            else:
-                config_json["preferences"]["suitColors"] = {
-                    'gravityDeg': metroidprime_options['suit_settings']['gravity_suit_color'],
-                    'phazonDeg': metroidprime_options['suit_settings']['phazon_suit_color'],
-                    'powerDeg': metroidprime_options['suit_settings']['power_suit_color'],
-                    'variaDeg': metroidprime_options['suit_settings']['varia_suit_color'],
-                }
-            config_json['preferences']['forceFusion'] = metroidprime_options['suit_settings']['fusion_suit']
-            config_json['preferences']['defaultGameOptions'] = metroidprime_options['default_game_settings'].to_config()
+        config_json['gameConfig']['updateHintStateReplacement'] = (
+            construct_hook_patch(game_version, build_progressive_beam_patch)
+        )
+        # HUD settings
+        config_json['tweaks'] = get_tweaks(metroidprime_options)
+        # Suit Settings
+        config_json['strg'] = get_strg(metroidprime_options, config_json['strg'])
+        if metroidprime_options['suit_settings']['randomize_suit_colors']:
+            r = Random(time.time())
+            config_json['preferences']['suitColors'] = {
+                'gravityDeg': r.randint(1, 35) * 10,
+                'phazonDeg': r.randint(1, 35) * 10,
+                'powerDeg': r.randint(1, 35) * 10,
+                'variaDeg': r.randint(1, 35) * 10,
+            }
+        else:
+            config_json["preferences"]["suitColors"] = {
+                'gravityDeg': metroidprime_options['suit_settings']['gravity_suit_color'],
+                'phazonDeg': metroidprime_options['suit_settings']['phazon_suit_color'],
+                'powerDeg': metroidprime_options['suit_settings']['power_suit_color'],
+                'variaDeg': metroidprime_options['suit_settings']['varia_suit_color'],
+            }
+        config_json['preferences']['forceFusion'] = metroidprime_options['suit_settings']['fusion_suit']
+        config_json['preferences']['defaultGameOptions'] = metroidprime_options['default_game_settings'].to_config()
 
-            disc_version: str = str(py_randomprime.rust.get_iso_mp1_version(os.fspath(input_iso_path)))  # type: ignore
-            # Version specific changes to the config
-            config_json = make_version_specific_changes(config_json, disc_version)
+        disc_version: str = str(py_randomprime.rust.get_iso_mp1_version(os.fspath(input_iso_path)))  # type: ignore
+        # Version specific changes to the config
+        config_json = make_version_specific_changes(config_json, disc_version)
 
-            notifier = py_randomprime.ProgressNotifier(  # type: ignore
-                lambda progress, message: print("Generating ISO: ", progress, message)  # type: ignore
-            )
-            logger.info("--------------")
-            logger.info(f"Input ISO Path: {input_iso_path}")
-            logger.info(f"Output ISO Path: {output_path}")
-            logger.info(f"Disc Version: {disc_version}")
-            logger.info("Patching ISO...")
-            py_randomprime.patch_iso(input_iso_path, output_path, config_json, notifier)  # type: ignore
-            logger.info("Patching Complete")
-
-        except BaseException as e:
-            logger.error(f"Failed to patch ISO: {e}")
-            # Delete the output file if it exists since it will be corrupted
-            if os.path.exists(output_path):
-                os.remove(output_path)
-
-            raise RuntimeError(f"Failed to patch ISO: {e}")
+        notifier = py_randomprime.ProgressNotifier(  # type: ignore
+            lambda progress, message: print("Generating ISO: ", progress, message)  # type: ignore
+        )
         logger.info("--------------")
+        logger.info(f"Input ISO Path: {input_iso_path}")
+        logger.info(f"Output ISO Path: {output_path}")
+        logger.info(f"Disc Version: {disc_version}")
+        logger.info("Patching ISO...")
+        py_randomprime.patch_iso(input_iso_path, output_path, config_json, notifier)  # type: ignore
+        logger.info("Patching Complete")
+
+    except BaseException as e:
+        logger.error(f"Failed to patch ISO: {e}")
+        # Delete the output file if it exists since it will be corrupted
+        if os.path.exists(output_path):
+            os.remove(output_path)
+
+        raise RuntimeError(f"Failed to patch ISO: {e}")
+    logger.info("--------------")
 
     Utils.async_start(run_game(output_path))
 
