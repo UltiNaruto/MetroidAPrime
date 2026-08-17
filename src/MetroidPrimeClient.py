@@ -210,7 +210,7 @@ class MetroidPrimeContext(CommonContext):
         apmp1_file: Optional[str] = None,
         mp1_iso: Optional[str] = None,
         dolphin_path: Optional[str] = None,
-        dolphin_arguments: Optional[str] = None,
+        dolphin_arguments: Optional[list] = None,
         dolphin_autostart: Optional[bool] = None,
     ):
         super().__init__(server_address, password)
@@ -701,7 +701,7 @@ async def _handle_game_not_ready(ctx: MetroidPrimeContext):
         await asyncio.sleep(3)
 
 
-async def run_game(romfile: str, dolphin_path: Optional[str] = None, dolphin_arguments: Optional[str] = None, dolphin_autostart: Optional[bool] = None):
+async def run_game(romfile: str, dolphin_path: Optional[str] = None, dolphin_arguments: Optional[list] = None, dolphin_autostart: Optional[bool] = None):
     metroidprime_options = get_settings()["metroidprime_options"]
     auto_start: bool = dolphin_autostart if dolphin_autostart is not None else metroidprime_options['emulator_settings']['auto_start']
     emulator_path: str = dolphin_path if dolphin_path not in ("", None) else metroidprime_options['emulator_settings']['executable_path']
@@ -783,7 +783,7 @@ def get_randomprime_config_from_apmp1(apmp1_file: str) -> Dict[str, Any]:
     return config_json
 
 
-async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None, dolphin_path: Optional[str] = None, dolphin_arguments: Optional[str] = None, dolphin_autostart: Optional[bool] = None):
+async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None, dolphin_path: Optional[str] = None, dolphin_arguments: Optional[list] = None, dolphin_autostart: Optional[bool] = None):
     import py_randomprime # type: ignore
 
     metroidprime_options = get_settings()['metroidprime_options']
@@ -866,7 +866,7 @@ def main(*args: str):
             return None
         return True if value.lower() in ('yes', 'on', 'true', 't', 'y', '1') else False
 
-    async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str], mp1_iso: Optional[str], dolphin_path: Optional[str], dolphin_arguments: Optional[str], dolphin_autostart: Optional[bool]) -> None:
+    async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str], mp1_iso: Optional[str], dolphin_path: Optional[str], dolphin_arguments: Optional[list], dolphin_autostart: Optional[bool]) -> None:
         from .PrimeUtils import setup_libs
         setup_libs()
 
