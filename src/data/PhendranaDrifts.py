@@ -679,7 +679,8 @@ class PhendranaDriftsAreaData(AreaData):
                     PickupData(
                         "Phendrana Drifts: Research Lab Aether - Morph Track",
                         rule_func=lambda world, state: can_combat_labs(world, state)
-                        and can_space_jump(world, state),
+                        and can_space_jump(world, state)
+                        and can_morph_ball(world, state),
                         tricks=[Tricks.research_lab_aether_item_dbj]
                     ),
                 ],
