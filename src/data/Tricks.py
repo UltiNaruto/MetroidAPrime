@@ -478,18 +478,43 @@ class Tricks:
         can_heat,
     )
 
+    twin_fires_tunnel_gravity = TrickInfo(
+        "Twin Fires Tunnel with Gravity",
+        "Traverse the Twin Fires Tunnel by using the Gravity Suit and Space Jump Boots",
+        TrickDifficulty.Easy,
+        lambda world, state: can_space_jump(world, state) and can_move_underwater(world, state)
+            and can_heat(world, state) and has_energy_tanks(world, state, 1),
+    )
+    twin_fires_tunnel_dbj = TrickInfo(
+        "Twin Fires Tunnel with DBJ",
+        "Traverse the Twin Fires Tunnel by using a double bomb jump in the lava",
+        TrickDifficulty.Medium,
+        lambda world, state: can_bomb(world, state) and can_heat(world, state) and has_energy_tanks(world, state, 2),
+    )
     twin_fires_tunnel_no_spider = TrickInfo(
         "Twin Fires Tunnel No Spider Ball",
         "Traverse the Twin Fires Tunnel by using an R Jump and geometry near the transport door",
         TrickDifficulty.Medium,
         can_space_jump,
     )
+    cross_twin_fires_gravity_only = TrickInfo(
+        "Cross Twin Fires Gravity Only",
+        "Traverse the Twin Fires Tunnel by using only the Gravity Suit and Space Jump Boots. Twin Fires Tunnel is the only room in late Magmoor that is superheated.",
+        TrickDifficulty.Easy,
+        lambda world, state: can_space_jump(world, state) and can_move_underwater(world, state)
+            and has_energy_tanks(world, state, 2),
+    )
     cross_twin_fires_suitless = TrickInfo(
         "Cross Twin Fires Suitless",
         "Removes the suit requirement when crossing this room. Twin Fires Tunnel is the only room in late Magmoor that is superheated. This trick automatically assumes you have 2 Energy Tanks and can cross without Spider Ball, since it cannot be used while you are taking heat damage.",
         TrickDifficulty.Medium,
-        lambda world, state: can_space_jump(world, state)
-        and has_energy_tanks(world, state, 2),
+        lambda world, state: can_space_jump(world, state) and has_energy_tanks(world, state, 2),
+    )
+    cross_twin_fires_suitless_dbj = TrickInfo(
+        "Cross Twin Fires Suitless with DBJ",
+        "Traverse the Twin Fires Tunnel using a double bomb jump without Varia Suit. Twin Fires Tunnel is the only room in late Magmoor that is superheated.",
+        TrickDifficulty.Medium,
+        lambda world, state: can_bomb(world, state) and has_energy_tanks(world, state, 4),
     )
 
     geothermal_core_no_grapple_spider = TrickInfo(

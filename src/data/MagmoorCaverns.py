@@ -427,8 +427,12 @@ class MagmoorCavernsAreaData(AreaData):
                         rule_func=lambda world, state: can_heat(world, state)
                         and can_spider(world, state),
                         tricks=[
+                            Tricks.twin_fires_tunnel_gravity,
                             Tricks.twin_fires_tunnel_no_spider,
+                            Tricks.twin_fires_tunnel_dbj,
+                            Tricks.cross_twin_fires_gravity_only,
                             Tricks.cross_twin_fires_suitless,
+                            Tricks.cross_twin_fires_suitless_dbj,
                         ],
                     ),
                     1: DoorData(
