@@ -741,8 +741,9 @@ class PhendranaDriftsAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Phendrana Drifts: Ruined Courtyard",
-                        rule_func=lambda world, state: _can_reach_top_of_ruined_courtyard(
-                            world, state
+                        rule_func=lambda world, state: (
+                            _can_reach_top_of_ruined_courtyard(world, state)
+                            and (can_bomb(world, state) or can_ball_jump(world, state))
                         ),
                         tricks=[Tricks.phendrana_courtyard_item_no_boost_spider],
                     ),
@@ -808,7 +809,7 @@ class PhendranaDriftsAreaData(AreaData):
             RoomName.South_Quarantine_Tunnel: RoomData(
                 doors={
                     0: DoorData(
-                        RoomName.Quarantine_Cave, 
+                        RoomName.Quarantine_Cave,
                         rule_func=can_morph_ball,
                         defaultLock=DoorLockType.Wave
                     ),
