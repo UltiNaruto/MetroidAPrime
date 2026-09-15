@@ -285,6 +285,12 @@ class Tricks:
         TrickDifficulty.Easy,
         can_bomb,
     )
+    arboretum_backwards_wall_boost: TrickInfo = TrickInfo(
+        "Arboretum Backwards Wall Boost",
+        "Enter Arboretum from the top door and use Boost Ball to get through the backwards wall",
+        TrickDifficulty.Easy,
+        can_boost,
+    )
 
     gathering_hall_without_space_jump: TrickInfo = TrickInfo(
         "Gathering Hall Without Space Jump",

@@ -777,7 +777,9 @@ class ChozoRuinsAreaData(AreaData):
                 doors={
                     0: DoorData(RoomName.Sunchamber_Access),
                     1: DoorData(
-                        RoomName.Arboretum, rule_func=lambda world, state: False
+                        RoomName.Arboretum,
+                        rule_func=lambda world, state: False,
+                        tricks=[Tricks.arboretum_backwards_wall_boost],
                     ),
                 }
             ),
