@@ -151,10 +151,15 @@ class ChozoRuinsAreaData(AreaData):
             ),
             RoomName.Burn_Dome_Access: RoomData(
                 doors={
-                    0: DoorData(RoomName.Burn_Dome, rule_func=can_bomb),
+                    0: DoorData(
+                        RoomName.Burn_Dome,
+                        rule_func=can_bomb,
+                        tricks=[Tricks.burn_dome_no_bombs],
+                    ),
                     1: DoorData(
                         RoomName.Energy_Core,
                         rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
+                        tricks=[Tricks.burn_dome_no_bombs],
                         defaultLock=DoorLockType.None_,
                         exclude_from_rando=True,
                     ),
@@ -294,6 +299,7 @@ class ChozoRuinsAreaData(AreaData):
                         RoomName.Burn_Dome_Access,
                         defaultLock=DoorLockType.None_,
                         rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
+                        tricks=[Tricks.burn_dome_no_bombs],
                         exclude_from_rando=True,
                     ),  # Bombs are required to get out of here
                     1: DoorData(RoomName.West_Furnace_Access, rule_func=can_bomb),
@@ -645,7 +651,9 @@ class ChozoRuinsAreaData(AreaData):
                         rule_func=can_missile,
                     ),
                     PickupData(
-                        "Chozo Ruins: Ruined Gallery - Tunnel", rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state)
+                        "Chozo Ruins: Ruined Gallery - Tunnel",
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
+                        tricks=[Tricks.ruined_gallery_tunnel_no_bombs]
                     ),
                 ],
             ),
@@ -731,9 +739,12 @@ class ChozoRuinsAreaData(AreaData):
                         RoomName.Reflecting_Pool,
                         blast_shield=BlastShieldType.Missile,
                         rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
+                        tricks=[Tricks.save_station_3_no_bombs],
                     ),
                     1: DoorData(
-                        RoomName.Transport_to_Tallon_Overworld_East, rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state)
+                        RoomName.Transport_to_Tallon_Overworld_East,
+                        rule_func=lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
+                        tricks=[Tricks.save_station_3_no_bombs],
                     ),
                 }
             ),
@@ -757,7 +768,7 @@ class ChozoRuinsAreaData(AreaData):
                 doors={
                     0: DoorData(
 						RoomName.Sunchamber,
-                        rule_func=can_pass_flaagrah_vines 
+                        rule_func=can_pass_flaagrah_vines
 					), # is locked if Flaagrah is dead until after you beat the ghosts
                     1: DoorData(RoomName.Sunchamber_Lobby),
                 },
@@ -778,7 +789,7 @@ class ChozoRuinsAreaData(AreaData):
                         exclude_from_rando=True,
                     ),
                     1: DoorData(
-                        RoomName.Sunchamber_Access, 
+                        RoomName.Sunchamber_Access,
                         rule_func=can_pass_flaagrah_vines
                     ) # gets locked until after you beat the ghosts
                 },

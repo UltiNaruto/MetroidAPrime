@@ -71,14 +71,13 @@ class MagmoorCavernsAreaData(AreaData):
                     PickupData(
                         "Magmoor Caverns: Fiery Shores - Warrior Shrine Tunnel",
                         rule_func=lambda world, state: can_power_bomb(world, state)
-                        and (can_bomb(world, state) or can_ball_jump(world, state))
-                        and (
-                            can_warp_to_start(world, state)
-                            if world.starting_room_name == RoomName.Warrior_Shrine.value
-                            else state.can_reach(
-                                RoomName.Warrior_Shrine.value, None, world.player
-                            )
-                        ),
+                            and (can_bomb(world, state) or can_ball_jump(world, state))
+                            and (
+                                can_warp_to_start(world, state)
+                                if world.starting_room_name == RoomName.Warrior_Shrine.value
+                                else state.can_reach(RoomName.Warrior_Shrine.value, None, world.player)
+                            ),
+                        tricks=[Tricks.fiery_shores_warrior_shrine_tunnel_no_bombs]
                     ),  # Not an item in this room but can only be accessed from here, if starting in warrior shrine need to be able to warp back
                 ],
             ),
@@ -479,8 +478,9 @@ class MagmoorCavernsAreaData(AreaData):
                         RoomName.Fiery_Shores,
                         defaultLock=DoorLockType.None_,
                         rule_func=lambda world, state: can_heat(world, state)
-                        and can_power_bomb(world, state)
-                        and (can_bomb(world, state) or can_ball_jump(world, state)),
+                            and can_power_bomb(world, state)
+                            and (can_bomb(world, state) or can_ball_jump(world, state)),
+                        tricks=[Tricks.warrior_shrine_tunnel_no_bombs],
                         exclude_from_rando=True,
                     ),
                 },

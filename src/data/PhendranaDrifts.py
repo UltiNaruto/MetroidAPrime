@@ -157,10 +157,10 @@ class PhendranaDriftsAreaData(AreaData):
                     PickupData(
                         "Phendrana Drifts: Control Tower",
                         rule_func=lambda world, state: can_combat_labs(world, state)
-                        and can_space_jump(world, state)
-                        and can_missile(world, state)
-                        and can_melt_ice(world, state)
-                        and (can_bomb(world, state) or can_ball_jump(world, state)),
+                            and can_space_jump(world, state)
+                            and can_missile(world, state)
+                            and can_melt_ice(world, state)
+                            and (can_bomb(world, state) or can_ball_jump(world, state)),
                         tricks=[Tricks.control_tower_item_no_plasma],
                     ),
                 ],
