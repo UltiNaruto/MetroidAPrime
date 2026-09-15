@@ -3,7 +3,7 @@ from typing import Callable, TYPE_CHECKING
 
 from BaseClasses import CollectionState
 from ..Enum import RoomName, SuitUpgrade, TrickDifficulty
-from ..LogicCombat import can_combat_beam_pirates, can_combat_ghosts, can_combat_labs
+from ..LogicCombat import can_combat_beam_pirates, can_combat_ghosts, can_combat_labs, can_combat_thardus
 from ..Logic import (
     can_ball_jump,
     can_bomb,
@@ -696,7 +696,7 @@ class Tricks:
         "Quarantine to North Courtyard Slope Jump",
         "You can exit Quarantine Cave to Ruined Courtyard by slope jumping next to the Spider Ball track.",
         TrickDifficulty.Medium,
-        lambda world, state: can_space_jump(world, state),
+        lambda world, state: can_combat_thardus(world, state) and can_thermal(world, state) and can_space_jump(world, state),
     )
 
     observatory_puzzle_skip = TrickInfo(
