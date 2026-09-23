@@ -232,7 +232,9 @@ class ChozoRuinsAreaData(AreaData):
                         rule_func=lambda world, state: can_bomb(world, state) or can_power_bomb(world, state, 1),
                     ),
                     1: DoorData(
-                        RoomName.Dynamo, destination_area=MetroidPrimeArea.Chozo_Ruins
+                        RoomName.Dynamo,
+                        blast_shield=BlastShieldType.Missile,
+                        destination_area=MetroidPrimeArea.Chozo_Ruins,
                     ),
                 },
             ),
@@ -241,6 +243,7 @@ class ChozoRuinsAreaData(AreaData):
                 doors={
                     0: DoorData(
                         RoomName.Dynamo_Access,
+                        blast_shield=BlastShieldType.Missile,
                         destination_area=MetroidPrimeArea.Chozo_Ruins,
                     ),
                 },
