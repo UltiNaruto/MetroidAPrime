@@ -342,7 +342,7 @@ def make_config(world: "MetroidPrimeWorld") -> Dict[str, Any]:
             "startingBeam": get_starting_beam(world),
             "missileStationPbRefill": True,
             "doorOpenMode": "PrimaryBlastShield",
-            "etankCapacity": 100,
+            "etankCapacity": options.etank_capacity.value,
             "itemMaxCapacity": {
                 "Power Beam": (
                     2 if bool(options.progressive_beam_upgrades.value) else 1
