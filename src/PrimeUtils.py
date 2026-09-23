@@ -5,7 +5,7 @@ import platform
 import sys
 
 from importlib.metadata import version, PackageNotFoundError
-from typing import List
+from typing import List, Optional
 
 from .Enum import SuitUpgrade
 
@@ -147,3 +147,8 @@ def is_between_or_throw(v: int, minimum: int, maximum: int) -> int:
     if v < minimum or v > maximum:
         raise RuntimeError(f'{v} is not between {minimum} and {maximum}!')
     return v
+
+def parse_bool(value: Optional[str]):
+    if not value:
+        return None
+    return True if value.lower() in ('yes', 'on', 'true', 't', 'y', '1') else False

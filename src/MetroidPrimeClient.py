@@ -42,7 +42,7 @@ from .MetroidPrimeInterface import (
 )
 from .NotificationManager import NotificationManager
 from .PrimeSettings import get_strg, get_tweaks
-from .PrimeUtils import count_ammo, get_apworld_version, get_output_path
+from .PrimeUtils import count_ammo, get_apworld_version, get_output_path, parse_bool
 
 tracker_loaded = False
 try:
@@ -815,11 +815,6 @@ async def patch_and_run_game(apmp1_file: str, mp1_iso: Optional[str] = None, dol
 
 def main(*args: str):
     Utils.init_logging("MetroidPrime Client")
-
-    def parse_bool(value):
-        if not value:
-            return None
-        return True if value.lower() in ('yes', 'on', 'true', 't', 'y', '1') else False
 
     async def _main(connect: Optional[str], password: Optional[str], apmp1_file: Optional[str], mp1_iso: Optional[str], dolphin_path: Optional[str], dolphin_arguments: Optional[list], dolphin_autostart: Optional[bool]) -> None:
         from .PrimeUtils import setup_libs
