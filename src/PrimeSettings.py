@@ -3,7 +3,7 @@ import time
 from random import Random
 
 from settings import Bool, Group, UserFilePath
-from typing import Any, Dict, List, Optional, Self
+from typing import Any, Dict, List, Optional, Self, Union
 
 from .Config import PAUSE_MENU_STRG_KEY
 from .Container import get_version_from_iso
@@ -83,8 +83,8 @@ class EmulatorSettings(Group):
         pass
 
     executable_path: EmulatorExecutable = EmulatorExecutable(EmulatorExecutable.copy_to)
-    arguments: EmulatorArguments = []
-    auto_start: EmulatorAutoStart = True
+    arguments: Union[EmulatorArguments, list] = []
+    auto_start: Union[EmulatorAutoStart, bool] = True
 
     def __init__(self):
         should_save = any([attr not in self for attr in self])
@@ -120,7 +120,7 @@ class HUDSettings(Group):
         Value must be between 0 and 255
         """
 
-    color: HudColor = 'default'
+    color: Union[HudColor, str] = 'default'
     color_red: HudColorChannel = HudColorChannel(EHudColor.DEFAULT.value[0])
     color_green: HudColorChannel = HudColorChannel(EHudColor.DEFAULT.value[1])
     color_blue: HudColorChannel = HudColorChannel(EHudColor.DEFAULT.value[2])
@@ -207,12 +207,12 @@ class SuitSettings(Group):
         """Override the color of the suit using an index from the game's color wheel. Allowed values are between 0 and 359."""
         pass
 
-    fusion_suit: FusionSuit = False
-    randomize_suit_colors: RandomizeSuitColors = False
-    power_suit_color: SuitColorRotation = 0
-    varia_suit_color: SuitColorRotation = 0
-    gravity_suit_color: SuitColorRotation = 0
-    phazon_suit_color: SuitColorRotation = 0
+    fusion_suit: Union[FusionSuit, bool] = False
+    randomize_suit_colors: Union[RandomizeSuitColors, bool] = False
+    power_suit_color: Union[SuitColorRotation, int] = 0
+    varia_suit_color: Union[SuitColorRotation, int] = 0
+    gravity_suit_color: Union[SuitColorRotation, int] = 0
+    phazon_suit_color: Union[SuitColorRotation, int] = 0
 
     def __init__(self):
         should_save = any([attr not in self for attr in self])
@@ -230,9 +230,9 @@ class DefaultGameOptionsSettings(Group):
         class HudLag(Bool):
             pass
 
-        visor_opacity: Opacity = 100
-        helmet_opacity: Opacity = 100
-        hud_lag: HudLag = True
+        visor_opacity: Union[Opacity, int] = 100
+        helmet_opacity: Union[Opacity, int] = 100
+        hud_lag: Union[HudLag, bool] = True
 
         def __init__(self):
             should_save = any([attr not in self for attr in self])
@@ -260,10 +260,10 @@ class DefaultGameOptionsSettings(Group):
             """Allowed values are between -10 and 10."""
             pass
 
-        screen_brightness: Brightness = 50
-        screen_offset_x: Offset = 0
-        screen_offset_y: Offset = 0
-        screen_stretch: Stretch = 0
+        screen_brightness: Union[Brightness, int] = 50
+        screen_offset_x: Union[Offset, int] = 0
+        screen_offset_y: Union[Offset, int] = 0
+        screen_stretch: Union[Stretch, int] = 0
 
         def __init__(self):
             should_save = any([attr not in self for attr in self])
@@ -279,9 +279,9 @@ class DefaultGameOptionsSettings(Group):
             """Allowed values are mono, stereo and dolby."""
             pass
 
-        sfx_volume: Volume = 100
-        music_volume: Volume = 100
-        sound_mode: SoundMode = "stereo"
+        sfx_volume: Union[Volume, int] = 100
+        music_volume: Union[Volume, int] = 100
+        sound_mode: Union[SoundMode, str] = "stereo"
 
         def __init__(self):
             should_save = any([attr not in self for attr in self])
@@ -300,9 +300,9 @@ class DefaultGameOptionsSettings(Group):
             """When true, beams are on the left. Else they are on the right."""
             pass
 
-        reverse_y_axis: ReverseYAxis = False
-        rumble: Rumble = True
-        swap_beam_controls: SwapBeamControls = False
+        reverse_y_axis: Union[ReverseYAxis, bool] = False
+        rumble: Union[Rumble, bool] = True
+        swap_beam_controls: Union[SwapBeamControls, bool] = False
 
     visor_settings: VisorSettings = VisorSettings()
     display_settings: DisplaySettings = DisplaySettings()
