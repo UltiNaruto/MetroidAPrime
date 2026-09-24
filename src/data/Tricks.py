@@ -3,7 +3,7 @@ from typing import Callable, TYPE_CHECKING
 
 from BaseClasses import CollectionState
 from ..Enum import RoomName, SuitUpgrade, TrickDifficulty
-from ..LogicCombat import can_combat_beam_pirates, can_combat_ghosts
+from ..LogicCombat import can_combat_beam_pirates, can_combat_ghosts, can_combat_labs, can_combat_thardus
 from ..Logic import (
     can_ball_jump,
     can_bomb,
@@ -25,6 +25,7 @@ from ..Logic import (
     can_spider,
     can_super_missile,
     can_thermal,
+    can_warp_to_start,
     can_wave_beam,
     can_xray,
     has_energy_tanks,
@@ -232,6 +233,13 @@ class Tricks:
         and can_morph_ball(world, state),
     )
 
+    ruined_gallery_tunnel_no_bombs = TrickInfo(
+        "Ruined Gallery Tunnel No Bombs",
+        "Use a wall boost to get into the morph tunnel in Ruined Gallery",
+        TrickDifficulty.Hard,
+        can_boost,
+    )
+
     magma_pool_scan_dash: TrickInfo = TrickInfo(
         "Cross Magma Pool Suitless",
         "Cross magma pool using a scan dash on the crate items",
@@ -277,6 +285,12 @@ class Tricks:
         TrickDifficulty.Easy,
         can_bomb,
     )
+    arboretum_backwards_wall_boost: TrickInfo = TrickInfo(
+        "Arboretum Backwards Wall Boost",
+        "Enter Arboretum from the top door and use Boost Ball to get through the backwards wall",
+        TrickDifficulty.Easy,
+        can_boost,
+    )
 
     gathering_hall_without_space_jump: TrickInfo = TrickInfo(
         "Gathering Hall Without Space Jump",
@@ -296,6 +310,13 @@ class Tricks:
         "Reach the Watery Hall Underwater Item without Gravity Suit or Space Jump by using a slope jump or bomb jump",
         TrickDifficulty.Medium,
         lambda world, state: True,
+    )
+
+    burn_dome_no_bombs = TrickInfo(
+        "Burn Dome Escape No Bombs",
+        "Use wall boosts to get into the morph tunnels to leave Burn Dome",
+        TrickDifficulty.Hard,
+        can_boost,
     )
 
     furnace_no_spider_ball = TrickInfo(
@@ -389,6 +410,13 @@ class Tricks:
         lambda world, state: can_bomb(world, state) or can_ball_jump(world, state),
     )
 
+    save_station_3_no_bombs = TrickInfo(
+        "Save Station 3 No Bombs",
+        "Use a wall boost to get into the morph tunnel to cross Save Station 3",
+        TrickDifficulty.Hard,
+        can_boost,
+    )
+
     # Magmoor
 
     lava_lake_item_suitless = TrickInfo(
@@ -470,6 +498,23 @@ class Tricks:
         TrickDifficulty.Easy,
         can_space_jump,
     )
+    warrior_shrine_tunnel_no_bombs = TrickInfo(
+        "Warrior Shrine Tunnel Escape No Bombs",
+        "Use a wall boost to get into the morph tunnel to escape the tunnel below Warrior Shrine",
+        TrickDifficulty.Hard,
+        lambda world, state: can_heat(world, state) and can_power_bomb(world, state) and can_boost(world, state),
+    )
+    fiery_shores_warrior_shrine_tunnel_no_bombs = TrickInfo(
+        "Warrior Shrine Tunnel Escape No Bombs",
+        "Use a wall boost to get into the morph tunnel to escape the tunnel below Warrior Shrine",
+        TrickDifficulty.Hard,
+        lambda world, state: can_power_bomb(world, state) and can_boost(world, state)
+            and (
+                can_warp_to_start(world, state)
+                if world.starting_room_name == RoomName.Warrior_Shrine.value
+                else state.can_reach(RoomName.Warrior_Shrine.value, None, world.player)
+            ),
+    )
 
     transport_tunnel_b_damage_boost = TrickInfo(
         "Transport Tunnel B Damage Boost",
@@ -478,18 +523,43 @@ class Tricks:
         can_heat,
     )
 
+    twin_fires_tunnel_gravity = TrickInfo(
+        "Twin Fires Tunnel with Gravity",
+        "Traverse the Twin Fires Tunnel by using the Gravity Suit and Space Jump Boots",
+        TrickDifficulty.Easy,
+        lambda world, state: can_space_jump(world, state) and can_move_underwater(world, state)
+            and can_heat(world, state) and has_energy_tanks(world, state, 1),
+    )
+    twin_fires_tunnel_dbj = TrickInfo(
+        "Twin Fires Tunnel with DBJ",
+        "Traverse the Twin Fires Tunnel by using a double bomb jump in the lava",
+        TrickDifficulty.Medium,
+        lambda world, state: can_bomb(world, state) and can_heat(world, state) and has_energy_tanks(world, state, 2),
+    )
     twin_fires_tunnel_no_spider = TrickInfo(
         "Twin Fires Tunnel No Spider Ball",
         "Traverse the Twin Fires Tunnel by using an R Jump and geometry near the transport door",
         TrickDifficulty.Medium,
         can_space_jump,
     )
+    cross_twin_fires_gravity_only = TrickInfo(
+        "Cross Twin Fires Gravity Only",
+        "Traverse the Twin Fires Tunnel by using only the Gravity Suit and Space Jump Boots. Twin Fires Tunnel is the only room in late Magmoor that is superheated.",
+        TrickDifficulty.Easy,
+        lambda world, state: can_space_jump(world, state) and can_move_underwater(world, state)
+            and has_energy_tanks(world, state, 2),
+    )
     cross_twin_fires_suitless = TrickInfo(
         "Cross Twin Fires Suitless",
         "Removes the suit requirement when crossing this room. Twin Fires Tunnel is the only room in late Magmoor that is superheated. This trick automatically assumes you have 2 Energy Tanks and can cross without Spider Ball, since it cannot be used while you are taking heat damage.",
         TrickDifficulty.Medium,
-        lambda world, state: can_space_jump(world, state)
-        and has_energy_tanks(world, state, 2),
+        lambda world, state: can_space_jump(world, state) and has_energy_tanks(world, state, 2),
+    )
+    cross_twin_fires_suitless_dbj = TrickInfo(
+        "Cross Twin Fires Suitless with DBJ",
+        "Traverse the Twin Fires Tunnel using a double bomb jump without Varia Suit. Twin Fires Tunnel is the only room in late Magmoor that is superheated.",
+        TrickDifficulty.Medium,
+        lambda world, state: can_bomb(world, state) and has_energy_tanks(world, state, 4),
     )
 
     geothermal_core_no_grapple_spider = TrickInfo(
@@ -591,8 +661,27 @@ class Tricks:
         "Reach the Control Tower item without Plasma Beam by jumping off of crates in the middle and shooting the tower base with a missile",
         TrickDifficulty.Easy,
         lambda world, state: (can_bomb(world, state) or can_ball_jump(world, state))
-        and can_missile(world, state)
-        and can_space_jump(world, state),
+            and can_missile(world, state)
+            and can_space_jump(world, state),
+    )
+    control_tower_item_no_bombs = TrickInfo(
+        "Control Tower Item No Bombs",
+        "Use a wall boost to escape after getting the Control Tower item (normally)",
+        TrickDifficulty.Hard,
+        lambda world, state: can_combat_labs(world, state)
+            and can_space_jump(world, state)
+            and can_missile(world, state)
+            and can_melt_ice(world, state)
+            and can_boost(world, state),
+    )
+    control_tower_item_no_plasma_bombs = TrickInfo(
+        "Control Tower Item No Plasma No Bombs",
+        "Reach the Control Tower item without Plasma Beam and then escape using a wall boost",
+        TrickDifficulty.Hard,
+        lambda world, state: can_combat_labs(world, state)
+            and can_space_jump(world, state)
+            and can_missile(world, state)
+            and can_boost(world, state),
     )
 
     monitor_cave_no_grapple = TrickInfo(
@@ -607,7 +696,7 @@ class Tricks:
         "Quarantine to North Courtyard Slope Jump",
         "You can exit Quarantine Cave to Ruined Courtyard by slope jumping next to the Spider Ball track.",
         TrickDifficulty.Medium,
-        lambda world, state: can_space_jump(world, state),
+        lambda world, state: can_combat_thardus(world, state) and can_thermal(world, state) and can_space_jump(world, state),
     )
 
     observatory_puzzle_skip = TrickInfo(

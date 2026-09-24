@@ -157,10 +157,10 @@ class PhendranaDriftsAreaData(AreaData):
                     PickupData(
                         "Phendrana Drifts: Control Tower",
                         rule_func=lambda world, state: can_combat_labs(world, state)
-                        and can_space_jump(world, state)
-                        and can_missile(world, state)
-                        and can_melt_ice(world, state)
-                        and (can_bomb(world, state) or can_ball_jump(world, state)),
+                            and can_space_jump(world, state)
+                            and can_missile(world, state)
+                            and can_melt_ice(world, state)
+                            and (can_bomb(world, state) or can_ball_jump(world, state)),
                         tricks=[Tricks.control_tower_item_no_plasma],
                     ),
                 ],
@@ -563,30 +563,30 @@ class PhendranaDriftsAreaData(AreaData):
                         RoomName.North_Quarantine_Tunnel,
                         defaultLock=DoorLockType.Wave,
                         rule_func=lambda world, state: can_combat_thardus(world, state)
-                        and can_spider(world, state)
-                        and can_thermal(world, state),
+                            and can_spider(world, state)
+                            and can_thermal(world, state),
                         tricks=[Tricks.quarantine_to_north_courtyard_slope_jump],
                     ),
                     1: DoorData(
                         RoomName.South_Quarantine_Tunnel,
                         defaultLock=DoorLockType.Wave,
                         rule_func=lambda world, state: can_combat_thardus(world, state)
-                        and can_thermal(world, state)
-                        and (
-                            (can_bomb(world, state) and can_spider(world, state))
-                            or (
-                                can_space_jump(world, state)
-                                and can_grapple(world, state)
-                            )
-                        ),
+                            and can_thermal(world, state)
+                            and (
+                                (can_bomb(world, state) and can_spider(world, state))
+                                or (
+                                    can_space_jump(world, state)
+                                    and can_grapple(world, state)
+                                )
+                            ),
                     ),
                     2: DoorData(
                         RoomName.Quarantine_Monitor,
                         defaultLock=DoorLockType.None_,
                         exclude_from_rando=True,
                         rule_func=lambda world, state: can_combat_thardus(world, state)
-                        and can_spider(world, state)
-                        and can_grapple(world, state),
+                            and can_spider(world, state)
+                            and can_grapple(world, state),
                         tricks=[Tricks.monitor_cave_no_grapple],
                     ),  # Not an annotated door
                 },
@@ -594,7 +594,9 @@ class PhendranaDriftsAreaData(AreaData):
                     PickupData(
                         "Phendrana Drifts: Quarantine Cave",
                         rule_func=lambda world, state: can_combat_thardus(world, state)
-                        and can_thermal(world, state),
+                            and can_thermal(world, state)
+                            and can_spider(world, state),
+                        tricks=[Tricks.quarantine_to_north_courtyard_slope_jump],
                     ),
                 ],
             ),
@@ -741,8 +743,9 @@ class PhendranaDriftsAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Phendrana Drifts: Ruined Courtyard",
-                        rule_func=lambda world, state: _can_reach_top_of_ruined_courtyard(
-                            world, state
+                        rule_func=lambda world, state: (
+                            _can_reach_top_of_ruined_courtyard(world, state)
+                            and (can_bomb(world, state) or can_ball_jump(world, state))
                         ),
                         tricks=[Tricks.phendrana_courtyard_item_no_boost_spider],
                     ),
@@ -808,7 +811,7 @@ class PhendranaDriftsAreaData(AreaData):
             RoomName.South_Quarantine_Tunnel: RoomData(
                 doors={
                     0: DoorData(
-                        RoomName.Quarantine_Cave, 
+                        RoomName.Quarantine_Cave,
                         rule_func=can_morph_ball,
                         defaultLock=DoorLockType.Wave
                     ),
