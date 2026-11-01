@@ -428,9 +428,11 @@ class MagmoorCavernsAreaData(AreaData):
                         tricks=[
                             Tricks.twin_fires_tunnel_gravity,
                             Tricks.twin_fires_tunnel_no_spider,
+                            Tricks.twin_fires_tunnel_scan_dash,
                             Tricks.twin_fires_tunnel_dbj,
                             Tricks.cross_twin_fires_gravity_only,
                             Tricks.cross_twin_fires_suitless,
+                            Tricks.cross_twin_fires_suitless_scan_dash,
                             Tricks.cross_twin_fires_suitless_dbj,
                         ],
                     ),

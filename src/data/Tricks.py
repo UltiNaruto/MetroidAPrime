@@ -536,6 +536,12 @@ class Tricks:
         TrickDifficulty.Medium,
         lambda world, state: can_bomb(world, state) and can_heat(world, state) and has_energy_tanks(world, state, 2),
     )
+    twin_fires_tunnel_scan_dash = TrickInfo(
+        "Twin Fires Tunnel Scan Dash",
+        "Traverse the Twin Fires Tunnel by using a scan dash from the geometry near the transport door",
+        TrickDifficulty.Medium,
+        lambda world, state: can_scan(world, state) and can_space_jump(world, state) and can_heat(world, state),
+    )
     twin_fires_tunnel_no_spider = TrickInfo(
         "Twin Fires Tunnel No Spider Ball",
         "Traverse the Twin Fires Tunnel by using an R Jump and geometry near the transport door",
@@ -549,9 +555,15 @@ class Tricks:
         lambda world, state: can_space_jump(world, state) and can_move_underwater(world, state)
             and has_energy_tanks(world, state, 2),
     )
+    cross_twin_fires_suitless_scan_dash = TrickInfo(
+        "Cross Twin Fires Suitless",
+        "Traverse the Twin Fires Tunnel by using a scan dash from the geometry near the transport door without the Varia Suit. Twin Fires Tunnel is the only room in late Magmoor that is superheated.",
+        TrickDifficulty.Medium,
+        lambda world, state: can_scan(world, state) and can_space_jump(world, state) and has_energy_tanks(world, state, 2),
+    )
     cross_twin_fires_suitless = TrickInfo(
         "Cross Twin Fires Suitless",
-        "Removes the suit requirement when crossing this room. Twin Fires Tunnel is the only room in late Magmoor that is superheated. This trick automatically assumes you have 2 Energy Tanks and can cross without Spider Ball, since it cannot be used while you are taking heat damage.",
+        "Traverse the Twin Fires Tunnel by using an R Jump and geometry near the transport door without the Varia Suit. Twin Fires Tunnel is the only room in late Magmoor that is superheated.",
         TrickDifficulty.Medium,
         lambda world, state: can_space_jump(world, state) and has_energy_tanks(world, state, 2),
     )
