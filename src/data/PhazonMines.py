@@ -11,13 +11,13 @@ from ..Logic import (
     can_melt_ice,
     can_morph_ball,
     can_phazon,
-    can_plasma_beam,
     can_power_bomb,
     can_scan,
     can_space_jump,
     can_spider,
     can_super_missile,
     can_thermal,
+    can_warp_to_start,
     can_wave_beam,
     can_xray,
 )
@@ -637,11 +637,18 @@ class PhazonMinesAreaData(AreaData):
                 pickups=[
                     PickupData(
                         "Phazon Mines: Processing Center Access",
-                        rule_func=lambda world, state: can_backwards_lower_mines(
-                            world, state
-                        )
-                        or state.can_reach(
-                            RoomName.Elite_Quarters.value, None, world.player
+                        rule_func=lambda world, state: (
+                            can_backwards_lower_mines(world, state)
+                        ) or (
+                            can_warp_to_start(world, state)
+                            if world.starting_room_name == RoomName.Processing_Center_Access.value
+                            else (
+                                state.can_reach(
+                                    RoomName.Elite_Quarters.value, None, world.player
+                                ) and (
+                                    can_combat_omega_pirate(world, state)
+                                )
+                            )
                         ),
                         tricks=[],
                     ),
