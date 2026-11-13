@@ -470,12 +470,14 @@ class PhendranaDriftsAreaData(AreaData):
                             can_boost(world, state) and can_scan(world, state)
                         )
                         or can_space_jump(world, state),
+                        tricks=[Tricks.phendrana_canyon_escape_no_items],
                     ),
                 },
                 pickups=[
                     PickupData(
                         "Phendrana Drifts: Phendrana Canyon",
-                        tricks=[Tricks.phendrana_canyon_escape_no_items],
+                        rule_func=lambda world, state: can_scan(world, state),
+                        tricks=[Tricks.phendrana_canyon_item_with_sj],
                     ),
                 ],
             ),

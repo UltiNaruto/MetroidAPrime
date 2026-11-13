@@ -555,6 +555,12 @@ class Tricks:
         TrickDifficulty.Easy,
         lambda world, state: True,
     )
+    phendrana_canyon_item_with_sj = TrickInfo(
+        "Phendrana Canyon Item With SJ",
+        "Get the item with Space Jump Boots only. Requires L-Analog to be used to control the jumps.",
+        TrickDifficulty.Easy,
+        lambda world, state: can_space_jump(world, state),
+    )
     phendrana_courtyard_no_boost_spider = TrickInfo(
         "Phendrana Courtyard No Boost Spider",
         "There is standable collision near the lower door that can be used to climb to the top of the room.",
